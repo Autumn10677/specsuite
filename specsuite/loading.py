@@ -6,7 +6,7 @@ import warnings
 
 from tqdm import tqdm
 from astropy.io import fits
-from astropy import coord
+from astropy import coordinates as coord
 from astropy.time import Time
 import astropy.units as u
 
@@ -217,7 +217,7 @@ def average_matching_files(
     crop_bds: list = [0, None],
     mode: str = "median",
     debug: bool = False,
-    update: bool = False,
+    progress: bool = False,
 ):
     """
     Extracts images from a user-given path, and finds
@@ -237,13 +237,13 @@ def average_matching_files(
         include 'median' and 'mean'.
     debug :: bool
         Toggles the display of image stats.
-    update :: bool
+    progress :: bool
         Toggles the progress bar.
     """
 
     # Retrieves all data filenames and prepares image list
     images = []
-    images = collect_images_array(path, tag, ignore=ignore, debug=debug, update=update)
+    images = collect_images_array(path, tag, ignore=ignore, debug=debug, progress=progress)
 
     mode = mode.lower()
     if mode == "mean":

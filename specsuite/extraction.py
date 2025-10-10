@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 from scipy.optimize import curve_fit
 
-from utils import _gaussian, _moffat, rebin_image_columns
+from .utils import _gaussian, _moffat, rebin_image_columns
 
 
 def generate_spatial_profile(
