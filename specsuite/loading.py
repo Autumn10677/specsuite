@@ -13,6 +13,7 @@ import astropy.units as u
 SUPPORTED_INSTRUMENTS = ["kosmos"]
 
 
+# Simplifies warning to remove visual clutter
 def custom_formatwarning(
     message, category, filename=None, lineno=None, line=None, module=None
 ):
@@ -88,6 +89,13 @@ def extract_image(
 
     if instrument == "kosmos":
         return _kosmos_loader(path, file)
+
+    else:
+        warnings.warn(
+            f"Provided instrumnet '{instrument}' is not currently supported",
+            UserWarning,
+        )
+        return
 
 
 def _kosmos_loader(
@@ -203,7 +211,6 @@ def collect_images_array(
             if debug:
                 print(f"{file}")
         except Exception as e:
-            print(e)
             if debug:
                 print(f"{file} --> (FAILED, {e})")
 
@@ -243,7 +250,9 @@ def average_matching_files(
 
     # Retrieves all data filenames and prepares image list
     images = []
-    images = collect_images_array(path, tag, ignore=ignore, debug=debug, progress=progress)
+    images = collect_images_array(
+        path, tag, ignore=ignore, debug=debug, progress=progress
+    )
 
     mode = mode.lower()
     if mode == "mean":
@@ -327,18 +336,18 @@ def load_metadata(
 
 
 def extract_times(
-    path,
-    target,
-    ignore=[],
-    time_lbl="DATE-OBS",
-    ra_lbl="RA",
-    dec_lbl="DEC",
-    lat_lbl="LATITUDE",
-    long_lbl="LONGITUD",
-    time_format="isot",
-    time_scale="tai",
-    loc_units=(u.hourangle, u.deg),
-    loc_frame="icrs",
+    path: str,
+    target: str,
+    ignore: list = [],
+    time_lbl: str = "DATE-OBS",
+    ra_lbl: str = "RA",
+    dec_lbl: str = "DEC",
+    lat_lbl: str = "LATITUDE",
+    long_lbl: str = "LONGITUD",
+    time_format: str = "isot",
+    time_scale: str = "tai",
+    loc_units: tuple = (u.hourangle, u.deg),
+    loc_frame: str = "icrs",
 ):
     """
     Extracts time data from the headers of a set of

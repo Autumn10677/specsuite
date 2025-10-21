@@ -8,7 +8,12 @@ import matplotlib.pyplot as plt
 from astropy.units import Quantity
 
 
-def load_STIS_spectra(name=None, filetype="model", wavelength_bounds=None, debug=False):
+def load_STIS_spectra(
+    name: str = None,
+    filetype: str = "model",
+    wavelength_bounds: tuple = None,
+    debug: bool = False,
+):
     """
     Attempts to download spectra data from
     the STIS website (see url below). It
@@ -104,16 +109,16 @@ def load_STIS_spectra(name=None, filetype="model", wavelength_bounds=None, debug
 
 
 def generate_flux_conversion(
-    w_measured,
-    w_model,
-    f_measured,
-    f_model,
-    err,
-    model_type="polynomial",
-    sigma_clip=50,
-    order=7,
-    max_iter=50,
-    debug=False,
+    w_measured: np.ndarray,
+    w_model: np.ndarray,
+    f_measured: np.ndarray,
+    f_model: np.ndarray,
+    err: np.ndarray,
+    model_type: str = "polynomial",
+    sigma_clip: float = 50.0,
+    order: int = 7,
+    max_iter: int = 50,
+    debug: bool = False,
 ):
     """
     Generates a numpy polynomial that predicts

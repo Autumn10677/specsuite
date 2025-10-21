@@ -8,8 +8,42 @@ from .utils import _gaussian, _moffat, rebin_image_columns
 
 
 def generate_spatial_profile(
-    image, profile="moffat", profile_order=7, bin_size=8, repeat=True, debug=False
+    image: np.ndarray,
+    profile: str = "moffat",
+    profile_order: int = 7,
+    bin_size: int = 8,
+    repeat: bool = True,
+    debug: bool = False,
 ):
+    """
+    Generates a 'spatial profile' as outlined in Horne (1986).
+    Spatial profiles predict the likelihood that a photon would
+    land at a given cross-dispersion location for each wavelength.
+    This function assumes that the dispersion axis is located
+    along the x-axis.
+
+    Parameters:
+    -----------
+    image :: np.ndarray
+        The image that a spatial profile is fit to.
+    profile :: str
+        Name of the type of profile to fit for. Currently, the
+        only valid options are...
+            - moffat
+            - gaussian
+    profile_order :: int
+        The order of the polynomial used to fit to each constant
+        in the specified spatial profile (i.e., along the dispersion
+        axis, the mean evolve as what order of polynomial?)
+    bin_size :: int
+        Size of each bin used for 'binning down' the provided image
+        before fitting.
+    repeat :: bool
+        Allows the initial fit to each parameter to influence the
+        initial guesses in a second series of fits.
+    debug :: bool
+        Allows for optional debugging plots to be shown.
+    """
 
     assert profile in ["moffat", "gaussian"], f"'{profile}' is not a valid profile..."
 
@@ -93,17 +127,17 @@ def generate_spatial_profile(
 
 
 def horne_extraction(
-    images,
-    backgrounds,
-    profile="gaussian",
-    profile_order=7,
-    RN=6,
-    bin_size=8,
-    sigma_clip=25,
-    max_iter=10,
-    repeat=True,
-    debug=False,
-    update=False,
+    images: np.ndarray,
+    backgrounds: np.ndarray,
+    profile: str = "gaussian",
+    profile_order: int = 7,
+    RN: float = 6.0,
+    bin_size: int = 8,
+    sigma_clip: float = 25.0,
+    max_iter: int = 10,
+    repeat: bool = True,
+    debug: bool = False,
+    update: bool = False,
 ):
 
     # Converts 2D arrays to 3D arrays
@@ -176,17 +210,17 @@ def horne_extraction(
 
 
 def extract_flux(
-    images,
-    images_bg,
-    bin_size=2**6,
-    trace_order=2,
-    model="fit moving",
-    extraction_width=10,
-    box_pos=0,
-    debug=False,
-    give_fit_params=False,
-    show_param_evolution=False,
-    update=False,
+    images: np.ndarray,
+    images_bg: np.ndarray,
+    bin_size: float = 2**6,
+    trace_order: int = 2,
+    model: str = "fit moving",
+    extraction_width: int = 10,
+    box_pos: float = 0.0,
+    debug: bool = False,
+    give_fit_params: bool = False,
+    show_param_evolution: bool = False,
+    update: bool = False,
 ):
     """
     Extracts flux from a given image using a
@@ -336,7 +370,9 @@ def extract_flux(
     return spectra, errs
 
 
-def trace_fit(image, bin=16, trace_order=2, debug=False):
+def trace_fit(
+    image: np.ndarray, bin: int = 16, trace_order: int = 2, debug: bool = False
+):
     """
     Fits a trace to a signal across the horizontal
     axis of an image. This is done by rebinning a

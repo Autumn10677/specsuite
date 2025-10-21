@@ -9,7 +9,11 @@ from joblib import Parallel, delayed
 
 
 def find_cal_lines(
-    image, std_variation=50, row=None, debug=False, element_name="Original"
+    image: np.ndarray,
+    std_variation: float = 50.0,
+    row: int = None,
+    debug: bool = False,
+    element_name: str = "Original",
 ):
     """
     Finds pixel positions of spectral lines in a
@@ -107,7 +111,7 @@ def find_cal_lines(
     return np.array(non_zero_indices), np.array(rel_intensity)
 
 
-def combine_within_tolerance(values, tolerance):
+def combine_within_tolerance(values: list, tolerance: float):
     """
     Takes a user-given list and combines values that
     are within a given tolerance. This is helpful for
@@ -153,7 +157,7 @@ def combine_within_tolerance(values, tolerance):
 
 
 def generate_warp_model(
-    image,
+    image: np.ndarray,
     guess: int,
     tolerance: int = 16,
     line_order: int = 2,
@@ -286,7 +290,9 @@ def generate_warp_model(
     return warp_models
 
 
-def dewarp_image(image, models, debug=False, update=False):
+def dewarp_image(
+    image: np.ndarray, models: list, debug: bool = False, update: bool = False
+):
     """
     Takes an image that is horizontally warped (straight
     vertical lines appear curved) and dewarps according
@@ -392,7 +398,7 @@ def dewarp_image(image, models, debug=False, update=False):
     return unwarped_image
 
 
-def generate_effpix_map(xs, rows, models):
+def generate_effpix_map(xs: np.ndarray, rows: np.ndarray, models: np.ndarray):
     """
     Generates a 2D map of the effective location
     of each pixel center across the detector. It
@@ -432,12 +438,12 @@ def generate_effpix_map(xs, rows, models):
 
 
 def extract_background(
-    images,
-    warp_model,
-    mask_region=(None, None),
-    return_spectrum=False,
-    update=False,
-    debug=False,
+    images: np.ndarray,
+    warp_model: np.ndarray,
+    mask_region: tuple = (None, None),
+    return_spectrum: bool = False,
+    update: bool = False,
+    debug: bool = False,
 ):
     """
     Extracts the sky background for a series of

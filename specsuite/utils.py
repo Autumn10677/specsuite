@@ -3,15 +3,15 @@ import numpy as np
 
 
 def plot_image(
-    image,
-    xlim=None,
-    ylim=None,
-    xlabel=None,
-    ylabel=None,
-    cbar_label="Counts",
-    title="",
-    figsize=(10, 3),
-    cmap=None,
+    image: np.ndarray,
+    xlim: tuple = None,
+    ylim: tuple = None,
+    xlabel: str = None,
+    ylabel: str = None,
+    cbar_label: str = "Counts",
+    title: str = "",
+    figsize: tuple = (10, 3),
+    cmap: str = None,
     **kwargs,
 ):
 
@@ -44,7 +44,9 @@ def plot_image(
     plt.show()
 
 
-def plot_spectra(flux, err, p_wavecal=None, plot_idx=0):
+def plot_spectra(
+    flux: np.ndarray, err: np.ndarray, p_wavecal: tuple = None, plot_idx: int = 0
+):
 
     # Adjusts the xlabel / x-data if necessary
     xlabel = "Dispersion Axis (pix)"
@@ -62,17 +64,17 @@ def plot_spectra(flux, err, p_wavecal=None, plot_idx=0):
     plt.show()
 
 
-def _gaussian(x, A, mu, sigma):
+def _gaussian(x: np.ndarray, A: float, mu: float, sigma: float):
     "Generates a 1D Gaussian curve at each point in x"
     return A * np.exp(-((x - mu) ** 2) / (2 * sigma**2))
 
 
-def _moffat(x, A, mu, gamma):
+def _moffat(x: np.ndarray, A: float, mu: float, gamma: float):
     "Generates a 1D modified Moffat curve at each point in x"
     return A * (1 + ((x - mu) / gamma) ** 2) ** (-2.5)
 
 
-def rebin_image_columns(image, bin):
+def rebin_image_columns(image: np.ndarray, bin: int):
     """
     Rebins an image along a single axis. The bin
     size must be an integer multiple of the axis
@@ -107,7 +109,7 @@ def rebin_image_columns(image, bin):
     return rebinned_image
 
 
-def flatfield_correction(image, flat, debug=False):
+def flatfield_correction(image: np.ndarray, flat: np.ndarray, debug: bool = False):
     """
     Parameters:
     -----------
