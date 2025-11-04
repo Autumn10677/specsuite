@@ -6,25 +6,20 @@ def plot_image(
     image: np.ndarray,
     xlim: tuple = None,
     ylim: tuple = None,
-    xlabel: str = None,
-    ylabel: str = None,
+    xlabel: str = "Dispersion Axis (pix)",
+    ylabel: str = "Cross-Dispersion Axis (pix)",
     cbar_label: str = "Counts",
     title: str = "",
     figsize: tuple = (10, 3),
-    cmap: str = None,
+    cmap: str = "inferno",
     **kwargs,
 ):
 
-    if cmap is None:
-        cmap = "inferno"
+    # Necessary to prevent weird behavior at edges of image
     if xlim is None:
         xlim = [0, len(image[0])]
     if ylim is None:
         ylim = [0, len(image)]
-    if xlabel is None:
-        xlabel = "Dispersion Axis (pix)"
-    if ylabel is None:
-        ylabel = "Cross-Dispersion Axis (pix)"
 
     plt.rcParams["figure.figsize"] = figsize
     plt.imshow(
@@ -66,12 +61,32 @@ def plot_spectra(
 
 def _gaussian(x: np.ndarray, A: float, mu: float, sigma: float):
     "Generates a 1D Gaussian curve at each point in x"
-    return A * np.exp(-((x - mu) ** 2) / (2 * sigma**2))
+
+    # Ensures the calculation can run without error
+    try:
+        x = np.array(x).astype(float)
+        A, mu, sigma = np.array([A, mu, sigma]).astype(float)
+    except ValueError:
+        return None
+
+    profile = A * np.exp(-((x - mu) ** 2) / (2 * sigma**2))
+
+    return profile
 
 
 def _moffat(x: np.ndarray, A: float, mu: float, gamma: float):
     "Generates a 1D modified Moffat curve at each point in x"
-    return A * (1 + ((x - mu) / gamma) ** 2) ** (-2.5)
+
+    # Ensures the calculation can run without error
+    try:
+        x = np.array(x).astype(float)
+        A, mu, gamma = np.array([A, mu, gamma]).astype(float)
+    except ValueError:
+        return None
+
+    profile = A * (1 + ((x - mu) / gamma) ** 2) ** (-2.5)
+
+    return profile
 
 
 def rebin_image_columns(image: np.ndarray, bin: int):

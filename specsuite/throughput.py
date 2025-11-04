@@ -38,10 +38,7 @@ def load_STIS_spectra(
     """
 
     # Loads the HTML data from the STIS website
-    url = (
-        "https://www.stsci.edu/hst/instrumentation/"
-        + "reference-data-for-calibration-and-tools/astronomical-catalogs/calspec"
-    )
+    url = "https://www.stsci.edu/hst/instrumentation/reference-data-for-calibration-and-tools/astronomical-catalogs/calspec"  # noqa: E501
 
     response = requests.get(url)
     df = pd.read_html(StringIO(response.text))[0]
@@ -66,7 +63,7 @@ def load_STIS_spectra(
 
     # Loads FITS data for the specified star
     filename = f"{df["Name"][0]}{df[filetype][0]}.fits"
-    file_url = f"https://archive.stsci.edu/hlsps/reference-atlases/cdbs/current_calspec/{filename}"
+    file_url = f"https://archive.stsci.edu/hlsps/reference-atlases/cdbs/current_calspec/{filename}"  # noqa: E501
     hdul = fits.open(file_url)
 
     # Unpacks spectral data
