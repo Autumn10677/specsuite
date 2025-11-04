@@ -19,8 +19,12 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install astropy numpy requests tqdm
+        pip install astropy matplotlib numpy requests tqdm
 
     - name: Test 'loading' functions
       run: |
         python tests/unit/test_loading.py
+
+    - name: Test 'util' functions
+      run: |
+        python tests/unit/test_utils.py
