@@ -7,8 +7,8 @@ sys.path.append("specsuite/")
 
 import loading  # noqa
 
-CAL_PATH = "../../APO Data/TOI3884/UT250317/cals"
-DATA_PATH = "../../APO Data/TOI3884/UT250317/sci"
+CAL_PATH = "data/KOSMOS/calibrations"
+DATA_PATH = "data/KOSMOS/target"
 
 class TestLoadingFunctions(unittest.TestCase):
 
@@ -66,54 +66,54 @@ class TestLoadingFunctions(unittest.TestCase):
             []
         )
 
-    # def test_collect_images_array(self):
+    def test_collect_images_array(self):
 
-    #     # Ensures that valid call returns a numpy array (instead of 'None')
-    #     valid_images = loading.collect_images_array(path = DATA_PATH, tag = "toi3884")
-    #     self.assertTrue(len(valid_images) > 0)
-    #     self.assertIsInstance(valid_images, np.ndarray)
+        # Ensures that valid call returns a numpy array (instead of 'None')
+        valid_images = loading.collect_images_array(path = DATA_PATH, tag = "toi3884")
+        self.assertTrue(len(valid_images) > 0)
+        self.assertIsInstance(valid_images, np.ndarray)
 
-    #     # Since 'wrong tag' is not in any filename, no files should be loaded
-    #     self.assertTrue(
-    #         loading.collect_images_array(
-    #             path = CAL_PATH,
-    #             tag = "wrong tag"
-    #         ) is None
-    #     )
+        # Since 'wrong tag' is not in any filename, no files should be loaded
+        self.assertTrue(
+            loading.collect_images_array(
+                path = CAL_PATH,
+                tag = "wrong tag"
+            ) is None
+        )
 
-    #     # FIXME: In the future, bad instruments should default to 'default' loading
-    #     self.assertTrue(
-    #         loading.collect_images_array(
-    #             path = CAL_PATH,
-    #             tag = "bias",
-    #             instrument = "fake instrument",
-    #         ) is None
-    #     )
+        # FIXME: In the future, bad instruments should default to 'default' loading
+        self.assertTrue(
+            loading.collect_images_array(
+                path = CAL_PATH,
+                tag = "bias",
+                instrument = "fake instrument",
+            ) is None
+        )
 
-    # def test_average_matching_files(self):
+    def test_average_matching_files(self):
 
-    #     # Ensures that valid call returns a numpy array (instead of 'None')
-    #     valid_images = loading.average_matching_files(
-    #         path = DATA_PATH,
-    #         tag = "toi3884",
-    #     )
-    #     self.assertTrue(len(valid_images) > 0)
-    #     self.assertIsInstance(valid_images, np.ndarray)
+        # Ensures that valid call returns a numpy array (instead of 'None')
+        valid_images = loading.average_matching_files(
+            path = DATA_PATH,
+            tag = "toi3884",
+        )
+        self.assertTrue(len(valid_images) > 0)
+        self.assertIsInstance(valid_images, np.ndarray)
 
-    #     self.assertTrue(
-    #         loading.average_matching_files(
-    #             path = CAL_PATH,
-    #             tag = "wrong tag"
-    #         ) is None
-    #     )
+        self.assertTrue(
+            loading.average_matching_files(
+                path = CAL_PATH,
+                tag = "wrong tag"
+            ) is None
+        )
 
-    #     self.assertTrue(
-    #         loading.average_matching_files(
-    #             path = CAL_PATH,
-    #             tag = "bias",
-    #             instrument = "fake instrument",
-    #         ) is None
-    #     )
+        self.assertTrue(
+            loading.average_matching_files(
+                path = CAL_PATH,
+                tag = "bias",
+                instrument = "fake instrument",
+            ) is None
+        )
 
 if __name__ == "__main__":
     unittest.main()
