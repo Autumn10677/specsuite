@@ -227,25 +227,25 @@ def generate_warp_model(
 
     if len(guess) == 0:
         warnings.warn(
-            "The provided 'guess' array is empty and a warp model could not be generated"
+            "The provided 'guess' array is empty and a warp model could not be generated"  # noqa: E501
         )
         return None
 
     if not isinstance(tolerance, int):
         warnings.warn(
-            f"'tolerance' must be an int (not {type(tolerance)}), using default value\n"
+            f"'tolerance' must be an int (not {type(tolerance)}), using default value\n"  # noqa: E501
         )
         tolerance = 16
 
     if not isinstance(line_order, int):
         warnings.warn(
-            f"'line_order' must be an int (not {type(warp_order)}), using default value\n"
+            f"'line_order' must be an int (not {type(warp_order)}), using default value\n"  # noqa: E501
         )
         line_order = 2
 
     if not isinstance(warp_order, int):
         warnings.warn(
-            f"'warp_order' must be an int (not {type(warp_order)}), using default value\n"
+            f"'warp_order' must be an int (not {type(warp_order)}), using default value\n"  # noqa: E501
         )
         warp_order = 1
 
@@ -370,7 +370,7 @@ def dewarp_image(
 
     if len(image.shape) != 2:
         warnings.warn(
-            f"The provided image must be a single 2D array (not a {len(image.shape)}D array)"
+            f"The provided image must be a single 2D array (not a {len(image.shape)}D array)"  # noqa: E501
         )
         return image
 
