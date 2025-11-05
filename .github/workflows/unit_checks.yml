@@ -28,3 +28,7 @@ jobs:
     - name: Test 'util' functions
       run: |
         python tests/unit/test_utils.py
+
+    - name: Test 'warping' functions
+      run: |
+        python tests/unit/test_warping.py

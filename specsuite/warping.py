@@ -7,6 +7,8 @@ import scipy.signal as signal
 from astropy.stats import mad_std
 from joblib import Parallel, delayed
 
+import sys
+sys.tracebacklimit = 0
 
 def find_cal_lines(
     image: np.ndarray,
@@ -49,7 +51,11 @@ def find_cal_lines(
     sample_std = mad_std(sample_light)
     filtered_light = np.array(
         [i if i > std_variation * sample_std else 0 for i in sample_light]
-    )
+    ).astype(float)
+
+    if np.max(filtered_light) == 0.0:
+        raise ZeroDivisionError(f"No pixels were found above the provided threshold ({std_variation})")
+
     filtered_light /= np.max(filtered_light)
 
     non_zero_indices = []
@@ -133,27 +139,37 @@ def combine_within_tolerance(values: list, tolerance: float):
         been averaged and combined.
     """
 
-    # Initializes several useful lists
-    values = sorted(list(values))
-    combined_values = []
-    temp_group = [values[0]]
+    # Silently handled here in case users provide negative tolerance
+    try:
+        tolerance = np.abs(tolerance)
+        values = sorted(list(values))
+        combined_values = []
+        temp_group = [values[0]]
+    except IndexError:
+        return np.array([])
+    except TypeError:
+        return np.array([])
 
-    # Iterates over each value
-    for i in range(1, len(values)):
+    try:
+        # Iterates over each value
+        for i in range(1, len(values)):
 
-        # Checks whether values are within a tolerance
-        if np.abs(values[i] - temp_group[-1]) <= tolerance:
-            temp_group.append(values[i])
+            # Checks whether values are within a tolerance
+            if np.abs(values[i] - temp_group[-1]) <= tolerance:
+                temp_group.append(values[i])
 
-        # Combines close points and resents temporary list
-        else:
-            combined_values.append(np.mean(temp_group))
-            temp_group = [values[i]]
+            # Combines close points and resents temporary list
+            else:
+                combined_values.append(np.mean(temp_group))
+                temp_group = [values[i]]
 
-    # Add the last group
-    combined_values.append(np.mean(temp_group))
+        # Add the last group
+        combined_values.append(np.mean(temp_group))
 
-    return combined_values
+    except TypeError:
+        return values
+
+    return np.array(combined_values).astype(float)
 
 
 def generate_warp_model(
