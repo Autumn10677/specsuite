@@ -6,6 +6,7 @@ from tqdm import tqdm
 import scipy.signal as signal
 from astropy.stats import mad_std
 from joblib import Parallel, delayed
+import warnings
 
 import sys
 
@@ -178,13 +179,13 @@ def combine_within_tolerance(values: list, tolerance: float):
 
 def generate_warp_model(
     image: np.ndarray,
-    guess: int,
+    guess: np.ndarray,
     tolerance: int = 16,
     line_order: int = 2,
     warp_order: int = 1,
     ref_idx: bool = None,
     debug: bool = False,
-):
+) -> list:
     """
     Models how straight vertical lines in a wavelength calibration
     image are being warped. Assumes a relatively low amount of
@@ -223,6 +224,30 @@ def generate_warp_model(
         Collection of models describing how y-warping coefficients
         change as a function of x.
     """
+
+    if len(guess) == 0:
+        warnings.warn(
+            "The provided 'guess' array is empty and a warp model could not be generated"
+        )
+        return None
+
+    if not isinstance(tolerance, int):
+        warnings.warn(
+            f"'tolerance' must be an int (not {type(tolerance)}), using default value\n"
+        )
+        tolerance = 16
+
+    if not isinstance(line_order, int):
+        warnings.warn(
+            f"'line_order' must be an int (not {type(warp_order)}), using default value\n"
+        )
+        line_order = 2
+
+    if not isinstance(warp_order, int):
+        warnings.warn(
+            f"'warp_order' must be an int (not {type(warp_order)}), using default value\n"
+        )
+        warp_order = 1
 
     coeff_list = np.array([])
     if ref_idx is None:
@@ -334,11 +359,20 @@ def dewarp_image(
         Enables diagnostic plots.
     update :: bool
         Enables a progress bar.
+
     Returns:
     --------
     unwarped_image :: np.ndarray
         A dewarped version of the provided image.
     """
+
+    image = np.array(image)
+
+    if len(image.shape) != 2:
+        warnings.warn(
+            f"The provided image must be a single 2D array (not a {len(image.shape)}D array)"
+        )
+        return image
 
     # Defines an array of pixel edges for each raw data pixel
     edges = np.array(range(len(image[0]) + 1)) - 0.5

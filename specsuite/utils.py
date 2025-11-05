@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import warnings
 
 
 def plot_image(
@@ -14,49 +15,57 @@ def plot_image(
     cmap: str = "inferno",
     **kwargs,
 ):
+    
+    try:
 
-    # Necessary to prevent weird behavior at edges of image
-    if xlim is None:
-        xlim = [0, len(image[0])]
-    if ylim is None:
-        ylim = [0, len(image)]
+        image = np.array(image).astype(float)
+        assert len(image.shape) == 2
 
-    plt.rcParams["figure.figsize"] = figsize
-    plt.imshow(
-        image,
-        cmap="inferno",
-        aspect="auto",
-        interpolation="none",
-        origin="lower",
-        **kwargs,
-    )
-    plt.title(title)
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
-    plt.colorbar(label=cbar_label)
-    plt.xlim(xlim)
-    plt.ylim(ylim)
-    plt.show()
+        # Necessary to prevent weird behavior at edges of image
+        if xlim is None:
+            xlim = [0, len(image[0])]
+        if ylim is None:
+            ylim = [0, len(image)]
+
+        plt.rcParams["figure.figsize"] = figsize
+        plt.imshow(
+            image,
+            cmap="inferno",
+            aspect="auto",
+            interpolation="none",
+            origin="lower",
+            **kwargs,
+        )
+        plt.title(title)
+        plt.xlabel(xlabel)
+        plt.ylabel(ylabel)
+        plt.colorbar(label=cbar_label)
+        plt.xlim(xlim)
+        plt.ylim(ylim)
+        plt.show()
+
+    except AssertionError:
+        warnings.warn("The provided image is not a valid 2D array")
 
 
-def plot_spectra(
-    flux: np.ndarray, err: np.ndarray, p_wavecal: tuple = None, plot_idx: int = 0
-):
+    def plot_spectra(
+        flux: np.ndarray, err: np.ndarray, p_wavecal: tuple = None, plot_idx: int = 0
+    ):
 
-    # Adjusts the xlabel / x-data if necessary
-    xlabel = "Dispersion Axis (pix)"
-    xs = np.array(range(len(flux)))
-    if p_wavecal is not None:
-        xs = p_wavecal(xs)
-        xlabel = "Wavelength (AA)"
+        # Adjusts the xlabel / x-data if necessary
+        xlabel = "Dispersion Axis (pix)"
+        xs = np.array(range(len(flux)))
+        if p_wavecal is not None:
+            xs = p_wavecal(xs)
+            xlabel = "Wavelength (AA)"
 
-    # Plots spectra with errorbars
-    plt.rcParams["figure.figsize"] = (12, 5)
-    plt.scatter(xs, flux.T[plot_idx], color="k", s=3)
-    plt.errorbar(xs, flux.T[plot_idx], yerr=err.T[plot_idx], fmt="none", color="k")
-    plt.xlim(xs[0], xs[-1])
-    plt.xlabel(xlabel)
-    plt.show()
+        # Plots spectra with errorbars
+        plt.rcParams["figure.figsize"] = (12, 5)
+        plt.scatter(xs, flux.T[plot_idx], color="k", s=3)
+        plt.errorbar(xs, flux.T[plot_idx], yerr=err.T[plot_idx], fmt="none", color="k")
+        plt.xlim(xs[0], xs[-1])
+        plt.xlabel(xlabel)
+        plt.show()
 
 
 def _gaussian(x: np.ndarray, A: float, mu: float, sigma: float):
