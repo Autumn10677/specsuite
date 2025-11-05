@@ -8,7 +8,7 @@ sys.path.append("specsuite/")
 import utils  # noqa
 
 
-class TestMyUtils(unittest.TestCase):
+class TestUtilFunctions(unittest.TestCase):
 
     def test_plot_image(self):
         pass
