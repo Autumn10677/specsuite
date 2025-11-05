@@ -5,13 +5,22 @@ import numpy as np
 
 sys.path.append("specsuite/")
 
-import utils  # noqa
+import utils
+import loading
 
+CAL_PATH = "data/KOSMOS/calibrations"
 
 class TestUtilFunctions(unittest.TestCase):
 
     def test_plot_image(self):
-        pass
+
+        # Ensures that plotting will not work for invalid image shapes
+        with self.assertWarns(UserWarning):
+            utils.plot_image([], norm='log')
+        with self.assertWarns(UserWarning):
+            utils.plot_image([1, 2, 3, 4], norm='log')
+        with self.assertWarns(UserWarning):
+            utils.plot_image([[[1, 2], [3, 4], [5, 6]]], norm='log')
 
     def test_plot_spectra(self):
         pass
