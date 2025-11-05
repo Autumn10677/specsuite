@@ -15,7 +15,7 @@ def plot_image(
     cmap: str = "inferno",
     **kwargs,
 ):
-    
+
     try:
 
         image = np.array(image).astype(float)
@@ -46,7 +46,6 @@ def plot_image(
 
     except AssertionError:
         warnings.warn("The provided image is not a valid 2D array")
-
 
     def plot_spectra(
         flux: np.ndarray, err: np.ndarray, p_wavecal: tuple = None, plot_idx: int = 0
