@@ -8,7 +8,9 @@ from astropy.stats import mad_std
 from joblib import Parallel, delayed
 
 import sys
+
 sys.tracebacklimit = 0
+
 
 def find_cal_lines(
     image: np.ndarray,
@@ -54,7 +56,9 @@ def find_cal_lines(
     ).astype(float)
 
     if np.max(filtered_light) == 0.0:
-        raise ZeroDivisionError(f"No pixels were found above the provided threshold ({std_variation})")
+        raise ZeroDivisionError(
+            f"No pixels were found above the provided threshold ({std_variation})"
+        )
 
     filtered_light /= np.max(filtered_light)
 
