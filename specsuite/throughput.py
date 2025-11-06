@@ -68,14 +68,20 @@ def load_STIS_spectra(
 
     # Unpacks spectral data
     data = hdul[1].data
+    hdul.close()
 
     wavs = data["WAVELENGTH"] * u.AA
 
     # Generates mask for undesired wavelengths
-    if wavelength_bounds is None:
-        wavelength_bounds = [np.min(wavs), np.max(wavs)]
-    mask = (wavelength_bounds[0] < wavs) & (wavs < wavelength_bounds[1])
-    wavs = wavs[mask]
+    try:
+        if wavelength_bounds is None:
+            wavelength_bounds = [np.min(wavs), np.max(wavs)]
+        mask = (wavelength_bounds[0] < wavs) & (wavs < wavelength_bounds[1])
+        wavs = wavs[mask]
+    except TypeError:
+        raise AssertionError(
+            f"'Wavelength bounds must be a tuple of astropy.Quantities, not '{type(wavelength_bounds)}'"
+        )
 
     if filetype == "model":
         cont = data["CONTINUUM"][mask] * u.erg / u.s / u.cm**2 / u.AA
