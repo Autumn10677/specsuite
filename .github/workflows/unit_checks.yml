@@ -19,7 +19,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install astropy joblib matplotlib numpy requests scipy tqdm
+        pip install astropy joblib lxml matplotlib numpy pandas requests scipy tqdm
 
     - name: Test 'loading' functions
       run: |
@@ -32,3 +32,7 @@ jobs:
     - name: Test 'warping' functions
       run: |
         python tests/unit/test_warping.py
+
+    - name: Test 'throughput' functions
+      run: |
+        python tests/unit/test_throughput.py
