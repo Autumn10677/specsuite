@@ -80,7 +80,7 @@ def load_STIS_spectra(
         wavs = wavs[mask]
     except TypeError:
         raise AssertionError(
-            f"'Wavelength bounds must be astropy.Quantities, not '{type(wavelength_bounds)}'"  # noqa
+            f"'Wavelength bounds must be astropy.Quantities, not '{type(wavelength_bounds)}'"  # noqa: E501
         )
 
     if filetype == "model":
