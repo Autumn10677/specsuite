@@ -98,7 +98,8 @@ def generate_spatial_profile(
                     plt.plot(rows, profile_function(rows, *popt))
                     plt.show()
 
-            except:
+            except Exception as e:
+                print(e)
                 pass
 
     parameters = np.array(parameters).T
@@ -360,7 +361,7 @@ def extract_flux(
                 # Plots evolution of trace parameter over images
                 plt.rcParams["figure.figsize"] = (10, 3)
                 plt.scatter(idxs, np.array(fit_coefficients)[:, i], color="k")
-                plt.title(f"Coefficient Order: {len(fit_coefficients[0])-1-i}")
+                plt.title(f"Coefficient Order: {len(fit_coefficients[0]) - 1 - i}")
                 plt.xlabel("Image Index")
                 plt.ylabel("Value")
                 plt.show()

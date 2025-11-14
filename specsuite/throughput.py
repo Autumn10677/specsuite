@@ -38,10 +38,7 @@ def load_STIS_spectra(
     """
 
     # Loads the HTML data from the STIS website
-    url = (
-        "https://www.stsci.edu/hst/instrumentation/"
-        + "reference-data-for-calibration-and-tools/astronomical-catalogs/calspec"
-    )
+    url = "https://www.stsci.edu/hst/instrumentation/reference-data-for-calibration-and-tools/astronomical-catalogs/calspec"  # noqa: E501
 
     response = requests.get(url)
     df = pd.read_html(StringIO(response.text))[0]
@@ -66,19 +63,25 @@ def load_STIS_spectra(
 
     # Loads FITS data for the specified star
     filename = f"{df["Name"][0]}{df[filetype][0]}.fits"
-    file_url = f"https://archive.stsci.edu/hlsps/reference-atlases/cdbs/current_calspec/{filename}"
+    file_url = f"https://archive.stsci.edu/hlsps/reference-atlases/cdbs/current_calspec/{filename}"  # noqa: E501
     hdul = fits.open(file_url)
 
     # Unpacks spectral data
     data = hdul[1].data
+    hdul.close()
 
     wavs = data["WAVELENGTH"] * u.AA
 
     # Generates mask for undesired wavelengths
-    if wavelength_bounds is None:
-        wavelength_bounds = [np.min(wavs), np.max(wavs)]
-    mask = (wavelength_bounds[0] < wavs) & (wavs < wavelength_bounds[1])
-    wavs = wavs[mask]
+    try:
+        if wavelength_bounds is None:
+            wavelength_bounds = [np.min(wavs), np.max(wavs)]
+        mask = (wavelength_bounds[0] < wavs) & (wavs < wavelength_bounds[1])
+        wavs = wavs[mask]
+    except TypeError:
+        raise AssertionError(
+            f"'Wavelength bounds must be astropy.Quantities, not '{type(wavelength_bounds)}'"  # noqa: E501
+        )
 
     if filetype == "model":
         cont = data["CONTINUUM"][mask] * u.erg / u.s / u.cm**2 / u.AA

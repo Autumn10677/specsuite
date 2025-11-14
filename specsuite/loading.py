@@ -123,11 +123,12 @@ def _kosmos_loader(
     # Extracts header from fits file
     hdu = fits.open(path + f"/{file}")
     image_data = hdu[0].data
+    image_header = hdu[0].header
 
     if clip_overscan:
 
         # Loads metadata for the size of half the overscan region
-        bias_section = (hdu[0].header)["BSEC11"]
+        bias_section = image_header["BSEC11"]
         bias_section = re.sub(r"[(){}\[\]]", "", bias_section)
 
         # Calculates the total overscan region length (accounts for indexing)
@@ -141,6 +142,8 @@ def _kosmos_loader(
 
     else:
         image_data = np.rot90(image_data, k=3)
+
+    hdu.close()
 
     return image_data
 
@@ -214,12 +217,20 @@ def collect_images_array(
             if debug:
                 print(f"{file} --> (FAILED, {e})")
 
+    if len(image_collection) == 0:
+        warnings.warn(
+            "No images were successfully loaded, returning 'None' instead",
+            UserWarning,
+        )
+        return None
+
     return np.array(image_collection)[:, crop_bds[0] : crop_bds[1]]
 
 
 def average_matching_files(
     path: str,
     tag: str,
+    instrument: str = "kosmos",
     ignore: list = [],
     crop_bds: list = [0, None],
     mode: str = "median",
@@ -251,14 +262,22 @@ def average_matching_files(
     # Retrieves all data filenames and prepares image list
     images = []
     images = collect_images_array(
-        path, tag, ignore=ignore, debug=debug, progress=progress
+        path,
+        tag,
+        instrument=instrument,
+        ignore=ignore,
+        debug=debug,
+        progress=progress,
     )
 
-    mode = mode.lower()
-    if mode == "mean":
-        avg_image = np.mean(images, axis=0)
-    else:
-        avg_image = np.median(images, axis=0)
+    # Handles 'None' return from 'collect_images_array()'
+    try:
+        if mode.lower() == "mean":
+            avg_image = np.mean(images, axis=0)
+        else:
+            avg_image = np.median(images, axis=0)
+    except np.exceptions.AxisError:
+        return None
 
     # Prints image statistics
     if debug:

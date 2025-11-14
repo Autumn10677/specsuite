@@ -6,6 +6,11 @@ from tqdm import tqdm
 import scipy.signal as signal
 from astropy.stats import mad_std
 from joblib import Parallel, delayed
+import warnings
+
+import sys
+
+sys.tracebacklimit = 0
 
 
 def find_cal_lines(
@@ -49,7 +54,13 @@ def find_cal_lines(
     sample_std = mad_std(sample_light)
     filtered_light = np.array(
         [i if i > std_variation * sample_std else 0 for i in sample_light]
-    )
+    ).astype(float)
+
+    if np.max(filtered_light) == 0.0:
+        raise ZeroDivisionError(
+            f"No pixels were found above the provided threshold ({std_variation})"
+        )
+
     filtered_light /= np.max(filtered_light)
 
     non_zero_indices = []
@@ -133,38 +144,48 @@ def combine_within_tolerance(values: list, tolerance: float):
         been averaged and combined.
     """
 
-    # Initializes several useful lists
-    values = sorted(list(values))
-    combined_values = []
-    temp_group = [values[0]]
+    # Silently handled here in case users provide negative tolerance
+    try:
+        tolerance = np.abs(tolerance)
+        values = sorted(list(values))
+        combined_values = []
+        temp_group = [values[0]]
+    except IndexError:
+        return np.array([])
+    except TypeError:
+        return np.array([])
 
-    # Iterates over each value
-    for i in range(1, len(values)):
+    try:
+        # Iterates over each value
+        for i in range(1, len(values)):
 
-        # Checks whether values are within a tolerance
-        if np.abs(values[i] - temp_group[-1]) <= tolerance:
-            temp_group.append(values[i])
+            # Checks whether values are within a tolerance
+            if np.abs(values[i] - temp_group[-1]) <= tolerance:
+                temp_group.append(values[i])
 
-        # Combines close points and resents temporary list
-        else:
-            combined_values.append(np.mean(temp_group))
-            temp_group = [values[i]]
+            # Combines close points and resents temporary list
+            else:
+                combined_values.append(np.mean(temp_group))
+                temp_group = [values[i]]
 
-    # Add the last group
-    combined_values.append(np.mean(temp_group))
+        # Add the last group
+        combined_values.append(np.mean(temp_group))
 
-    return combined_values
+    except TypeError:
+        return values
+
+    return np.array(combined_values).astype(float)
 
 
 def generate_warp_model(
     image: np.ndarray,
-    guess: int,
+    guess: np.ndarray,
     tolerance: int = 16,
     line_order: int = 2,
     warp_order: int = 1,
     ref_idx: bool = None,
     debug: bool = False,
-):
+) -> list:
     """
     Models how straight vertical lines in a wavelength calibration
     image are being warped. Assumes a relatively low amount of
@@ -203,6 +224,30 @@ def generate_warp_model(
         Collection of models describing how y-warping coefficients
         change as a function of x.
     """
+
+    if len(guess) == 0:
+        warnings.warn(
+            "The provided 'guess' array is empty and a warp model could not be generated"  # noqa: E501
+        )
+        return None
+
+    if not isinstance(tolerance, int):
+        warnings.warn(
+            f"'tolerance' must be an int (not {type(tolerance)}), using default value\n"  # noqa: E501
+        )
+        tolerance = 16
+
+    if not isinstance(line_order, int):
+        warnings.warn(
+            f"'line_order' must be an int (not {type(warp_order)}), using default value\n"  # noqa: E501
+        )
+        line_order = 2
+
+    if not isinstance(warp_order, int):
+        warnings.warn(
+            f"'warp_order' must be an int (not {type(warp_order)}), using default value\n"  # noqa: E501
+        )
+        warp_order = 1
 
     coeff_list = np.array([])
     if ref_idx is None:
@@ -314,11 +359,20 @@ def dewarp_image(
         Enables diagnostic plots.
     update :: bool
         Enables a progress bar.
+
     Returns:
     --------
     unwarped_image :: np.ndarray
         A dewarped version of the provided image.
     """
+
+    image = np.array(image)
+
+    if len(image.shape) != 2:
+        warnings.warn(
+            f"The provided image must be a single 2D array (not a {len(image.shape)}D array)"  # noqa: E501
+        )
+        return image
 
     # Defines an array of pixel edges for each raw data pixel
     edges = np.array(range(len(image[0]) + 1)) - 0.5

@@ -6,7 +6,7 @@ on:
     branches: [ main ]
 
 jobs:
-  lint:
+  core-style-checks:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -14,13 +14,17 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: '3.14'
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install black
+        pip install black flake8
 
     - name: Run Black formatter check
       run: |
         black --check specsuite/*.py
+
+    - name: Run flake8 formatter check
+      run: |
+        flake8 --max-line-length=88 --ignore=E203,W503 specsuite/*.py
