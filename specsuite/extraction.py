@@ -51,7 +51,11 @@ def generate_spatial_profile(
     # Stores fitting information (function, p0, bounds) for each model
     profile_dict = {
         "gaussian": [_gaussian, [0.5, -1, 2.5], [[0, 0, 0], [1, len(image), 10]]],
-        "moffat": [_moffat, [0.5, -1, 5, 0.01], [[0, 0, 4, 0], [1, len(image), 20, np.inf]]],
+        "moffat": [
+            _moffat,
+            [0.5, -1, 5, 0.01],
+            [[0, 0, 4, 0], [1, len(image), 20, np.inf]],
+        ],
     }
 
     # Extracts profile information
@@ -160,10 +164,10 @@ def boxcar_extraction(
         A 2D array containing the flux of each provided exposure.
         Has a shape of (image index, pixel position).
     error_array :: np.ndarray
-        A 2D array containing the undertainty of each provided 
+        A 2D array containing the undertainty of each provided
         exposure. Has a shape of (image index, pixel position).
     """
-    
+
     # Did not want to terminate execution in case this is intentional
     if RN == 0.0:
         warnings.warn("Assuming RN = 0, this is likely an under-estimate.\n")
@@ -234,7 +238,7 @@ def horne_extraction(
 
             # Generates new spatial profile and variance estimate
             P = generate_spatial_profile(
-                (D - S)/f,
+                (D - S) / f,
                 bin_size=bin_size,
                 profile=profile,
                 profile_order=profile_order,

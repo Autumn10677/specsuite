@@ -82,7 +82,7 @@ def _gaussian(x: np.ndarray, A: float, mu: float, sigma: float):
     return profile
 
 
-def _moffat(x: np.ndarray, A: float, mu: float, gamma: float):
+def _moffat(x: np.ndarray, A: float, mu: float, gamma: float, offset: float = 0.0):
     "Generates a 1D modified Moffat curve at each point in x"
 
     # Ensures the calculation can run without error
