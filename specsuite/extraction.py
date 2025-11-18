@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import warnings
 
 from tqdm import tqdm
 from scipy.optimize import curve_fit
@@ -50,7 +51,7 @@ def generate_spatial_profile(
     # Stores fitting information (function, p0, bounds) for each model
     profile_dict = {
         "gaussian": [_gaussian, [0.5, -1, 2.5], [[0, 0, 0], [1, len(image), 10]]],
-        "moffat": [_moffat, [0.5, -1, 5], [[0, 0, 4], [1, len(image), 20]]],
+        "moffat": [_moffat, [0.5, -1, 5, 0.01], [[0, 0, 4, 0], [1, len(image), 20, np.inf]]],
     }
 
     # Extracts profile information
@@ -91,15 +92,15 @@ def generate_spatial_profile(
                 parameters.append(popt)
                 successful_cols.append(cols_binned[idx])
 
-                if debug:
-                    plt.rcParams["figure.figsize"] = (12, 1)
-                    plt.title(popt)
-                    plt.scatter(rows, y)
-                    plt.plot(rows, profile_function(rows, *popt))
-                    plt.show()
+                # if debug:
+                #     plt.rcParams["figure.figsize"] = (12, 1)
+                #     plt.title(popt)
+                #     plt.scatter(rows, y)
+                #     plt.plot(rows, profile_function(rows, *popt))
+                #     plt.show()
 
-            except Exception as e:
-                print(e)
+            # Prevents printout if fit does not converge
+            except RuntimeError:
                 pass
 
     parameters = np.array(parameters).T
@@ -127,19 +128,79 @@ def generate_spatial_profile(
     return P
 
 
+def boxcar_extraction(
+    science: np.ndarray,
+    backgrounds: np.ndarray,
+    RN: float | np.ndarray = 0.0,
+):
+    """
+    Performs a simple boxcar extraction on an image
+    (or series of images). This assumes that both arrays
+    of images of dimensions corresponding to...
+
+        (cross-dispersion, dispersion)
+
+    If that is not the case, please rotate your data arrays
+    before feeding them into this function.
+
+    Parameters:
+    -----------
+    science :: np.ndarray
+        A 2D (or array of several 2D) science exposures that
+        have been background subtracted.
+    backgrounds :: np.ndarray
+        A 2D (or array of several 2D) background exposures
+        that have been subtracted off of your science images.
+    RN :: float | np.ndarray
+        The read noise associated with your detector.
+
+    Returns:
+    --------
+    flux_array :: np.ndarray
+        A 2D array containing the flux of each provided exposure.
+        Has a shape of (image index, pixel position).
+    error_array :: np.ndarray
+        A 2D array containing the undertainty of each provided 
+        exposure. Has a shape of (image index, pixel position).
+    """
+    
+    # Did not want to terminate execution in case this is intentional
+    if RN == 0.0:
+        warnings.warn("Assuming RN = 0, this is likely an under-estimate.\n")
+
+    # Handles single-image exposures by wrapping them in a list
+    if len(science.shape) != 3:
+        science = np.array([science])
+    if len(backgrounds.shape) != 3:
+        backgrounds = np.array([backgrounds])
+
+    # Checks that arrays are either 3D or a wrapped 2D exposure
+    try:
+        assert (len(science.shape) == 3) and (len(backgrounds.shape) == 3)
+    except AssertionError:
+        raise AssertionError("Both image arrays should be 2D or 3D.")
+
+    # Assumes that 'science' and 'backgrounds' are 3D arrays
+    flux_array = np.sum(science, axis=1)
+    error_array = np.sqrt(np.sum(science + backgrounds + RN**2, axis=1))
+
+    return flux_array, error_array
+
+
 def horne_extraction(
     images: np.ndarray,
     backgrounds: np.ndarray,
-    profile: str = "gaussian",
-    profile_order: int = 7,
-    RN: float = 6.0,
-    bin_size: int = 8,
-    sigma_clip: float = 25.0,
-    max_iter: int = 10,
+    profile: str = "moffat",
+    profile_order: int = 3,
+    RN: float = 0.0,
+    bin_size: int = 16,
+    max_iter: int = 5,
     repeat: bool = True,
     debug: bool = False,
     update: bool = False,
 ):
+    if RN == 0.0:
+        warnings.warn("Assuming RN = 0, this is likely an under-estimate.")
 
     # Converts 2D arrays to 3D arrays
     original_shape = images.shape
@@ -164,43 +225,31 @@ def horne_extraction(
         V = RN**2 + D
 
         # Initializes flux using median to mitigate cosmic rays
-        f = np.sum(D - S, axis=0)
-
-        # Creates two arrays to stop running when flagged outliers match
-        M = np.ones(D.shape)
-        last_M = np.zeros(D.shape)
+        f = np.median(images + backgrounds, axis=0)
 
         step = 0
 
         # Iterates until erroneous pixels have been flagged and removed
-        while not np.array_equal(M, last_M) and step < max_iter:
-
-            last_M = M.copy()
+        while step < max_iter:
 
             # Generates new spatial profile and variance estimate
             P = generate_spatial_profile(
-                D - S,
+                (D - S)/f,
                 bin_size=bin_size,
                 profile=profile,
                 profile_order=profile_order,
                 repeat=repeat,
                 debug=debug,
             )
-            P *= M
 
             V = RN**2 + np.abs(f * P + S)
             V = np.clip(V, 1e-20, None)
 
-            # Removes the brightest pixel if it exceeds clipping threshold
-            flagging_threshold = M * np.sqrt(((D - S - f * P) ** 2 / V))
-            if np.max(flagging_threshold > sigma_clip):
-                M[flagging_threshold == np.max(flagging_threshold)] = 0
-
             # Re-calculates flux and variance using updated arrays
-            numerator = np.sum(M * P * (D - S) / V, axis=0)
-            denominator = np.sum(M * P**2 / V, axis=0)
+            numerator = np.sum(P * (D - S) / V, axis=0)
+            denominator = np.sum(P**2 / V, axis=0)
             f = numerator / denominator
-            f_var = np.sum(M * P, axis=0) / denominator
+            f_var = np.sum(P, axis=0) / denominator
 
             step += 1
 
@@ -491,7 +540,7 @@ def apply_trace_extraction(
     locs=None,
     stds=None,
     N_pix=5,
-    RN=6.0,
+    RN=0.0,
     debug=False,
 ):
     """
