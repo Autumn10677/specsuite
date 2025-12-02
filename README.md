@@ -1,18 +1,17 @@
-# specsuite
+# Welcome to specsuite!
 For help with getting ```specsuite``` running on your own data, please check out our documentation (FIXME)!
 
 ## Introduction
-Although other spectroscopic reduction tools exist, 
-
-```specsuite``` was designed to help users process long-slit spectroscopic data from ___all___ ground-based telescopes, but this level of generalization is still a work in progress! As of writing, this reduction pipeline has been tested this reduction pipeline against data from...
+Although other spectroscopic reduction tools exist, they are often designed for a small subset of instruments, have hard-to-read documentation, or are difficult to debug. ```specsuite``` was designed to address all three of these concerns, providing a set of robust, generalized, and user-friendly reduction tools! As of writing, this reduction pipeline has been tested this reduction pipeline against data from...
 - Gemini North (GMOS-N)
 - Apache Point Observatory (KOSMOS)
 - Sommers-Bausch Observatory (SBO)
 
-In particular, ```specsuite``` aims to provide a series of modular tools that are easy to integrate into an existing workflow.
+...but we are constantly testing on data from other telescopes!
+
+Another advantage of ```specsuite``` is its modularity. All functions were designed to be easy to slot into an existing reduction pipeline (assuming the data is formatted correctly). If there are features you would like to see added to ```specsuite```, please feel free to add an issue on this repository for our developers to address!
 
 ## Quickstart
-
 To install the most recent version of ```specsuite```, run the following command from your terminal...
 ```bash
 pip install specsuite
@@ -21,8 +20,6 @@ If you have an existing installation and would like to update to the most recent
 ```bash
 pip install --upgrade specsuite
 ```
-
-`specsuite` is a toolbox that can reduce data from a long-slit spectrograph.
 
 ## How can I test ```specsuite``` runs on my computer?
 
