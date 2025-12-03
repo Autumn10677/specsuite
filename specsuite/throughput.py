@@ -15,17 +15,14 @@ def load_STIS_spectra(
     debug: bool = False,
 ):
     """
-    Attempts to download spectra data from
-    the STIS website (see url below). It
-    only looks for data contained in the
-    first data table.
+    Attempts to download spectra data from the STIS website (see url
+    below). It only looks for data contained in the first data table.
 
     Parameters:
     -----------
     name :: str
-        Name of the star to load data for.
-        This should match an entry in the
-        "Star name" column of Table 1.
+        Name of the star to load data for. This should match an entry
+        in the "Star name" column of Table 1.
 
     Returns:
     --------
@@ -122,51 +119,40 @@ def generate_flux_conversion(
     order: int = 7,
     max_iter: int = 50,
     debug: bool = False,
-):
+) -> np.poly1d:
     """
-    Generates a numpy polynomial that predicts
-    the physical flux [flam] / CCD count as a
-    function of wavelength [Angstroms].
+    Generates a numpy polynomial that predicts the physical flux [flam]
+    / CCD count as a function of wavelength [Angstroms].
 
     Parameters:
     -----------
     w_measured :: np.ndarray
-        A 1D array of wavelengths for your CCD
-        spectrum (in Angstroms).
+        A 1D array of wavelengths for your CCD spectrum (in Angstroms).
     w_model :: np.ndarray
-        A 1D array of wavelengths for your known
-        spectrum (in Angstroms).
+        A 1D array of wavelengths for your known spectrum (in Angstroms).
     f_measured :: np.ndarray
-        A 1D array of flux for your CCD
-        spectrum.
+        A 1D array of flux for your CCD spectrum.
     f_model :: np.ndarray
-        A 1D array of flux for your known
-        spectrum.
+        A 1D array of flux for your known spectrum.
     err :: np.ndarray
-        A 1D array of errors for you CCD
-        flux.
+        A 1D array of errors for you CCD flux.
     sigma_clip :: float
-        The max number of standard deviations
-        a point is allowed to be from the
-        calibration model. Outlier points are
-        removed from future fits.
+        The max number of standard deviations a point is allowed to be
+        from the calibration model. Outlier points are removed from
+        future fits.
     order :: int
         Polynomial order of the flux conversion.
     max_iter :: int
-        Maximum number of fits to perform before
-        manually stopping
+        Maximum number of fits to perform before manually stopping.
     debug :: bool
-        Plots the final fit against the user-
-        provided data.
+        Plots the final fit against the user-provided data.
 
     Returns:
     --------
     p_flux_conversion :: np.poly1d
-        An n-th order polynomial that takes
-        wavelength [Angstroms] as an argument.
-        The returned value converts CCD counts
-        into pysical units [flam], meaning it
-        is in units of flam/count.
+        An n-th order polynomial that takes wavelength [Angstroms] as
+        an argument. The returned value converts CCD counts into
+        physical units [flam], meaning it is in units of flam/count.
     """
 
     assert model_type in [

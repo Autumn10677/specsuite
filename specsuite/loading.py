@@ -82,9 +82,14 @@ def extract_image(
         the FITS file. Currently, the only supported instruments
         are...
             - KOSMOS
+            - GMOS
 
     Returns:
-        ???
+    --------
+    image :: np.ndarray | None
+        A 2D array containing the image found in the resulting FITS
+        file. If there is issue with loading the data, a 'None' is
+        returned.
     """
 
     if instrument == "kosmos":
@@ -95,14 +100,14 @@ def extract_image(
             f"Provided instrumnet '{instrument}' is not currently supported",
             UserWarning,
         )
-        return
+        return None
 
 
 def _kosmos_loader(
     path: str,
     file: str,
     clip_overscan: bool = True,
-):
+) -> np.ndarray:
     """
     Controls how to load data from Apache Point Observatory's
     KOSMOS instrument. The resulting output will be oriented
@@ -118,6 +123,14 @@ def _kosmos_loader(
     file :: str
         Name of the FITS file in the specified directory to
         load.
+    clip_overscan: bool
+        Determines whether to clip the overscan region of the
+        detector.
+
+    Returns:
+    --------
+    image_data :: np.ndarray
+        A 2D array loaded in from the specified FITS file.
     """
 
     # Extracts header from fits file
@@ -157,7 +170,7 @@ def collect_images_array(
     clip_overscan: bool = True,
     debug: bool = False,
     progress: bool = False,
-):
+) -> np.ndarray:
     """
     Collect a list of images from a user-given path
     corresponding to a specified tag. Images can
@@ -166,19 +179,36 @@ def collect_images_array(
 
     Parameters:
     -----------
-    path :: string
+    path :: str
         Path to data directory containing image
         data.
-    tag :: string
+    tag :: str
         Tag to search for in filenames.
     ignore :: list
         List of file indexes to ignore.
+    crop_bds :: list
+        The region along the cross-dispersion (spatial) axis
+        to keep (all other rows will be dropped).
+    instrument :: str
+        The name of the instrument the FITS data was
+        taken from. This is used to determine which loading
+        function should be used.
+    clip_overscan :: bool
+        Allows the overscan region to be cropped out of
+        the returned array.
+    debug :: bool
+        Allows for diagnostic information to be printed.
+        This includes the names of all files found with
+        the given 'tag' and whether any of them failed
+        to load.
+    progress :: bool
+        Whether a progress bar should be displayed.
 
     Returns:
     --------
-    image_collection :: list
-        List of np.ndarray objects for each image
-        in the user-given file path.
+    image_collection :: np.ndarray
+        An array of 2D images corresponding to each valid
+        file found in the provided path.
     """
 
     instrument = instrument.lower()
@@ -236,17 +266,18 @@ def average_matching_files(
     mode: str = "median",
     debug: bool = False,
     progress: bool = False,
-):
+) -> np.ndarray:
     """
     Extracts images from a user-given path, and finds
-    the average images calculated on a pixel-by-pixel
-    basis.
+    the average pixel value for every pixel across all
+    images. This defaults to the 'median' average, but
+    can be changed to take the 'mean' average as well.
 
     Parameters:
     -----------
-    path :: string
+    path :: str
         Path to data directory.
-    tag :: string
+    tag :: str
         Tag to search for in filenames.
     ignore :: list
         List of data indexes to ignore in averaging.
@@ -294,7 +325,7 @@ def load_metadata(
     path: str,
     tag: str,
     ignore: list = [],
-):
+) -> dict:
     """
     Loads an dictionary of all data for
     a collection of FITS files. This
@@ -303,9 +334,9 @@ def load_metadata(
 
     Parameters:
     -----------
-    path :: string
+    path :: str
         Path to data directory.
-    tag :: string
+    tag :: str
         Tag to search for in filenames.
     ignore :: list
         List of data indexes to ignore.
@@ -374,6 +405,7 @@ def extract_times(
     about the observation time.
 
     Parameters:
+    -----------
     time_lbl :: str
         Header label for observation time.
     ra_lbl :: str
@@ -398,6 +430,7 @@ def extract_times(
         the (RA, DEC) data in the header.
 
     Returns:
+    --------
     times_bc :: np.ndarray
         Array of JD barycentric times that have
         been corrected for variations in light
