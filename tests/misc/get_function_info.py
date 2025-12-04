@@ -104,28 +104,6 @@ def get_param_default(param):
         return param.default
 
 
-def get_function_info(func):
-    sig = inspect.signature(func)
-    
-    args_info = []
-    for name, param in sig.parameters.items():
-        args_info.append({
-            "name": name,
-            "annotation": param.annotation
-                if param.annotation is not inspect._empty else None,
-            "default": get_param_default(param)
-        })
-
-    return {
-        "name": func.__name__,
-        "docstring": inspect.getdoc(func) or "",
-        "arguments": args_info,
-        "return_annotation": (
-            sig.return_annotation
-            if sig.return_annotation is not inspect._empty else None
-        )
-    }
-
 def normalize_description(text):
     """
     Collapse paragraph text into a single line while preserving
@@ -181,6 +159,46 @@ def normalize_description(text):
     return "\n".join(cleaned_lines)
 
 
+def get_function_info(func):
+    sig = inspect.signature(func)
+
+    # --- Extract line number information ---
+    try:
+        source_file = inspect.getsourcefile(func)
+        source_lines, start_line = inspect.getsourcelines(func)
+        end_line = start_line + len(source_lines) - 1
+    except OSError:
+        # Built-ins or edge cases
+        source_file = None
+        start_line = None
+        end_line = None
+
+    args_info = []
+    for name, param in sig.parameters.items():
+        args_info.append({
+            "name": name,
+            "annotation": (
+                param.annotation
+                if param.annotation is not inspect._empty else None
+            ),
+            "default": get_param_default(param)
+        })
+
+    return {
+        "name": func.__name__,
+        "docstring": inspect.getdoc(func) or "",
+        "arguments": args_info,
+        "return_annotation": (
+            sig.return_annotation
+            if sig.return_annotation is not inspect._empty else None
+        ),
+        # NEW:
+        "file_path": source_file,
+        "line_start": start_line,
+        "line_end": end_line,
+    }
+
+
 def get_module_function_data(module):
 
     # Filter functions defined inside the module
@@ -193,12 +211,15 @@ def get_module_function_data(module):
     function_info = [get_function_info(f) for f in functions]
     function_info = sorted(function_info, key=lambda f: f["name"])
 
+    # Parse docstrings
     for entry in function_info:
 
-        if len(entry["docstring"])==0:
+        if len(entry["docstring"]) == 0:
             continue
 
         entry["docstring"] = split_docstring(entry["docstring"])
-        entry["docstring"]["description"] = normalize_description(entry["docstring"]["description"])
+        entry["docstring"]["description"] = normalize_description(
+            entry["docstring"]["description"]
+        )
 
     return function_info
