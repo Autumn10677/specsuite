@@ -78,25 +78,6 @@ def plot_image(
     except AssertionError:
         warnings.warn("The provided image is not a valid 2D array")
 
-    def plot_spectra(
-        flux: np.ndarray, err: np.ndarray, p_wavecal: tuple = None, plot_idx: int = 0
-    ):
-
-        # Adjusts the xlabel / x-data if necessary
-        xlabel = "Dispersion Axis (pix)"
-        xs = np.array(range(len(flux)))
-        if p_wavecal is not None:
-            xs = p_wavecal(xs)
-            xlabel = "Wavelength (AA)"
-
-        # Plots spectra with errorbars
-        plt.rcParams["figure.figsize"] = (12, 5)
-        plt.scatter(xs, flux.T[plot_idx], color="k", s=3)
-        plt.errorbar(xs, flux.T[plot_idx], yerr=err.T[plot_idx], fmt="none", color="k")
-        plt.xlim(xs[0], xs[-1])
-        plt.xlabel(xlabel)
-        plt.show()
-
 
 def _gaussian(x: np.ndarray, A: float, mu: float, sigma: float) -> np.ndarray:
     """
