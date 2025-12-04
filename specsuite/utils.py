@@ -35,7 +35,7 @@ def plot_image(
         entire vertical span of the image.
     xlabel :: str
         Text to write along the x-axis (bottom) of the image.
-    ylabe :: str
+    ylabel :: str
         Text to write along the y-axis (left) of the image.
     cbar_label :: str
         A text label assigned to the colorbar.

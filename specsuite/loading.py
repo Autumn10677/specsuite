@@ -123,7 +123,7 @@ def _kosmos_loader(
     file :: str
         Name of the FITS file in the specified directory to
         load.
-    clip_overscan: bool
+    clip_overscan :: bool
         Determines whether to clip the overscan region of the
         detector.
 
@@ -279,8 +279,14 @@ def average_matching_files(
         Path to data directory.
     tag :: str
         Tag to search for in filenames.
+    instrument :: str
+        The name of the instrument your FITS data was taken from. This
+        is only used to determine which loading function to use.
     ignore :: list
         List of data indexes to ignore in averaging.
+    crop_bds :: list
+        The region along the cross-dispersion (spatial) axis
+        to keep (all other rows will be dropped).
     mode :: str
         Type of average to take of images. Valid inputs
         include 'median' and 'mean'.
@@ -387,7 +393,7 @@ def load_metadata(
 
 def extract_times(
     path: str,
-    target: str,
+    tag: str,
     ignore: list = [],
     time_lbl: str = "DATE-OBS",
     ra_lbl: str = "RA",
@@ -406,6 +412,19 @@ def extract_times(
 
     Parameters:
     -----------
+    path :: str
+        Directory pointing toward the FITS file you wish to
+        load. This should not include the name of the file
+        itself.
+    tag :: str
+        A sub-string that can help differentiate between
+        desired and undesired files in a directory. If
+        an empty string is provided, no files are filtered
+        out (based on the 'tag' criteria).
+    ignore :: list
+        Filenames to ignore when loading in data. The 'ignore'
+        filenames must exactly match how they appear in the
+        file navigator (including .fits extension).
     time_lbl :: str
         Header label for observation time.
     ra_lbl :: str
@@ -440,11 +459,7 @@ def extract_times(
 
     # Gets a list of file addresses for our data
     files = sorted(
-        [
-            file
-            for file in os.listdir(path)
-            if target in file and file[-9:-5] not in ignore
-        ]
+        [file for file in os.listdir(path) if tag in file and file[-9:-5] not in ignore]
     )
     adds = [os.path.join(path, file) for file in files]
 

@@ -31,6 +31,10 @@ def build_hash_table(
     rounding :: int
         How many decimals to keep when calculating
         the relative distances of points.
+    min_separation :: float
+        The minimum allowed separation between base
+        pair points. If no argument is provided,
+        this will default to '0'.
     max_separation :: float
         The maximum allowed separation between base
         pair points. If no argument is provided,
@@ -96,7 +100,6 @@ def cast_votes(
     hash_table: dict,
     lines: np.ndarray,
     rounding: int = 3,
-    sigma: float = 3,
 ) -> dict:
     """
     Looks for lines that have a relative spacing described
@@ -107,14 +110,20 @@ def cast_votes(
     Parameters:
     -----------
     hash_table :: dict
-
+        A dictionary containing relative distances (key) and
+        all possible pairings of points that could produce such
+        a distance (values).
     lines :: np.ndarray
-
+        The lines to look for in the hash table.
     rounding :: int
+        How many decimals to keep when calculating
+        the relative distances of points.
 
     Returns:
     --------
     votes :: dict
+        A dictionary containing line locations (key) and a number of
+        votes (value). The votes can be an integer or a float.
     """
 
     # Ensures that lines are the lines are ordered and unique
@@ -162,17 +171,50 @@ def cast_votes(
 
 
 def get_most_likely_features(
-    votes,
-    keep_top_N=5,
-):
-    """ """
+    votes: dict,
+    keep_top_N: int = 5,
+) -> np.array:
+    """
+    Extracts the top N lines based on votes in the 'votes' dictionary.
+    If N is greater than the total number of lines, then all lines
+    will be returned.
+
+    Parameters:
+    -----------
+    votes :: dict
+        A dictionary containing line locations (key) and a number of
+        votes (value). The votes can be an integer or a float.
+    keep_top_N :: int
+        The number of lines to retrieve from the voting dictionary.
+
+    Returns:
+    --------
+    ??? :: np.array
+    """
     lines = np.array(list(votes.keys()))
     counts = np.array(list(votes.values()))
     sort_indices = np.argsort(counts)
     return np.sort(lines[sort_indices][-keep_top_N:])
 
 
-def is_monotonically_increasing(xs, coeffs):
+def is_monotonically_increasing(xs: np.ndarray, coeffs: list):
+    """
+    Checks if a given set of polynomial coefficients would produce a
+    monotonically increasing function over the provided xs.
+
+    Parameters:
+    -----------
+    xs :: np.ndarray
+        ???
+    coeffs :: list
+        ???
+
+    Returns:
+    --------
+    ??? :: np.ndarray
+        ???
+    """
+
     p_temp = np.poly1d(coeffs)
     derivative = p_temp.deriv()
     return np.all(derivative(xs) > 0)

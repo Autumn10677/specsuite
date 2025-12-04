@@ -188,7 +188,7 @@ def generate_warp_model(
     tolerance: int = 16,
     line_order: int = 2,
     warp_order: int = 1,
-    ref_idx: bool = None,
+    ref_idx: int = None,
     debug: bool = False,
 ) -> list:
     """
@@ -499,7 +499,7 @@ def generate_effpix_map(
 
 def extract_background(
     images: np.ndarray,
-    warp_model: np.ndarray,
+    warp_model: list,
     mask_region: tuple = (None, None),
     return_spectrum: bool = False,
     update: bool = False,
@@ -516,13 +516,9 @@ def extract_background(
     -----------
     images :: np.ndarray
         A series of exposures to extract backgrounds from.
-    arc_image :: np.ndarray
-        A single image of an arc lamp exposure over the same region as
-        the provided science exposures.
-    tolerace :: int
-        How many pixels around an arc line to use for fitting.
-    bin :: int
-        Size of vertical binning used for arc line fitting.
+    warp_model :: list
+        List of models that describe how vertical lines
+        are warped along the image's horizontal axis.
     mask_region :: tuple
         The pixel locations (vertical) to mask out during the
         background extraction.

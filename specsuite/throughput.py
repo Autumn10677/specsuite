@@ -23,6 +23,14 @@ def load_STIS_spectra(
     name :: str
         Name of the star to load data for. This should match an entry
         in the "Star name" column of Table 1.
+    filetype :: str
+        Determines which type of model to load from the STIS database.
+        The only valid options are "model" or "stis".
+    wavelength_bounds :: tuple
+        The (wmin, wmax) region of the STIS spectra to keep. Both
+        values must have astropy units compatible with wavelength.
+    debug :: bool
+        Allows diagnostic information to be output.
 
     Returns:
     --------
@@ -114,7 +122,6 @@ def generate_flux_conversion(
     f_measured: np.ndarray,
     f_model: np.ndarray,
     err: np.ndarray,
-    model_type: str = "polynomial",
     sigma_clip: float = 50.0,
     order: int = 7,
     max_iter: int = 50,
@@ -154,11 +161,6 @@ def generate_flux_conversion(
         an argument. The returned value converts CCD counts into
         physical units [flam], meaning it is in units of flam/count.
     """
-
-    assert model_type in [
-        "polynomial",
-        "powerlaw",
-    ], f"Model type must be 'polynomial' or 'powerlaw', not {model_type}..."
 
     # Ensures that none of the arrays have associated units
     if isinstance(w_measured, Quantity):
