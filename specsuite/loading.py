@@ -10,7 +10,7 @@ from astropy import coordinates as coord
 from astropy.time import Time
 import astropy.units as u
 
-SUPPORTED_INSTRUMENTS = ["kosmos"]
+SUPPORTED_INSTRUMENTS = ["kosmos", "gmos"]
 
 
 # Simplifies warning to remove visual clutter
@@ -94,6 +94,8 @@ def extract_image(
 
     if instrument == "kosmos":
         return _kosmos_loader(path, file)
+    elif instrument == "gmos":
+        return _GMOS_loader(path, file)
 
     else:
         warnings.warn(
@@ -101,6 +103,67 @@ def extract_image(
             UserWarning,
         )
         return None
+
+
+def _GMOS_loader(
+    path: str,
+    file: str,
+) -> np.ndarray:
+    """
+    Controls how to load data from Gemini Observatory's
+    GMOS-N instrument. The resulting output will be oriented
+    such that the x-axis is the dispersion axis (left is blue /
+    right is red) and the y-axis is the cross-dispersion axis.
+    
+    Parameters:
+    -----------
+    path :: str
+        Directory pointing toward the FITS file you wish to
+        load. This should not include the name of the file
+        itself.
+    file :: str
+        Name of the FITS file in the specified directory to
+        load.
+
+    Returns:
+    --------
+    image :: np.ndarray
+        A 2D array loaded in from the specified FITS file.  
+    """
+
+    hdul = fits.open(os.path.join(path, file))
+
+    # Iterates over each header
+    for idx, hdu in enumerate(hdul):
+
+        hdu.verify("fix")
+    
+        # Only loads image data
+        if hdu.header["NAXIS"]==2:
+
+            datasec = hdu.header["DATASEC"].replace("[", "").replace("]", "")
+            datasec = datasec.split(",")
+            lbound,rbound = datasec[0].split(":")
+            lbound,rbound = int(lbound), int(rbound)
+
+            image_data = hdu.data[:, lbound-1:rbound] * hdu.header["GAIN"]
+            RN_data = np.ones(hdu.data.shape)[:, lbound-1:rbound] * hdu.header["RDNOISE"]
+
+            # Adds chip gaps where appropriate
+            if idx in [5, 9]:
+                gap = np.full((image_data.shape[0], 61), np.nan)
+                image_data = np.hstack([gap, image_data])
+                RN_data = np.hstack([gap, RN_data])
+
+            # Catches an error if image is not initialized yet
+            try:
+                image = np.hstack([image, image_data])
+                RN = np.hstack([RN, RN_data])
+            except UnboundLocalError:
+                image = image_data
+                RN = RN_data
+    
+    return np.rot90(image, k=2)
 
 
 def _kosmos_loader(
@@ -485,3 +548,41 @@ def extract_times(
     times_bc = np.array([(t.tdb + tb).jd for t, tb in zip(times, ltt_bary)]) * u.day
 
     return times_bc
+
+
+def split_chips(
+    images: np.ndarray
+) -> np.ndarray:
+    """
+    Attempts to split up a series of 2D images into separate
+    arrays for each "chip" that has been combined. This
+    function assumes that "chip gaps" are indicated by a column
+    that is entirely comprised of NaN values.
+
+    Parameters:
+    -----------
+    images :: np.ndarray
+        A series of images that are comprised of multiple chips
+        joined by a "chip gap" comprised of NaN values.
+
+    Returns:
+    --------
+    sub_images :: np.ndarray
+        A list of images where each entry has N sub-images that
+        make up each chip that was detected.
+    """
+
+    # Ensures that code runs for a single image
+    if len(images.shape)==2:
+        images = np.array([images])
+
+    sub_images = []
+
+    for image in images:
+        nan_cols = np.all(np.isnan(image), axis=0)
+        split_idx = np.where(nan_cols[:-1] != nan_cols[1:])[0] + 1
+        chips = [block for block in np.split(image, split_idx, axis=1) if not np.all(np.isnan(block))]
+        sub_images.append(chips)
+
+    return np.array(sub_images)
+
