@@ -125,6 +125,9 @@ def _GMOS_loader(
     file :: str
         Name of the FITS file in the specified directory to
         load.
+    return_RN :: bool
+        Determines whether the read noise image should be
+        returned as an additional return. Defaults to 'False'.
 
     Returns:
     --------
