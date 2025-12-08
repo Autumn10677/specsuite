@@ -108,13 +108,14 @@ def extract_image(
 def _GMOS_loader(
     path: str,
     file: str,
+    return_RN: bool = False,
 ) -> np.ndarray:
     """
     Controls how to load data from Gemini Observatory's
     GMOS-N instrument. The resulting output will be oriented
     such that the x-axis is the dispersion axis (left is blue /
     right is red) and the y-axis is the cross-dispersion axis.
-    
+
     Parameters:
     -----------
     path :: str
@@ -128,26 +129,30 @@ def _GMOS_loader(
     Returns:
     --------
     image :: np.ndarray
-        A 2D array loaded in from the specified FITS file.  
+        A 2D array loaded in from the specified FITS file.
     """
 
+    image = None
+    RN = None
     hdul = fits.open(os.path.join(path, file))
 
     # Iterates over each header
     for idx, hdu in enumerate(hdul):
 
         hdu.verify("fix")
-    
+
         # Only loads image data
-        if hdu.header["NAXIS"]==2:
+        if hdu.header["NAXIS"] == 2:
 
             datasec = hdu.header["DATASEC"].replace("[", "").replace("]", "")
             datasec = datasec.split(",")
-            lbound,rbound = datasec[0].split(":")
-            lbound,rbound = int(lbound), int(rbound)
+            lbound, rbound = datasec[0].split(":")
+            lbound, rbound = int(lbound), int(rbound)
 
-            image_data = hdu.data[:, lbound-1:rbound] * hdu.header["GAIN"]
-            RN_data = np.ones(hdu.data.shape)[:, lbound-1:rbound] * hdu.header["RDNOISE"]
+            image_data = hdu.data[:, lbound - 1 : rbound] * hdu.header["GAIN"]
+            RN_data = (
+                np.ones(hdu.data.shape)[:, lbound - 1 : rbound] * hdu.header["RDNOISE"]
+            )
 
             # Adds chip gaps where appropriate
             if idx in [5, 9]:
@@ -155,14 +160,16 @@ def _GMOS_loader(
                 image_data = np.hstack([gap, image_data])
                 RN_data = np.hstack([gap, RN_data])
 
-            # Catches an error if image is not initialized yet
-            try:
-                image = np.hstack([image, image_data])
-                RN = np.hstack([RN, RN_data])
-            except UnboundLocalError:
+            # If image is 'None', then RN should be too
+            if image is None:
                 image = image_data
                 RN = RN_data
-    
+            else:
+                image = np.hstack([image, image_data])
+                RN = np.hstack([RN, RN_data])
+
+    if return_RN:
+        return np.rot90(image, k=2), np.rot90(RN, k=2)
     return np.rot90(image, k=2)
 
 
@@ -550,9 +557,7 @@ def extract_times(
     return times_bc
 
 
-def split_chips(
-    images: np.ndarray
-) -> np.ndarray:
+def split_chips(images: np.ndarray) -> np.ndarray:
     """
     Attempts to split up a series of 2D images into separate
     arrays for each "chip" that has been combined. This
@@ -573,7 +578,7 @@ def split_chips(
     """
 
     # Ensures that code runs for a single image
-    if len(images.shape)==2:
+    if len(images.shape) == 2:
         images = np.array([images])
 
     sub_images = []
@@ -581,8 +586,11 @@ def split_chips(
     for image in images:
         nan_cols = np.all(np.isnan(image), axis=0)
         split_idx = np.where(nan_cols[:-1] != nan_cols[1:])[0] + 1
-        chips = [block for block in np.split(image, split_idx, axis=1) if not np.all(np.isnan(block))]
+        chips = [
+            block
+            for block in np.split(image, split_idx, axis=1)
+            if not np.all(np.isnan(block))
+        ]
         sub_images.append(chips)
 
     return np.array(sub_images)
-
