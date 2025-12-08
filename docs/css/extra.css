@@ -45,12 +45,12 @@ html .md-typeset .admonition > :last-child, html .md-typeset details > :last-chi
 
 .description-label {
   font-weight: bold;
-  font-family: monospace;
+  font-family:'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif';
 }
 
 .parameters-label {
   font-weight: bold;
-  font-family: monospace;
+  /* font-family: monospace; */
 }
 
 .function-header-wrapper {
@@ -77,7 +77,7 @@ html .md-typeset .admonition > :last-child, html .md-typeset details > :last-chi
 
 .function-wrapper {
   border-radius: 5px;
-  border: 2px solid gray;
+  border: 1px solid gray;
   margin-bottom: 20px;
 }
 
@@ -107,7 +107,7 @@ html .md-typeset .admonition > :last-child, html .md-typeset details > :last-chi
   display: block;
   height: 2px;
   background: #ffffff;
-  background: linear-gradient(90deg,rgba(77, 77, 77, 1) 0%, rgba(255, 255, 255, 1) 65%);
+  background: linear-gradient(90deg,rgba(77, 77, 77, 1) 0%, rgba(255, 255, 255, 1) 30%);
   margin-bottom: 10px;
 }
 
