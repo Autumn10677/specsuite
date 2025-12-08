@@ -6,6 +6,21 @@ from astropy.io import fits
 import astropy.units as u
 import matplotlib.pyplot as plt
 from astropy.units import Quantity
+import warnings
+
+import sys
+
+sys.tracebacklimit = 0
+
+
+# Simplifies warning to remove visual clutter
+def custom_formatwarning(
+    message, category, filename=None, lineno=None, line=None, module=None
+):
+    return f"{category.__name__}: {message}"
+
+
+warnings.formatwarning = custom_formatwarning
 
 
 def load_STIS_spectra(
@@ -55,7 +70,7 @@ def load_STIS_spectra(
     assert filetype in [
         "model",
         "stis",
-    ], f"filetype must be 'model' or 'stis,' not {filetype}"
+    ], f"filetype must be 'model' or 'stis,' not '{filetype}'"
 
     if filetype == "model":
         assert (
@@ -83,10 +98,11 @@ def load_STIS_spectra(
             wavelength_bounds = [np.min(wavs), np.max(wavs)]
         mask = (wavelength_bounds[0] < wavs) & (wavs < wavelength_bounds[1])
         wavs = wavs[mask]
-    except TypeError:
-        raise AssertionError(
-            f"'Wavelength bounds must be astropy.Quantities, not '{type(wavelength_bounds)}'"  # noqa: E501
+    except (TypeError, u.UnitConversionError):
+        print(
+            f"Wavelength bounds must be astropy.Quantities, not '{type(wavelength_bounds)}'"  # noqa: E501
         )
+        return None
 
     if filetype == "model":
         cont = data["CONTINUUM"][mask] * u.erg / u.s / u.cm**2 / u.AA

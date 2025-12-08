@@ -202,7 +202,40 @@ def horne_extraction(
     repeat: bool = True,
     debug: bool = False,
     update: bool = False,
-):
+) -> tuple[np.ndarray, np.ndarray]:
+    """
+    FIXME
+
+    Parameters:
+    -----------
+    images :: np.ndarray
+
+    backgrounds :: np.ndarray
+
+    profile :: str
+
+    profile_order :: int
+
+    RN :: float
+
+    bin_size :: int
+
+    max_iter :: int
+
+    repeat :: bool
+
+    debug :: bool
+
+    update :: bool
+
+    Returns:
+    --------
+    flux :: np.ndarray
+
+    flux_err :: np.ndarray
+
+    """
+
     if RN == 0.0:
         warnings.warn("Assuming RN = 0, this is likely an under-estimate.")
 
