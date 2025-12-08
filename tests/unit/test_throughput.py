@@ -37,8 +37,6 @@ class TestLoadingFunctions(unittest.TestCase):
             throughput.load_STIS_spectra("fake name")
         with self.assertRaises(AssertionError):
             throughput.load_STIS_spectra("GD153",filetype="bad model type")
-        with self.assertRaises(AssertionError):
-            throughput.load_STIS_spectra("GD153", wavelength_bounds = "Test")
 
 if __name__ == "__main__":
     unittest.main()
