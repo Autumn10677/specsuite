@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import warnings
 
 from tqdm import tqdm
 from scipy.optimize import curve_fit
@@ -168,9 +167,9 @@ def boxcar_extraction(
         exposure. Has a shape of (image index, pixel position).
     """
 
-    # Did not want to terminate execution in case this is intentional
-    if RN == 0.0:
-        warnings.warn("Assuming RN = 0, this is likely an under-estimate.\n")
+    # # Did not want to terminate execution in case this is intentional
+    # if RN == 0.0:
+    #     warnings.warn("Assuming RN = 0, this is likely an under-estimate.\n")
 
     # Handles single-image exposures by wrapping them in a list
     if len(science.shape) != 3:
@@ -236,8 +235,8 @@ def horne_extraction(
 
     """
 
-    if RN == 0.0:
-        warnings.warn("Assuming RN = 0, this is likely an under-estimate.")
+    # if RN == 0.0:
+    #     warnings.warn("Assuming RN = 0, this is likely an under-estimate.")
 
     # Converts 2D arrays to 3D arrays
     original_shape = images.shape
