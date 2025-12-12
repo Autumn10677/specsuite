@@ -89,9 +89,9 @@ html .md-typeset .admonition > :last-child, html .md-typeset details > :last-chi
   padding: 0px 20px;
 }
 
-/* .written-parameters-content {
-  padding: 0px 40px;
-} */
+.module-wrapper {
+  border: 5px solid gray;
+}
 
 .arg-var-name {
   font-style: italic;
