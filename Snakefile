@@ -2,6 +2,7 @@ import os
 import sys
 import matplotlib.pyplot as plt
 import numpy as np
+import specsuite as ss
 
 import matplotlib
 matplotlib.use('Agg')
@@ -13,13 +14,10 @@ except FileExistsError:
 
 sys.path.append("specsuite/")  # noqa
 
-import loading
-import utils
-import warping
-
 CAL_PATH = "data/KOSMOS/calibrations"
 DATA_PATH = "data/KOSMOS/target"
-DATA_REGION = (700, 850)
+DATA_REGION = (700, 800)
+VMIN, VMAX = (1e2, 1e4)
 
 PLOTTING_KWARGS = {
     "cmap": "inferno",
@@ -36,7 +34,8 @@ rule all:
         "outputs/median_arc.npy",
         "outputs/data_array.npy",
         "outputs/background_array.npy",
-        #"outputs/flux.npy",
+        "outputs/flux.npy",
+        "outputs/flux_errs.npy",
 
 rule basic_calibrations:
     output:
@@ -45,15 +44,15 @@ rule basic_calibrations:
         "outputs/median_arc.npy",
         "outputs/data_array.npy",
     run:
-        print(config["testarg"])
+        bias = ss.average_matching_files(path = CAL_PATH, tag = "bias", crop_bds=DATA_REGION)
+        flat = ss.average_matching_files(path = CAL_PATH, tag = "flat", crop_bds=DATA_REGION) - bias
+        arc = ss.average_matching_files(path = CAL_PATH, tag = "neon", crop_bds=DATA_REGION) - bias
+        data = ss.collect_images_array(path = DATA_PATH, tag="toi3884", crop_bds=DATA_REGION) - bias
 
-        bias = loading.average_matching_files(path = CAL_PATH, tag = "bias", crop_bds=DATA_REGION)
-        flat = loading.average_matching_files(path = CAL_PATH, tag = "flat", crop_bds=DATA_REGION) - bias
-        arc = loading.average_matching_files(path = CAL_PATH, tag = "neon", crop_bds=DATA_REGION) - bias
-        data = loading.collect_images_array(path = DATA_PATH, tag="toi3884", crop_bds=DATA_REGION) - bias
-
-        data = utils.flatfield_correction(data, arc)
-        data = utils.flatfield_correction(data, flat)
+        ss.plot_image(bias, title="Bias Exposure", savedir="outputs/bias.png")
+        ss.plot_image(flat, title="Flat Exposure", savedir="outputs/flat.png")
+        ss.plot_image(arc, title="Arclamp Exposure", savedir="outputs/arclamp.png")
+        ss.plot_image(data[0], norm='log', vmin=VMIN, vmax=VMAX, title="Raw Data", savedir="outputs/raw_data.png")
 
         np.save("outputs/median_bias.npy", bias)
         np.save("outputs/median_flat.npy", flat)
@@ -72,22 +71,27 @@ rule background_extraction:
         arc = np.load("outputs/median_arc.npy")
         data = np.load("outputs/data_array.npy")
 
-        locs, _ = warping.find_cal_lines(arc)
-        warp_model = warping.generate_warp_model(arc, locs)
-        backgrounds = warping.extract_background(data, warp_model, mask_region=(40, 60))
+        locs, _ = ss.find_cal_lines(arc, std_variation=50)
+        warp_model = ss.generate_warp_model(arc, locs)
+        background = ss.extract_background(data, warp_model, mask_region=(40, 60))
 
-        np.save("outputs/background_array.npy", backgrounds)
+        ss.plot_image(background[0], norm='log', vmin=VMIN, vmax=VMAX, title="Extracted Background", savedir="outputs/background.png")
+        ss.plot_image(data[0] - background[0], norm='log', vmin=VMIN, vmax=VMAX, title="Background-Corrected Data", savedir="outputs/background_corrected_data.png")
+        np.save("outputs/background_array.npy", background)
 
-# rule flux_extraction:
-#     input:
-#         "outputs/background_array.npy",
-#     output:
-#         "outputs/flux.npy",
-#         "outputs/flux_errs.npy",
-#     run:
-#         data = np.load("outputs/data_array.npy")
-#         backgrounds = np.load("outputs/background_array.npy")
+rule flux_extraction:
+    input:
+        "outputs/background_array.npy",
+    output:
+        "outputs/flux.npy",
+        "outputs/flux_errs.npy",
+    run:
+        data = np.load("outputs/data_array.npy")
+        backgrounds = np.load("outputs/background_array.npy")
 
-#         data -= backgrounds
+        data -= backgrounds
 
-#         flux, errs = extraction.horne_extraction(data, backgrounds)
+        flux, errs = ss.boxcar_extraction(data, backgrounds, RN=6.0)
+
+        np.save("outputs/flux.npy", flux)
+        np.save("outputs/flux_errs.npy", errs)
