@@ -14,8 +14,8 @@ nav:
   - Examples:
     - KOSMOS: kosmos_example.ipynb
     - GMOS-N: gmos_example.ipynb
-  - Contact Us: contact.ipynb
   - Docstrings: docstring_documentation.md
+  - Contact Us: contact.ipynb
 
 repo_url: https://github.com/Autumn10677/specsuite
 repo_name: specsuite
