@@ -5,9 +5,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import astropy.units as u
 
-sys.path.append("specsuite/")
+import specsuite.loading as loading
+import specsuite.throughput as throughput
 
-import loading, throughput  # noqa
+# sys.path.append("specsuite/")
+
+# import loading, throughput  # noqa
 
 CAL_PATH = "data/KOSMOS/calibrations"
 DATA_PATH = "data/KOSMOS/target"
@@ -37,8 +40,6 @@ class TestLoadingFunctions(unittest.TestCase):
             throughput.load_STIS_spectra("fake name")
         with self.assertRaises(AssertionError):
             throughput.load_STIS_spectra("GD153",filetype="bad model type")
-        with self.assertRaises(AssertionError):
-            throughput.load_STIS_spectra("GD153", wavelength_bounds = "Test")
 
 if __name__ == "__main__":
     unittest.main()

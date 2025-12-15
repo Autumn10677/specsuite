@@ -10,7 +10,7 @@ from astropy import coordinates as coord
 from astropy.time import Time
 import astropy.units as u
 
-SUPPORTED_INSTRUMENTS = ["kosmos"]
+SUPPORTED_INSTRUMENTS = ["kosmos", "gmos"]
 
 
 # Simplifies warning to remove visual clutter
@@ -82,27 +82,105 @@ def extract_image(
         the FITS file. Currently, the only supported instruments
         are...
             - KOSMOS
+            - GMOS
 
     Returns:
-        ???
+    --------
+    image :: np.ndarray | None
+        A 2D array containing the image found in the resulting FITS
+        file. If there is issue with loading the data, a 'None' is
+        returned.
     """
 
     if instrument == "kosmos":
         return _kosmos_loader(path, file)
+    elif instrument == "gmos":
+        return _GMOS_loader(path, file)
 
     else:
         warnings.warn(
             f"Provided instrumnet '{instrument}' is not currently supported",
             UserWarning,
         )
-        return
+        return None
+
+
+def _GMOS_loader(
+    path: str,
+    file: str,
+    return_RN: bool = False,
+) -> np.ndarray:
+    """
+    Controls how to load data from Gemini Observatory's
+    GMOS-N instrument. The resulting output will be oriented
+    such that the x-axis is the dispersion axis (left is blue /
+    right is red) and the y-axis is the cross-dispersion axis.
+
+    Parameters:
+    -----------
+    path :: str
+        Directory pointing toward the FITS file you wish to
+        load. This should not include the name of the file
+        itself.
+    file :: str
+        Name of the FITS file in the specified directory to
+        load.
+    return_RN :: bool
+        Determines whether the read noise image should be
+        returned as an additional return. Defaults to 'False'.
+
+    Returns:
+    --------
+    image :: np.ndarray
+        A 2D array loaded in from the specified FITS file.
+    """
+
+    image = None
+    RN = None
+    hdul = fits.open(os.path.join(path, file))
+
+    # Iterates over each header
+    for idx, hdu in enumerate(hdul):
+
+        hdu.verify("fix")
+
+        # Only loads image data
+        if hdu.header["NAXIS"] == 2:
+
+            datasec = hdu.header["DATASEC"].replace("[", "").replace("]", "")
+            datasec = datasec.split(",")
+            lbound, rbound = datasec[0].split(":")
+            lbound, rbound = int(lbound), int(rbound)
+
+            image_data = hdu.data[:, lbound - 1 : rbound] * hdu.header["GAIN"]
+            RN_data = (
+                np.ones(hdu.data.shape)[:, lbound - 1 : rbound] * hdu.header["RDNOISE"]
+            )
+
+            # Adds chip gaps where appropriate
+            if idx in [5, 9]:
+                gap = np.full((image_data.shape[0], 61), np.nan)
+                image_data = np.hstack([gap, image_data])
+                RN_data = np.hstack([gap, RN_data])
+
+            # If image is 'None', then RN should be too
+            if image is None:
+                image = image_data
+                RN = RN_data
+            else:
+                image = np.hstack([image, image_data])
+                RN = np.hstack([RN, RN_data])
+
+    if return_RN:
+        return np.rot90(image, k=2), np.rot90(RN, k=2)
+    return np.rot90(image, k=2)
 
 
 def _kosmos_loader(
     path: str,
     file: str,
     clip_overscan: bool = True,
-):
+) -> np.ndarray:
     """
     Controls how to load data from Apache Point Observatory's
     KOSMOS instrument. The resulting output will be oriented
@@ -118,6 +196,14 @@ def _kosmos_loader(
     file :: str
         Name of the FITS file in the specified directory to
         load.
+    clip_overscan :: bool
+        Determines whether to clip the overscan region of the
+        detector.
+
+    Returns:
+    --------
+    image_data :: np.ndarray
+        A 2D array loaded in from the specified FITS file.
     """
 
     # Extracts header from fits file
@@ -157,7 +243,7 @@ def collect_images_array(
     clip_overscan: bool = True,
     debug: bool = False,
     progress: bool = False,
-):
+) -> np.ndarray:
     """
     Collect a list of images from a user-given path
     corresponding to a specified tag. Images can
@@ -166,19 +252,36 @@ def collect_images_array(
 
     Parameters:
     -----------
-    path :: string
+    path :: str
         Path to data directory containing image
         data.
-    tag :: string
+    tag :: str
         Tag to search for in filenames.
     ignore :: list
         List of file indexes to ignore.
+    crop_bds :: list
+        The region along the cross-dispersion (spatial) axis
+        to keep (all other rows will be dropped).
+    instrument :: str
+        The name of the instrument the FITS data was
+        taken from. This is used to determine which loading
+        function should be used.
+    clip_overscan :: bool
+        Allows the overscan region to be cropped out of
+        the returned array.
+    debug :: bool
+        Allows for diagnostic information to be printed.
+        This includes the names of all files found with
+        the given 'tag' and whether any of them failed
+        to load.
+    progress :: bool
+        Whether a progress bar should be displayed.
 
     Returns:
     --------
-    image_collection :: list
-        List of np.ndarray objects for each image
-        in the user-given file path.
+    image_collection :: np.ndarray
+        An array of 2D images corresponding to each valid
+        file found in the provided path.
     """
 
     instrument = instrument.lower()
@@ -236,20 +339,27 @@ def average_matching_files(
     mode: str = "median",
     debug: bool = False,
     progress: bool = False,
-):
+) -> np.ndarray:
     """
     Extracts images from a user-given path, and finds
-    the average images calculated on a pixel-by-pixel
-    basis.
+    the average pixel value for every pixel across all
+    images. This defaults to the 'median' average, but
+    can be changed to take the 'mean' average as well.
 
     Parameters:
     -----------
-    path :: string
+    path :: str
         Path to data directory.
-    tag :: string
+    tag :: str
         Tag to search for in filenames.
+    instrument :: str
+        The name of the instrument your FITS data was taken from. This
+        is only used to determine which loading function to use.
     ignore :: list
         List of data indexes to ignore in averaging.
+    crop_bds :: list
+        The region along the cross-dispersion (spatial) axis
+        to keep (all other rows will be dropped).
     mode :: str
         Type of average to take of images. Valid inputs
         include 'median' and 'mean'.
@@ -294,7 +404,7 @@ def load_metadata(
     path: str,
     tag: str,
     ignore: list = [],
-):
+) -> dict:
     """
     Loads an dictionary of all data for
     a collection of FITS files. This
@@ -303,9 +413,9 @@ def load_metadata(
 
     Parameters:
     -----------
-    path :: string
+    path :: str
         Path to data directory.
-    tag :: string
+    tag :: str
         Tag to search for in filenames.
     ignore :: list
         List of data indexes to ignore.
@@ -356,7 +466,7 @@ def load_metadata(
 
 def extract_times(
     path: str,
-    target: str,
+    tag: str,
     ignore: list = [],
     time_lbl: str = "DATE-OBS",
     ra_lbl: str = "RA",
@@ -374,6 +484,20 @@ def extract_times(
     about the observation time.
 
     Parameters:
+    -----------
+    path :: str
+        Directory pointing toward the FITS file you wish to
+        load. This should not include the name of the file
+        itself.
+    tag :: str
+        A sub-string that can help differentiate between
+        desired and undesired files in a directory. If
+        an empty string is provided, no files are filtered
+        out (based on the 'tag' criteria).
+    ignore :: list
+        Filenames to ignore when loading in data. The 'ignore'
+        filenames must exactly match how they appear in the
+        file navigator (including .fits extension).
     time_lbl :: str
         Header label for observation time.
     ra_lbl :: str
@@ -398,6 +522,7 @@ def extract_times(
         the (RA, DEC) data in the header.
 
     Returns:
+    --------
     times_bc :: np.ndarray
         Array of JD barycentric times that have
         been corrected for variations in light
@@ -407,11 +532,7 @@ def extract_times(
 
     # Gets a list of file addresses for our data
     files = sorted(
-        [
-            file
-            for file in os.listdir(path)
-            if target in file and file[-9:-5] not in ignore
-        ]
+        [file for file in os.listdir(path) if tag in file and file[-9:-5] not in ignore]
     )
     adds = [os.path.join(path, file) for file in files]
 
@@ -437,3 +558,42 @@ def extract_times(
     times_bc = np.array([(t.tdb + tb).jd for t, tb in zip(times, ltt_bary)]) * u.day
 
     return times_bc
+
+
+def split_chips(images: np.ndarray) -> np.ndarray:
+    """
+    Attempts to split up a series of 2D images into separate
+    arrays for each "chip" that has been combined. This
+    function assumes that "chip gaps" are indicated by a column
+    that is entirely comprised of NaN values.
+
+    Parameters:
+    -----------
+    images :: np.ndarray
+        A series of images that are comprised of multiple chips
+        joined by a "chip gap" comprised of NaN values.
+
+    Returns:
+    --------
+    sub_images :: np.ndarray
+        A list of images where each entry has N sub-images that
+        make up each chip that was detected.
+    """
+
+    # Ensures that code runs for a single image
+    if len(images.shape) == 2:
+        images = np.array([images])
+
+    sub_images = []
+
+    for image in images:
+        nan_cols = np.all(np.isnan(image), axis=0)
+        split_idx = np.where(nan_cols[:-1] != nan_cols[1:])[0] + 1
+        chips = [
+            block
+            for block in np.split(image, split_idx, axis=1)
+            if not np.all(np.isnan(block))
+        ]
+        sub_images.append(chips)
+
+    return np.array(sub_images)

@@ -13,8 +13,43 @@ def plot_image(
     title: str = "",
     figsize: tuple = (10, 3),
     cmap: str = "inferno",
+    savedir: str = None,
     **kwargs,
 ):
+    """
+    A simple wrapper for matplotlib.pyplot.imshow(). By default, this
+    function uses a handful of style options to keep all visualizations
+    consistent within our documentation. You should be able to
+    overwrite these options and provide any of the standard additional
+    KWARGS.
+
+    Parameters:
+    -----------
+    image :: np.ndarray
+        A single 2D array. If it is not a Numpy array, the function
+        will attempt to convert it into one.
+    xlim :: tuple
+        The (xmin, xmax) to show. If none is provided, defaults to the
+        entire horizontal span of the image.
+    ylim :: tuple
+        The (ymin, ymax) to show. If none is provided, defaults to the
+        entire vertical span of the image.
+    xlabel :: str
+        Text to write along the x-axis (bottom) of the image.
+    ylabel :: str
+        Text to write along the y-axis (left) of the image.
+    cbar_label :: str
+        A text label assigned to the colorbar.
+    title :: str
+        A title to plot at the top of the image.
+    figsize :: tuple
+        The dimensions (horizontal, vertical) of the image.
+    cmap :: str
+        Name of the matplotlib colormap to use.
+    savedir :: str
+        Directory (+filename) to save the generated image at. If an argument
+        is provided, then 'plt.show()' will not run.
+    """
 
     try:
 
@@ -30,7 +65,7 @@ def plot_image(
         plt.rcParams["figure.figsize"] = figsize
         plt.imshow(
             image,
-            cmap="inferno",
+            cmap=cmap,
             aspect="auto",
             interpolation="none",
             origin="lower",
@@ -42,33 +77,42 @@ def plot_image(
         plt.colorbar(label=cbar_label)
         plt.xlim(xlim)
         plt.ylim(ylim)
-        plt.show()
+
+        if savedir is not None:
+            plt.savefig(savedir, bbox_inches="tight")
+            plt.clf()
+            plt.close()
+        else:
+            plt.show()
 
     except AssertionError:
         warnings.warn("The provided image is not a valid 2D array")
 
-    def plot_spectra(
-        flux: np.ndarray, err: np.ndarray, p_wavecal: tuple = None, plot_idx: int = 0
-    ):
 
-        # Adjusts the xlabel / x-data if necessary
-        xlabel = "Dispersion Axis (pix)"
-        xs = np.array(range(len(flux)))
-        if p_wavecal is not None:
-            xs = p_wavecal(xs)
-            xlabel = "Wavelength (AA)"
+def _gaussian(x: np.ndarray, A: float, mu: float, sigma: float) -> np.ndarray:
+    """
+    Generates a 1D Gaussian profile on the user-provided grid of
+    x-points. If an error is encountered, then 'None' will be returned
+    instead of a Numpy array.
 
-        # Plots spectra with errorbars
-        plt.rcParams["figure.figsize"] = (12, 5)
-        plt.scatter(xs, flux.T[plot_idx], color="k", s=3)
-        plt.errorbar(xs, flux.T[plot_idx], yerr=err.T[plot_idx], fmt="none", color="k")
-        plt.xlim(xs[0], xs[-1])
-        plt.xlabel(xlabel)
-        plt.show()
+    Parameters:
+    -----------
+    x :: np.ndarray
+        A set of x-points over which to evaluate the Gaussian profile.
+        This can be a single value, but must still be contained in a
+        list (i.e., [1]).
+    A :: float
+        The amplitude of the Gaussian profile.
+    mu :: float
+        The mean of the Gaussian profile.
+    sigma :: float
+        The standard deviation of the Gaussian profile.
 
-
-def _gaussian(x: np.ndarray, A: float, mu: float, sigma: float):
-    "Generates a 1D Gaussian curve at each point in x"
+    Returns:
+    --------
+    profile :: np.ndarray
+        The 1D Gaussian profile evaluated on the provided grid of x-points.
+    """
 
     # Ensures the calculation can run without error
     try:
@@ -82,8 +126,39 @@ def _gaussian(x: np.ndarray, A: float, mu: float, sigma: float):
     return profile
 
 
-def _moffat(x: np.ndarray, A: float, mu: float, gamma: float):
-    "Generates a 1D modified Moffat curve at each point in x"
+def _moffat(
+    x: np.ndarray,
+    A: float,
+    mu: float,
+    gamma: float,
+    offset: float = 0.0,
+) -> np.ndarray:
+    """
+    Generates a 1D Moffat profile on the user-provided grid of
+    x-points. If an error is encountered, then 'None' will be returned
+    instead of a Numpy array. Note: This is technically a 'modified
+    Moffat profile' since the exponent has been set to 2.5.
+
+    Parameters:
+    -----------
+    x :: np.ndarray
+        A set of x-points over which to evaluate the Moffat profile.
+        This can be a single value, but must still be contained in a
+        list (i.e., [1]).
+    A :: float
+        The amplitude of the Moffat profile.
+    mu :: float
+        The mean of the Moffat profile.
+    gamma :: float
+        A shape parameter for the Moffat profile.
+    offset :: float
+        A constant offset applied to all points.
+
+    Returns:
+    --------
+    profile :: np.ndarray
+        The 1D Moffat profile evaluated on the provided grid of x-points.
+    """
 
     # Ensures the calculation can run without error
     try:
@@ -92,30 +167,29 @@ def _moffat(x: np.ndarray, A: float, mu: float, gamma: float):
     except ValueError:
         return None
 
-    profile = A * (1 + ((x - mu) / gamma) ** 2) ** (-2.5)
+    profile = A * (1 + ((x - mu) / gamma) ** 2) ** (-2.5) + offset
 
     return profile
 
 
-def rebin_image_columns(image: np.ndarray, bin: int):
+def rebin_image_columns(image: np.ndarray, bin: int) -> np.ndarray:
     """
-    Rebins an image along a single axis. The bin
-    size must be an integer multiple of the axis
-    size being rebinned.
+    Rebins an image along a single axis. The bin size must be an
+    integer multiple of the axis size being rebinned.
 
     Parameters:
     -----------
     image :: np.ndarray
         Original image to be rebinned.
     bin :: int
-        Size each bin in pixels along the
-        columns of the provided image.
+        Size each bin in pixels along the columns of the provided
+        image.
 
     Returns:
     --------
     rebinned_image :: np.ndarray
-        An image where the columns have been
-        rebinned into bin length pixels.
+        An image where the columns have been rebinned into bin length
+        pixels.
     """
 
     # Initializes list for rebinned columns
@@ -132,26 +206,30 @@ def rebin_image_columns(image: np.ndarray, bin: int):
     return rebinned_image
 
 
-def flatfield_correction(image: np.ndarray, flat: np.ndarray, debug: bool = False):
+def flatfield_correction(
+    image: np.ndarray, flat: np.ndarray, debug: bool = False
+) -> np.ndarray:
     """
+    Applies a simple flatfield correction to one or more 2D images.
+    This function assumes that each entry along the first axis is a 2D
+    image with the same size as 'flat'.
+
     Parameters:
     -----------
     image :: np.ndarray
-        Image(s) that should be divided by the
-        normalized flatfield image. This can be
-        a single 2D image or an array of 2D images.
+        Image(s) that should be divided by the normalized flatfield
+        image. This can be a single 2D image or an array of 2D images.
     flat :: np.ndarray
-        A single unnormalized flatfield image,
-        ideally the median of several flatfield
-        exposures.]
+        A single unnormalized flatfield image, ideally the median of
+        several flatfield exposures.
     debug :: bool
         Allows for diagnostic plotting.
 
     Returns:
     --------
     flatfielded_ims :: np.ndarray
-        The resulting image(s) after being divided
-        by the normalized flatfield
+        The resulting image(s) after being divided by the normalized
+        flatfield.
     """
 
     # Calculates flatfield corrections

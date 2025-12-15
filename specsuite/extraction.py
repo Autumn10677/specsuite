@@ -50,7 +50,11 @@ def generate_spatial_profile(
     # Stores fitting information (function, p0, bounds) for each model
     profile_dict = {
         "gaussian": [_gaussian, [0.5, -1, 2.5], [[0, 0, 0], [1, len(image), 10]]],
-        "moffat": [_moffat, [0.5, -1, 5], [[0, 0, 4], [1, len(image), 20]]],
+        "moffat": [
+            _moffat,
+            [0.5, -1, 5, 0.01],
+            [[0, 0, 4, 0], [1, len(image), 20, np.inf]],
+        ],
     }
 
     # Extracts profile information
@@ -87,19 +91,12 @@ def generate_spatial_profile(
                     parameters = []
                     successful_cols = []
 
-                popt, pcov = curve_fit(profile_function, rows, y, p0=p0, bounds=bounds)
+                popt, _ = curve_fit(profile_function, rows, y, p0=p0, bounds=bounds)
                 parameters.append(popt)
                 successful_cols.append(cols_binned[idx])
 
-                if debug:
-                    plt.rcParams["figure.figsize"] = (12, 1)
-                    plt.title(popt)
-                    plt.scatter(rows, y)
-                    plt.plot(rows, profile_function(rows, *popt))
-                    plt.show()
-
-            except Exception as e:
-                print(e)
+            # Prevents printout if fit does not converge
+            except RuntimeError:
                 pass
 
     parameters = np.array(parameters).T
@@ -127,19 +124,133 @@ def generate_spatial_profile(
     return P
 
 
+def boxcar_extraction(
+    images: np.ndarray,
+    backgrounds: np.ndarray,
+    RN: float | np.ndarray = 0.0,
+    debug: bool = False,
+):
+    """
+    Performs a simple boxcar extraction on an image
+    (or series of images). This assumes that both arrays
+    of images of dimensions corresponding to...
+
+        (cross-dispersion, dispersion)
+
+    If that is not the case, please rotate your data arrays
+    before feeding them into this function.
+
+    Parameters:
+    -----------
+    images :: np.ndarray
+        A 2D (or array of several 2D) science exposures that
+        have been background subtracted.
+    backgrounds :: np.ndarray
+        A 2D (or array of several 2D) background exposures
+        that have been subtracted off of your science images.
+    RN :: float | np.ndarray
+        The read noise associated with your detector.
+    debug :: bool
+        Allows for optional plotting.
+
+    Returns:
+    --------
+    flux_array :: np.ndarray
+        A 2D array containing the flux of each provided exposure.
+        Has a shape of (image index, pixel position).
+    error_array :: np.ndarray
+        A 2D array containing the undertainty of each provided
+        exposure. Has a shape of (image index, pixel position).
+    """
+
+    # Handles single-image exposures by wrapping them in a list
+    if len(images.shape) != 3:
+        images = np.array([images])
+    if len(backgrounds.shape) != 3:
+        backgrounds = np.array([backgrounds])
+
+    # Checks that arrays are either 3D or a wrapped 2D exposure
+    try:
+        assert (len(images.shape) == 3) and (len(backgrounds.shape) == 3)
+    except AssertionError:
+        raise AssertionError("Both image arrays should be 2D or 3D.")
+
+    # Assumes that 'images' and 'backgrounds' are 3D arrays
+    flux_array = np.sum(images, axis=1)
+    error_array = np.sqrt(np.sum(images + backgrounds + RN**2, axis=1))
+
+    if debug:
+        pixel_positions = np.array(range(len(flux_array[0])))
+
+        plt.rcParams["figure.figsize"] = (12, 4)
+        plt.errorbar(
+            pixel_positions,
+            flux_array[0],
+            yerr=error_array[0],
+            color="k",
+            label="First Exposure",
+            fmt="none",
+        )
+        plt.plot(
+            pixel_positions,
+            np.median(flux_array, axis=0),
+            color="salmon",
+            label="Median Exposure",
+            zorder=-999,
+        )
+        plt.xlim(np.min(pixel_positions), np.max(pixel_positions))
+        plt.xlabel("Pixel Position (Dispersion Axis)")
+        plt.ylabel("Extracted Flux / Pixel")
+        plt.legend()
+        plt.show()
+
+    return flux_array, error_array
+
+
 def horne_extraction(
     images: np.ndarray,
     backgrounds: np.ndarray,
-    profile: str = "gaussian",
-    profile_order: int = 7,
-    RN: float = 6.0,
-    bin_size: int = 8,
-    sigma_clip: float = 25.0,
-    max_iter: int = 10,
+    profile: str = "moffat",
+    profile_order: int = 3,
+    RN: float = 0.0,
+    bin_size: int = 16,
+    max_iter: int = 5,
     repeat: bool = True,
     debug: bool = False,
     update: bool = False,
-):
+) -> tuple[np.ndarray, np.ndarray]:
+    """
+    FIXME
+
+    Parameters:
+    -----------
+    images :: np.ndarray
+
+    backgrounds :: np.ndarray
+
+    profile :: str
+
+    profile_order :: int
+
+    RN :: float
+
+    bin_size :: int
+
+    max_iter :: int
+
+    repeat :: bool
+
+    debug :: bool
+
+    update :: bool
+
+    Returns:
+    --------
+    flux :: np.ndarray
+
+    flux_err :: np.ndarray
+
+    """
 
     # Converts 2D arrays to 3D arrays
     original_shape = images.shape
@@ -164,211 +275,66 @@ def horne_extraction(
         V = RN**2 + D
 
         # Initializes flux using median to mitigate cosmic rays
-        f = np.sum(D - S, axis=0)
-
-        # Creates two arrays to stop running when flagged outliers match
-        M = np.ones(D.shape)
-        last_M = np.zeros(D.shape)
+        f = np.median(images + backgrounds, axis=0)
 
         step = 0
 
         # Iterates until erroneous pixels have been flagged and removed
-        while not np.array_equal(M, last_M) and step < max_iter:
-
-            last_M = M.copy()
+        while step < max_iter:
 
             # Generates new spatial profile and variance estimate
             P = generate_spatial_profile(
-                D - S,
+                (D - S) / f,
                 bin_size=bin_size,
                 profile=profile,
                 profile_order=profile_order,
                 repeat=repeat,
-                debug=debug,
+                debug=False,
             )
-            P *= M
 
             V = RN**2 + np.abs(f * P + S)
             V = np.clip(V, 1e-20, None)
 
-            # Removes the brightest pixel if it exceeds clipping threshold
-            flagging_threshold = M * np.sqrt(((D - S - f * P) ** 2 / V))
-            if np.max(flagging_threshold > sigma_clip):
-                M[flagging_threshold == np.max(flagging_threshold)] = 0
-
             # Re-calculates flux and variance using updated arrays
-            numerator = np.sum(M * P * (D - S) / V, axis=0)
-            denominator = np.sum(M * P**2 / V, axis=0)
+            numerator = np.sum(P * (D - S) / V, axis=0)
+            denominator = np.sum(P**2 / V, axis=0)
             f = numerator / denominator
-            f_var = np.sum(M * P, axis=0) / denominator
+            f_var = np.sum(P, axis=0) / denominator
 
             step += 1
 
         flux[:, idx] = f
         flux_err[:, idx] = np.sqrt(f_var)
 
+    flux = flux.T
+    flux_err = flux_err.T
+
+    if debug:
+        pixel_positions = np.array(range(len(flux[0])))
+
+        plt.rcParams["figure.figsize"] = (12, 4)
+        plt.errorbar(
+            pixel_positions,
+            flux[0],
+            yerr=flux_err[0],
+            color="k",
+            label="First Exposure",
+            fmt="none",
+        )
+        plt.plot(
+            pixel_positions,
+            np.median(flux, axis=0),
+            color="salmon",
+            label="Median Exposure",
+            zorder=-999,
+        )
+        plt.xlim(np.min(pixel_positions), np.max(pixel_positions))
+        plt.xlabel("Pixel Position (Dispersion Axis)")
+        plt.ylabel("Extracted Flux / Pixel")
+        plt.legend()
+        plt.show()
+
     return flux, flux_err
-
-
-def extract_flux(
-    images: np.ndarray,
-    images_bg: np.ndarray,
-    bin_size: float = 2**6,
-    trace_order: int = 2,
-    model: str = "fit moving",
-    extraction_width: int = 10,
-    box_pos: float = 0.0,
-    debug: bool = False,
-    give_fit_params: bool = False,
-    show_param_evolution: bool = False,
-    update: bool = False,
-):
-    """
-    Extracts flux from a given image using a
-    specified extraction technique. The user
-    must provide at least an image for extraction
-    w/ the same image before background subtraction.
-
-    Parameters:
-    -----------
-    images :: np.ndarray
-        Calibrated images from which a signal will be
-        extracted. This function assumes that this image
-        has been background-subtracted.
-    images_bg :: np.ndarray
-        Identical image to the first one, but before
-        the background subtraction has been applied.
-    trace_order :: int
-        Order of the polynomial used to fit to the
-        detected signal locations.
-    model :: str
-        Phrase indicating what type of extraction technique
-        to use. Valid options are...
-
-                   'boxcar' ~ Straight line trace at given position
-             'fit averaged' ~ Fits one trace to the average of
-                               all user-given images
-               'fit moving' ~ Fits a trace to each individual image.
-                              Most accurate, but prone to failure if
-                              a Gaussian curve poorly describes your
-                              given data.
-
-    extraction_width :: int
-        Number of pixels above (and below) the trace
-        to use for flux extraction.
-    box_pos :: float
-        The y-position at which your boxcar trace should
-        be centered. Only required if using the 'boxcar'
-        model.
-    debug :: bool
-        Allows plot generation.
-    give_fit_params :: bool
-        Allows for trace parameters to be returned from
-        the function.
-    show_param_evolution :: bool
-        Allows for the plotting of trace fit parameters.
-
-    Returns:
-    --------
-    spectra :: np.ndarray
-        Array of spectra extracted from the user-given
-        images. If multiple images are provided, each
-        row represents a single spectrum.
-    errs :: np.ndarray
-        Array of errors associated with the extracted
-        spectra. Follows the same structure as the
-        spectra array.
-    fit_coefficients :: np.ndarray
-        Array of trace fit parameters for every image.
-        This is an OPTIONAL return, and follows the
-        same convention as the above two arrays.
-    """
-
-    # List for storing trace fit coefficients
-    fit_coefficients = []
-
-    # Fixes formatting for single images
-    if len(images.shape) == 2:
-        images = np.array([images])
-    if len(images_bg.shape) == 2:
-        images_bg = np.array([images_bg])
-
-    # Initializes arrays for spectral data
-    spectra = np.zeros((len(images), len(images[0][0])))
-    errs = np.zeros((len(images), len(images[0][0])))
-
-    # Fits one trace to average image
-    if model == "fit averaged":
-
-        # Fits for an n-dimensional trace to averaged image
-        avg_im = np.median(images, axis=0)
-        xs, locs, stds, p = trace_fit(
-            avg_im, bin=bin_size, trace_order=trace_order, debug=debug
-        )
-        fit_coefficients = p.coefficients
-
-    # Uses a contant boxcar trace
-    if model == "boxcar":
-        xs = np.linspace(0, len(images[0][0]), 20)
-        locs = np.array([box_pos for _ in xs])
-        stds = np.array([0 for _ in xs])
-        p = np.poly1d([box_pos])
-
-    # Iterates over every image
-    for idx in tqdm(range(len(images)), desc="extracting flux", disable=not update):
-
-        # Extracts individual images
-        im = images[idx]
-        bg = images_bg[idx]
-
-        # Fits trace for every image
-        if model == "fit moving":
-
-            # Fits for an n-dimensional trace to
-            xs, locs, stds, p = trace_fit(
-                im, bin=bin_size, trace_order=trace_order, debug=debug
-            )
-            fit_coefficients.append(p.coefficients)
-
-        # Performs flux extraction
-        _, flux, err = apply_trace_extraction(
-            im,
-            bg,
-            p,
-            xpoints=xs,
-            locs=locs,
-            stds=stds,
-            debug=debug,
-            N_pix=extraction_width,
-        )
-
-        # Adds flux and error data to arrays
-        spectra[idx] = flux
-        errs[idx] = err
-
-    # Allows for trace parameter return
-    if give_fit_params:
-
-        # Displays fit parameters evolution
-        if model == "fit moving" and show_param_evolution:
-
-            # Creates array of image indexes for plotting
-            idxs = np.array(range(len(fit_coefficients)))
-
-            # Iterates over each trace coefficient
-            for i in range(len(fit_coefficients[0])):
-
-                # Plots evolution of trace parameter over images
-                plt.rcParams["figure.figsize"] = (10, 3)
-                plt.scatter(idxs, np.array(fit_coefficients)[:, i], color="k")
-                plt.title(f"Coefficient Order: {len(fit_coefficients[0]) - 1 - i}")
-                plt.xlabel("Image Index")
-                plt.ylabel("Value")
-                plt.show()
-
-        return spectra, errs, np.array(fit_coefficients)
-
-    return spectra, errs
 
 
 def trace_fit(
@@ -481,140 +447,3 @@ def trace_fit(
         plt.show()
 
     return xpoints, locs, stds, p_center
-
-
-def apply_trace_extraction(
-    image,
-    image_bg,
-    p_trace,
-    xpoints=None,
-    locs=None,
-    stds=None,
-    N_pix=5,
-    RN=6.0,
-    debug=False,
-):
-    """
-    Applies a defined trace to a user-given image
-    to extract signal flux within a given range of
-    pixels. Some arguments are only required if the
-    user intends to use the debugging plots. This
-    assumed the user-given images are already in units
-    of photons (not in ADU).
-
-    Parameters:
-    -----------
-    image :: np.ndarray
-        Image that the trace model describes
-        that flux will be extracted from.
-    image_bg :: np.ndarray
-        The same image we are extracting flux
-        from, but before background corrections
-        have been applied.
-    p_trace :: np.poly1d
-        Polynomial model describing the trace
-        that was fit to the provided image.
-    xpoints :: np.ndarray
-        X-positions of each point extracted from
-        the signal (only required for debug plots)
-    locs :: np.ndarray
-        Y-positions of each point extracted from
-        the signal (only required for debug plots)
-    stds :: np.ndarray
-        Standard deviations of each point extracted
-        the signal (only required for debug plots)
-    N_pix :: int
-        Number of pixels above (and below) trace to
-        extract.
-    RN :: float
-        Read noise associated with image. This is
-        used for calculating the error of our
-        extractions.
-    debug :: bool
-        Allows plot generation.
-
-    Returns:
-    --------
-    xs :: np.ndarray()
-        Horizontal pixel positions corresponding to
-        each extracted flux value. This is NOT in
-        wavelength-calibrated units.
-    extracted_flux :: np.ndarray
-        Extracted flux across our extraction aperture.
-    extracted_error :: np.ndarray
-        Error associated with the extracted flux.
-    """
-
-    xs = range(len(image[0]))
-
-    lower_bounds = [round(lower) - N_pix for lower in p_trace(range(len(image[0])))]
-    upper_bounds = [round(upper) + N_pix for upper in p_trace(range(len(image[0])))]
-
-    # Finds the error squared of our original image
-    err_im_squared = image_bg + RN**2
-
-    # Extracts flux and error from our defined aperture
-    extracted_flux = np.array(
-        [np.sum(image[i:j, k]) for i, j, k in zip(lower_bounds, upper_bounds, xs)]
-    )
-    extracted_error = np.array(
-        [
-            np.sqrt(np.sum(err_im_squared[i:j, k]))
-            for i, j, k in zip(lower_bounds, upper_bounds, xs)
-        ]
-    )
-
-    if debug:
-
-        # Plots original image
-        plt.rcParams["figure.figsize"] = (12, 4)
-        plt.imshow(
-            np.abs(image),
-            cmap="inferno",
-            aspect="auto",
-            norm="log",
-            interpolation="none",
-        )
-        plt.colorbar(label="Pixel Counts")
-
-        # Plots trace fits
-        plt.plot(xs, p_trace(xs), color="k", linewidth=3, alpha=0.5, label="Trace Fit")
-        plt.plot(
-            xs,
-            upper_bounds,
-            color="blue",
-            linewidth=3,
-            label=f"Extraction Region ({N_pix} Pixels)",
-        )
-        plt.plot(xs, lower_bounds, color="blue", linewidth=3)
-
-        # Plots extracted position data along signal
-        plt.scatter(xpoints, locs, color="k")
-        plt.errorbar(
-            xpoints,
-            locs,
-            yerr=stds,
-            fmt="none",
-            capsize=3,
-            color="k",
-            label="Signal Gaussian Position",
-        )
-
-        # Formatting
-        plt.title("Flux Extraction Aperture on Original Image")
-        plt.xlim(0, len(image[0]))
-        plt.legend(loc="upper left", shadow=True)
-        plt.show()
-
-        # Plots extracted flux
-        plt.rcParams["figure.figsize"] = (10, 5)
-        plt.scatter(xs, extracted_flux, color="k", s=0.1)
-        plt.errorbar(
-            xs, extracted_flux, yerr=extracted_error, fmt="none", capsize=2, color="k"
-        )
-        plt.xlim(0, len(xs))
-        plt.xlabel("Column (pixels)")
-        plt.ylabel("Extracted Flux")
-        plt.show()
-
-    return np.array(xs), np.array(extracted_flux), np.array(extracted_error)

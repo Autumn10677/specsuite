@@ -3,11 +3,15 @@ import unittest
 import warnings
 import numpy as np
 
-sys.path.append("specsuite/")
+import specsuite.loading as loading
+import specsuite.warping as warping
+import specsuite.utils as utils
 
-import loading  # noqa
-import warping
-import utils
+# sys.path.append("specsuite/")
+
+# import loading  # noqa
+# import warping
+# import utils
 
 CAL_PATH = "data/KOSMOS/calibrations"
 DATA_PATH = "data/KOSMOS/target"

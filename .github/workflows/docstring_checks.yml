@@ -1,0 +1,24 @@
+name: Docstring Consistency Checks
+
+on:
+  push:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  docstring-check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up micromamba and create env
+      uses: mamba-org/setup-micromamba@v1
+      with:
+        environment-file: environment.yml
+        cache-environment: true
+
+    - name: Run docstring check
+      shell: bash -l {0}
+      run: |
+        python tests/misc/test_docstring_consistency.py

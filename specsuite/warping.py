@@ -8,6 +8,8 @@ from astropy.stats import mad_std
 from joblib import Parallel, delayed
 import warnings
 
+from .utils import plot_image
+
 import sys
 
 sys.tracebacklimit = 0
@@ -18,25 +20,33 @@ def find_cal_lines(
     std_variation: float = 50.0,
     row: int = None,
     debug: bool = False,
-    element_name: str = "Original",
-):
+) -> tuple[np.ndarray, np.ndarray]:
     """
-    Finds pixel positions of spectral lines in a
-    provided image. The image does not need to range
-    from any specific wavelength to another. The only
-    requirement is that the lines are located vertically
-    on the image plane.
+    Finds pixel positions of spectral lines in a provided image. The
+    image does not need to range from any specific wavelength to
+    another. The only requirement is that the lines are located
+    vertically on the image plane.
 
     Parameters:
-        image :: np.ndarray
-            Image with calibration lines
-        std_variation :: int
-            How many standard deviations a peak must
-            exceed the baseline to be counted as a line
+    -----------
+    image :: np.ndarray
+        Image with calibration lines.
+    std_variation :: float
+        How many standard deviations a peak must exceed the baseline to
+        be counted as a line.
+    row :: int
+        Which row to pull a 1D profile from. If no argument is
+        provided, this function will default to the row at the center
+        of the cross-dispersion axis.
+    debug :: bool
+        Allows for a diagnostic plot to be shown.
 
     Returns:
-        non_zero_indices :: list
-            List of pixel locations for detected lines
+    --------
+    non_zero_indices :: np.ndarray
+        List of pixel locations for detected lines.
+    rel_intensity :: np.ndarray
+        List of the relative intensity of the detected lines.
     """
 
     if row is None:
@@ -114,7 +124,6 @@ def find_cal_lines(
         plt.subplot(2, 1, 2)
         plt.imshow(image, cmap="gray", aspect="auto", norm="log", origin="lower")
         plt.axhline(row, color="red", ls="--")
-        plt.title(rf"{element_name} Image")
 
         plt.tight_layout()
         plt.show()
@@ -122,26 +131,24 @@ def find_cal_lines(
     return np.array(non_zero_indices), np.array(rel_intensity)
 
 
-def combine_within_tolerance(values: list, tolerance: float):
+def combine_within_tolerance(values: np.ndarray, tolerance: float) -> np.ndarray:
     """
-    Takes a user-given list and combines values that
-    are within a given tolerance. This is helpful for
-    when a dense sample of features is non-ideal and
-    should be combined into a single feature.
+    Takes a user-given list and combines values that are within a given
+    tolerance. This is helpful for when a dense sample of features is
+    non-ideal and should be combined into a single feature.
 
     Parameters:
     -----------
-    values :: list
+    values :: np.ndarray
         List of values to be analyzed.
     tolerance :: float
-        The theshold at which two data points
-        should be combined.
+        The theshold at which two data points should be combined.
 
     Returns:
     --------
     combined_values :: list
-        List of values where close points have
-        been averaged and combined.
+        List of values where close points have been averaged and
+        combined.
     """
 
     # Silently handled here in case users provide negative tolerance
@@ -183,44 +190,50 @@ def generate_warp_model(
     tolerance: int = 16,
     line_order: int = 2,
     warp_order: int = 1,
-    ref_idx: bool = None,
+    ref_idx: int = None,
     debug: bool = False,
 ) -> list:
     """
     Models how straight vertical lines in a wavelength calibration
     image are being warped. Assumes a relatively low amount of
-    straight-line warping and that these lines are continuous.
-    This function allows for the type of warping to change along
-    the horizontal axis of the detector. This is functionally
-    achieved by binning down a given image and identifying the
-    brightest pixels across the vertical axis of a detector in
-    a small region around each line.
+    straight-line warping and that these lines are continuous. This
+    function allows for the type of warping to change along the
+    horizontal axis of the detector. This is functionally achieved by
+    binning down a given image and identifying the brightest pixels
+    across the vertical axis of a detector in a small region around
+    each line.
 
     Parameters:
     -----------
     image :: np.ndarray
-        Wavelength calibration image with distinct with
-        distinct vertical lines.
-    bin :: int
-        Binning used to reduce the number of rows analyzed
-        for peak detection. Binning of 1 is recommended for
-        the best results, but is more sensitive to irregularities.
+        A 2D arclamp image with strong emission features.
+    guess :: np.ndarray
+        The pixel positions (along the dispersion axis) of strong
+        emissions features in the provided image. These can be slightly
+        wrong, as the 'tolerance' determines how broad of a region to
+        analyze around each of these guesses.
     tolerance :: int
-        Number of pixels that x-warping deviates from your guess.
-        This is used to determine whether two peaks from different
-        rows are correlated to one another.
-    x_warp_order :: int
+        Number of pixels around your guess to use for building a warp
+        model. The tolerance should at least be large enough that the
+        entire emission line falls within a given window, but it is
+        often better to provide a slightly larger tolerance if you
+        are uncertain in the accuracy of your guesses.
+    line_order :: int
         Order of x-warping (i.e. How does our vertial warping change
         with x-position along the detector).
-    y_warp_order :: int
+    warp_order :: int
         Order of y-warping (i.e. What shape does a straight line
         projected onto our detector take on).
+    ref_idx :: int
+        Which row (along cross-dispersion axis) to use for measuring
+        the relative changes from row to row. This choice should be
+        near the brightest portion of the emission line.
     debug :: bool
         Allows for diagnostic plots to be displayed.
 
     Returns:
     --------
-    models :: list
+    warp_models :: list
         Collection of models describing how y-warping coefficients
         change as a function of x.
     """
@@ -337,15 +350,12 @@ def generate_warp_model(
 
 def dewarp_image(
     image: np.ndarray, models: list, debug: bool = False, update: bool = False
-):
+) -> np.ndarray:
     """
-    Takes an image that is horizontally warped (straight
-    vertical lines appear curved) and dewarps according
-    to a set of models that describe this curvature. This
-    is done by rebinning each row onto a consistent wavelength
-    bin proportional to the overlapping area between the
-    raw image data and a warped set of new pixel locations.
-    (FIXME)
+    Uses a 'warp model' to undo distortion in a 2D image. This is done
+    by rebinning each row onto a consistent wavelength bin proportional
+    to the overlapping area between the raw image data and a warped set
+    of new pixel locations.
 
     Parameters:
     -----------
@@ -452,31 +462,29 @@ def dewarp_image(
     return unwarped_image
 
 
-def generate_effpix_map(xs: np.ndarray, rows: np.ndarray, models: np.ndarray):
+def generate_effpix_map(
+    xs: np.ndarray, rows: np.ndarray, models: np.ndarray
+) -> np.ndarray:
     """
-    Generates a 2D map of the effective location
-    of each pixel center across the detector. It
-    uses models that describe the warping across
-    the detector as a function of row and column
-    positions.
+    Generates a 2D map of the effective location of each pixel center
+    across the detector. It uses models that describe the warping
+    across the detector as a function of row and column positions.
 
     Parameters:
     -----------
-    xs :: np.ndarray()
+    xs :: np.ndarray
         A 1D array holding all column pixel positions.
-    rows :: np.ndarray()
+    rows :: np.ndarray
         A 1D array holding all row pixel positions.
-    models :: np.ndarray()
-        An array holding how light warping changes as
-        a function of column and row pixel positions.
-        This function assumes that each fitting coefficient
-        changes according to a linear relationship.
+    models :: np.ndarray
+        An array holding how light warping changes as a function of
+        column and row pixel positions. This function assumes that each
+        fitting coefficient changes according to a linear relationship.
 
     Returns:
     --------
-    effpix_map :: np.ndarray()
-        A 2D array detailing the effective location of
-        each pixel center.
+    effpix_map :: np.ndarray
+        A 2D array detailing the effective location of each pixel center.
     """
 
     # Initializes array for map data
@@ -493,36 +501,34 @@ def generate_effpix_map(xs: np.ndarray, rows: np.ndarray, models: np.ndarray):
 
 def extract_background(
     images: np.ndarray,
-    warp_model: np.ndarray,
+    warp_model: list,
     mask_region: tuple = (None, None),
     return_spectrum: bool = False,
     update: bool = False,
     debug: bool = False,
-):
+) -> np.ndarray | tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
-    Extracts the sky background for a series of
-    exposures where a trace should be masked out.
-    It assumes that an arc image exists that can be
-    used for modelling light warping along the image.
-
-    NOTE: This assumes that flatfielding has been applied
-    and that sky emissions are approximately uniform
-    along the spatial axis.
+    Extracts the sky background for a series of exposures where a trace
+    should be masked out. It uses a 'warp model' that describes how
+    straight emission lines are 'bent' on the imaging plane. This
+    function assumes that flatfielding has been applied and that sky
+    emissions are approximately uniform along the spatial axis.
 
     Parameters:
     -----------
     images :: np.ndarray
         A series of exposures to extract backgrounds from.
-    arc_image :: np.ndarray
-        A single image of an arc lamp exposure over the
-        same region as the provided science exposures.
-    tolerace :: int
-        How many pixels around an arc line to use for fitting.
-    bin :: int
-        Size of vertical binning used for arc line fitting.
+    warp_model :: list
+        List of models that describe how vertical lines
+        are warped along the image's horizontal axis.
     mask_region :: tuple
         The pixel locations (vertical) to mask out during the
         background extraction.
+    return_spectrum :: bool
+        Whether or not to return the super-sampled spectra used for
+        interpolating the sky background. If 'True', three additional
+        arguments are returned. These are the effective pixel
+        locations, effective flux, and the 'effpix map'.
     update :: bool
         Controls whether or not progress bars are shown.
     debug :: bool
@@ -531,8 +537,19 @@ def extract_background(
     Returns:
     --------
     background_images :: np.ndarray
-        A series of images representing the approximated sky
-        background for each image.
+        A series of images representing the approximated sky background
+        for each image.
+    supersampled_effpix :: np.ndarray
+        The grid of 'effective pixel locations' that the sky emission
+        spectra was extracted for. This is essentially a flattened
+        version of the 'effpix_map'.
+    supersampled_spectra :: np.ndarray
+        The effective flux found for each of the effective pixel
+        locations.
+    effpix_map :: np.ndarray
+        A 2D array with the same size as an individual image. The value
+        at each pixel represents the 'effective pixel location' for
+        that given pixel.
     """
 
     # Ensure arrays are 3D and valid
@@ -601,26 +618,32 @@ def extract_background(
         )
         background_images[idx] = background
 
+    if debug:
+
+        VMIN, VMAX = np.min(images[0]), np.max(images[0])
+
+        plot_image(
+            images[0],
+            title="Original Exposure",
+            norm="log",
+            vmin=VMIN,
+            vmax=VMAX,
+        )
+        plot_image(
+            background_images[0],
+            title="Extracted Background",
+            norm="log",
+            vmin=VMIN,
+            vmax=VMAX,
+        )
+        plot_image(
+            images[0] - background_images[0],
+            title="Corrected Exposure",
+            norm="log",
+            vmin=VMIN,
+            vmax=VMAX,
+        )
+
     if return_spectrum:
         return background_images, supersampled_effpix, supersampled_spectra, effpix_map
     return background_images
-
-
-def background_correction(
-    images, arc, debug=False, update=False, std_variation=50, mask_region=(-1, -1)
-):
-
-    # Ensures that image data is 3D
-    original_shape = images.shape
-    if len(original_shape) == 2:
-        images = np.array([images])
-
-    # Performs background extraction / subtraction
-    locs, _ = find_cal_lines(arc, debug=debug, std_variation=std_variation)
-    warp_model = generate_warp_model(arc, locs, debug=debug)
-    background = extract_background(
-        images, warp_model, mask_region=mask_region, debug=debug, update=update
-    )
-    images -= background
-
-    return images.reshape(original_shape), background.reshape(original_shape)
