@@ -470,7 +470,6 @@ def match_features(
             if residuals_scaled[max_idx] > thresh:
                 xs_fit = np.delete(xs_fit, max_idx)
                 ys_fit = np.delete(ys_fit, max_idx)
-                colors = np.delete(colors, max_idx)
                 removed += 1
             else:
                 break
