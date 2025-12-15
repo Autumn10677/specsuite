@@ -5,9 +5,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import astropy.units as u
 
-sys.path.append("specsuite/")
+import specsuite.loading as loading
+import specsuite.throughput as throughput
 
-import loading, throughput  # noqa
+# sys.path.append("specsuite/")
+
+# import loading, throughput  # noqa
 
 CAL_PATH = "data/KOSMOS/calibrations"
 DATA_PATH = "data/KOSMOS/target"
