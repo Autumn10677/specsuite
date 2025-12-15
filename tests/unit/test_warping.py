@@ -150,7 +150,7 @@ class TestWarpingFunctions(unittest.TestCase):
             data,
             warp_models,
             mask_region = (60, 100),
-            update = True,
+            progress = True,
         )
         self.assertTrue(backgrounds.shape == data.shape)
         self.assertIsInstance(backgrounds, np.ndarray)
@@ -160,7 +160,7 @@ class TestWarpingFunctions(unittest.TestCase):
             data,
             warp_models,
             mask_region = (60, 100),
-            update = True,
+            progress = True,
             return_spectrum = True,
         )
         self.assertTrue(bgs.shape == data.shape)
