@@ -349,7 +349,7 @@ def generate_warp_model(
 
 
 def dewarp_image(
-    image: np.ndarray, models: list, debug: bool = False, update: bool = False
+    image: np.ndarray, models: list, debug: bool = False, progress: bool = False
 ) -> np.ndarray:
     """
     Uses a 'warp model' to undo distortion in a 2D image. This is done
@@ -367,7 +367,7 @@ def dewarp_image(
         are warped along the image's horizontal axis.
     debug :: bool
         Enables diagnostic plots.
-    update :: bool
+    progress :: bool
         Enables a progress bar.
 
     Returns:
@@ -422,7 +422,7 @@ def dewarp_image(
         Parallel(n_jobs=-1)(
             delayed(process_row)(row)
             for row in tqdm(
-                rows, desc="dewarping", position=0, leave=True, disable=not update
+                rows, desc="dewarping", position=0, leave=True, disable=not progress
             )
         )
     )
@@ -504,7 +504,7 @@ def extract_background(
     warp_model: list,
     mask_region: tuple = (None, None),
     return_spectrum: bool = False,
-    update: bool = False,
+    progress: bool = False,
     debug: bool = False,
 ) -> np.ndarray | tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
@@ -529,7 +529,7 @@ def extract_background(
         interpolating the sky background. If 'True', three additional
         arguments are returned. These are the effective pixel
         locations, effective flux, and the 'effpix map'.
-    update :: bool
+    progress :: bool
         Controls whether or not progress bars are shown.
     debug :: bool
         Allows for diagnostic plots to be shown.
@@ -593,7 +593,7 @@ def extract_background(
     # Initializes array for backgrounds
     background_images = np.zeros(science_images.shape)
     for idx, image in enumerate(
-        tqdm(science_images, desc="Extracting Background", disable=(not update))
+        tqdm(science_images, desc="Extracting Background", disable=(not progress))
     ):
 
         # Pulls the background flux data for any non-masked region

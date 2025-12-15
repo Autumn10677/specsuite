@@ -217,7 +217,7 @@ def horne_extraction(
     max_iter: int = 5,
     repeat: bool = True,
     debug: bool = False,
-    update: bool = False,
+    progress: bool = False,
 ) -> tuple[np.ndarray, np.ndarray]:
     """
     Performs a profile-weighted (Horne) extraction for a series
@@ -260,7 +260,7 @@ def horne_extraction(
         helpful to keep this as 'True'.
     debug :: bool
         Allows for optional plotting.
-    update :: bool
+    progress :: bool
         Enables a progress bar to be displayed.
 
     Returns:
@@ -285,7 +285,7 @@ def horne_extraction(
 
     # Iterates over every image
     for idx in tqdm(
-        range(N_images), desc="Performing Optimal Extraction", disable=not update
+        range(N_images), desc="Performing Optimal Extraction", disable=not progress
     ):
 
         # Creates initial spectral extraction / variance

@@ -128,13 +128,13 @@ class TestWarpingFunctions(unittest.TestCase):
         # Sanity checks for a valid example call
         locs, _ = warping.find_cal_lines(arc)
         warp_models = warping.generate_warp_model(arc, locs)
-        dewarped_image = warping.dewarp_image(arc, warp_models, update=True)
+        dewarped_image = warping.dewarp_image(arc, warp_models, progress=True)
         self.assertTrue(dewarped_image.shape == arc.shape)
         self.assertIsInstance(dewarped_image, np.ndarray)
 
         # If multiple images are provided, spit back out the original array
         with self.assertWarns(UserWarning):
-            test_array = warping.dewarp_image(data, warp_models, update=True)
+            test_array = warping.dewarp_image(data, warp_models, progress=True)
             self.assertTrue(
                 np.array_equal(
                     test_array, data
