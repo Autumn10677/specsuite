@@ -334,7 +334,6 @@ def horne_extraction(
         plt.legend()
         plt.show()
 
-
     return flux, flux_err
 
 
