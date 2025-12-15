@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 from scipy.optimize import curve_fit
 
-from specsuite.utils import _gaussian, _moffat, rebin_image_columns
+from .utils import _gaussian, _moffat, rebin_image_columns
 
 
 def generate_spatial_profile(
@@ -125,7 +125,7 @@ def generate_spatial_profile(
 
 
 def boxcar_extraction(
-    science: np.ndarray,
+    images: np.ndarray,
     backgrounds: np.ndarray,
     RN: float | np.ndarray = 0.0,
     debug: bool = False,
@@ -142,7 +142,7 @@ def boxcar_extraction(
 
     Parameters:
     -----------
-    science :: np.ndarray
+    images :: np.ndarray
         A 2D (or array of several 2D) science exposures that
         have been background subtracted.
     backgrounds :: np.ndarray
@@ -164,20 +164,20 @@ def boxcar_extraction(
     """
 
     # Handles single-image exposures by wrapping them in a list
-    if len(science.shape) != 3:
-        science = np.array([science])
+    if len(images.shape) != 3:
+        images = np.array([images])
     if len(backgrounds.shape) != 3:
         backgrounds = np.array([backgrounds])
 
     # Checks that arrays are either 3D or a wrapped 2D exposure
     try:
-        assert (len(science.shape) == 3) and (len(backgrounds.shape) == 3)
+        assert (len(images.shape) == 3) and (len(backgrounds.shape) == 3)
     except AssertionError:
         raise AssertionError("Both image arrays should be 2D or 3D.")
 
-    # Assumes that 'science' and 'backgrounds' are 3D arrays
-    flux_array = np.sum(science, axis=1)
-    error_array = np.sqrt(np.sum(science + backgrounds + RN**2, axis=1))
+    # Assumes that 'images' and 'backgrounds' are 3D arrays
+    flux_array = np.sum(images, axis=1)
+    error_array = np.sqrt(np.sum(images + backgrounds + RN**2, axis=1))
 
     if debug:
         pixel_positions = np.array(range(len(flux_array[0])))
@@ -289,7 +289,7 @@ def horne_extraction(
                 profile=profile,
                 profile_order=profile_order,
                 repeat=repeat,
-                debug=debug,
+                debug=False,
             )
 
             V = RN**2 + np.abs(f * P + S)
@@ -305,6 +305,35 @@ def horne_extraction(
 
         flux[:, idx] = f
         flux_err[:, idx] = np.sqrt(f_var)
+
+    flux = flux.T
+    flux_err = flux_err.T
+
+    if debug:
+        pixel_positions = np.array(range(len(flux[0])))
+
+        plt.rcParams["figure.figsize"] = (12, 4)
+        plt.errorbar(
+            pixel_positions,
+            flux[0],
+            yerr=flux_err[0],
+            color="k",
+            label="First Exposure",
+            fmt="none",
+        )
+        plt.plot(
+            pixel_positions,
+            np.median(flux, axis=0),
+            color="salmon",
+            label="Median Exposure",
+            zorder=-999,
+        )
+        plt.xlim(np.min(pixel_positions), np.max(pixel_positions))
+        plt.xlabel("Pixel Position (Dispersion Axis)")
+        plt.ylabel("Extracted Flux / Pixel")
+        plt.legend()
+        plt.show()
+
 
     return flux, flux_err
 
