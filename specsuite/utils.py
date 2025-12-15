@@ -46,6 +46,9 @@ def plot_image(
         The dimensions (horizontal, vertical) of the image.
     cmap :: str
         Name of the matplotlib colormap to use.
+    savedir :: str
+        Directory (+filename) to save the generated image at. If an argument
+        is provided, then 'plt.show()' will not run.
     """
 
     try:
