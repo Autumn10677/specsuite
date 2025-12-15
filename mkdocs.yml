@@ -1,4 +1,5 @@
 site_name: specsuite
+site_url: https://Autumn10677.github.io/specsuite
 
 nav:
   - Home: index.ipynb
@@ -34,7 +35,7 @@ plugins:
   - search
   - mkdocs-jupyter:
       kernel_name: python3
-      execute: False
+      execute: True
 
 markdown_extensions:
   - attr_list
