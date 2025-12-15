@@ -13,6 +13,7 @@ def plot_image(
     title: str = "",
     figsize: tuple = (10, 3),
     cmap: str = "inferno",
+    savedir: str = None,
     **kwargs,
 ):
     """
@@ -73,7 +74,13 @@ def plot_image(
         plt.colorbar(label=cbar_label)
         plt.xlim(xlim)
         plt.ylim(ylim)
-        plt.show()
+
+        if savedir is not None:
+            plt.savefig(savedir, bbox_inches="tight")
+            plt.clf()
+            plt.close()
+        else:
+            plt.show()
 
     except AssertionError:
         warnings.warn("The provided image is not a valid 2D array")
