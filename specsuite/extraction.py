@@ -91,16 +91,9 @@ def generate_spatial_profile(
                     parameters = []
                     successful_cols = []
 
-                popt, pcov = curve_fit(profile_function, rows, y, p0=p0, bounds=bounds)
+                popt, _ = curve_fit(profile_function, rows, y, p0=p0, bounds=bounds)
                 parameters.append(popt)
                 successful_cols.append(cols_binned[idx])
-
-                # if debug:
-                #     plt.rcParams["figure.figsize"] = (12, 1)
-                #     plt.title(popt)
-                #     plt.scatter(rows, y)
-                #     plt.plot(rows, profile_function(rows, *popt))
-                #     plt.show()
 
             # Prevents printout if fit does not converge
             except RuntimeError:
@@ -135,6 +128,7 @@ def boxcar_extraction(
     science: np.ndarray,
     backgrounds: np.ndarray,
     RN: float | np.ndarray = 0.0,
+    debug: bool = False,
 ):
     """
     Performs a simple boxcar extraction on an image
@@ -156,6 +150,8 @@ def boxcar_extraction(
         that have been subtracted off of your science images.
     RN :: float | np.ndarray
         The read noise associated with your detector.
+    debug :: bool
+        Allows for optional plotting.
 
     Returns:
     --------
@@ -166,10 +162,6 @@ def boxcar_extraction(
         A 2D array containing the undertainty of each provided
         exposure. Has a shape of (image index, pixel position).
     """
-
-    # # Did not want to terminate execution in case this is intentional
-    # if RN == 0.0:
-    #     warnings.warn("Assuming RN = 0, this is likely an under-estimate.\n")
 
     # Handles single-image exposures by wrapping them in a list
     if len(science.shape) != 3:
@@ -186,6 +178,31 @@ def boxcar_extraction(
     # Assumes that 'science' and 'backgrounds' are 3D arrays
     flux_array = np.sum(science, axis=1)
     error_array = np.sqrt(np.sum(science + backgrounds + RN**2, axis=1))
+
+    if debug:
+        pixel_positions = np.array(range(len(flux_array[0])))
+
+        plt.rcParams["figure.figsize"] = (12, 4)
+        plt.errorbar(
+            pixel_positions,
+            flux_array[0],
+            yerr=error_array[0],
+            color="k",
+            label="First Exposure",
+            fmt="none",
+        )
+        plt.plot(
+            pixel_positions,
+            np.median(flux_array, axis=0),
+            color="salmon",
+            label="Median Exposure",
+            zorder=-999,
+        )
+        plt.xlim(np.min(pixel_positions), np.max(pixel_positions))
+        plt.xlabel("Pixel Position (Dispersion Axis)")
+        plt.ylabel("Extracted Flux / Pixel")
+        plt.legend()
+        plt.show()
 
     return flux_array, error_array
 
@@ -234,9 +251,6 @@ def horne_extraction(
     flux_err :: np.ndarray
 
     """
-
-    # if RN == 0.0:
-    #     warnings.warn("Assuming RN = 0, this is likely an under-estimate.")
 
     # Converts 2D arrays to 3D arrays
     original_shape = images.shape

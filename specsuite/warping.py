@@ -8,6 +8,8 @@ from astropy.stats import mad_std
 from joblib import Parallel, delayed
 import warnings
 
+from specsuite.utils import plot_image
+
 import sys
 
 sys.tracebacklimit = 0
@@ -615,6 +617,32 @@ def extract_background(
             Parallel(n_jobs=-1)(delayed(process_row)(row) for row in rows)
         )
         background_images[idx] = background
+
+    if debug:
+
+        VMIN, VMAX = np.min(images[0]), np.max(images[0])
+
+        plot_image(
+            images[0],
+            title="Original Exposure",
+            norm="log",
+            vmin=VMIN,
+            vmax=VMAX,
+        )
+        plot_image(
+            background_images[0],
+            title="Extracted Background",
+            norm="log",
+            vmin=VMIN,
+            vmax=VMAX,
+        )
+        plot_image(
+            images[0] - background_images[0],
+            title="Corrected Exposure",
+            norm="log",
+            vmin=VMIN,
+            vmax=VMAX,
+        )
 
     if return_spectrum:
         return background_images, supersampled_effpix, supersampled_spectra, effpix_map
