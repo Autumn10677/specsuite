@@ -8,7 +8,7 @@ from astropy.stats import mad_std
 from joblib import Parallel, delayed
 import warnings
 
-from specsuite.utils import plot_image
+from .utils import plot_image
 
 import sys
 
