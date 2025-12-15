@@ -160,22 +160,22 @@ def calculate_evidence(
         triplet combinations.
     """
 
-    # shape broadcasting: DOBS (T,1), SIG (T,1), KEYS (1,K)
+    # Shape broadcasting to make operations easier later on
     DOBS = d_obs[:, None]
     SIG = sig_d[:, None]
     KEYS = valid_keys[None, :]
 
+    # This determines the 'size' of bin to integrate over
     L = KEYS - pad
     R = KEYS + pad
-    # compute z-s
+
+    # Approximates indefinite integral over normal distribution
     denom = SIG * sqrt(2)
-
-    # avoid division by zero (SIG already filtered)
-    z1 = (R - DOBS) / denom  # (T,K)
+    z1 = (R - DOBS) / denom
     z0 = (L - DOBS) / denom
-    prob_mass = 0.5 * (erf(z1) - erf(z0))  # (T,K)
+    prob_mass = 0.5 * (erf(z1) - erf(z0))
 
-    # sum probability masses across triplets to get evidence mass per key
+    # Sums probability mass across triplets to get evidence mass per key
     evidence_raw = prob_mass.sum(axis=0)
     total = evidence_raw.sum()
     if total == 0:
@@ -238,31 +238,27 @@ def cast_votes(
         data points is most likely.
     """
 
+    # Initialized with known size to prevent slow appending
     votes = np.zeros((n_model_points, n_data_points), dtype=float)
+    weights_matrix = prob_mass * evidence[None, :]
 
-    # compute weight matrix = prob_mass * evidence (broadcast evidence across rows)
-    weights_matrix = prob_mass * evidence[None, :]  # shape (T,K)
-
-    # iterate keys (this loops over keys, not over all triplet pairs)
+    # Iterates over all valid keys (instead of triplet pairs)
     for k_index, key in enumerate(valid_keys):
+
+        # Only continues if key is 'valid' and a valid triplet exists
         if key not in hash_table:
             continue
-        model_triplet_indices = hash_table[
-            key
-        ]  # (M_k, 3) arrays of model indices (m1,m2,m3)
+        model_triplet_indices = hash_table[key]
         if model_triplet_indices.size == 0:
             continue
-        weights_for_key = weights_matrix[:, k_index]  # length T
 
-        # small micro-optim: skip if all zero
+        # Only continues if key has non-zero probability mass
+        weights_for_key = weights_matrix[:, k_index]
         if np.all(weights_for_key <= 0):
             continue
 
         # For each model triplet, add weights_for_key to appropriate votes rows
-        # We use the precomputed data triplet indices arrays di_v, dj_v, dk_v
         for m1_idx, m2_idx, m3_idx in model_triplet_indices:
-            # add to votes[m1_idx, di_v] += weights_for_key
-            # np.add.at handles repeated indices and vectorized accumulation
             np.add.at(votes[m1_idx], di_v, weights_for_key)
             np.add.at(votes[m2_idx], dj_v, weights_for_key)
             np.add.at(votes[m3_idx], dk_v, weights_for_key)
@@ -277,6 +273,7 @@ def match_features(
     rounding: int = 3,
     sigma: float = 2.0,
     order: int = 2,
+    debug: bool = False,
 ):
     """
     Attempts to find the most probable matches in lines
@@ -311,6 +308,8 @@ def match_features(
     order :: int
         The polynomial order to fit to the matched features. We
         highly recommend keeping this at 'order=2'.
+    debug :: bool
+        Allows for diagnostic plots to be shown.
 
     Returns:
     --------
@@ -333,6 +332,8 @@ def match_features(
     )
     data_triplet_idx = np.array(list(combinations(range(n_data_points), 3)), dtype=int)
 
+    # This tries to iteratively improve geometric hashing with few protetctions
+    # Future work should probably attempt to perform some sanity checks
     for iteration in tqdm(
         range(iterations),
         desc="Matching Features",
@@ -413,6 +414,7 @@ def match_features(
         if n_data_triplets == 0:
             raise RuntimeError("No usable data triplets after sigma filtering.")
 
+        # Calculates probability of each key being found given all triplets
         evidence, prob_mass = calculate_evidence(
             valid_keys=valid_keys,
             d_obs=d_obs,
@@ -420,6 +422,7 @@ def match_features(
             pad=pad,
         )
 
+        # Casts votes to match model lines to data lines
         votes = cast_votes(
             n_model_points=n_model_points,
             n_data_points=n_data_points,
@@ -432,50 +435,39 @@ def match_features(
             dk_v=dk_v,
         )
 
-        # ------------------------
-        # For each model point find best data match (highest vote)
-        # ------------------------
-        best_data_idx = np.argmax(
-            votes, axis=1
-        )  # for each model index -> best data index
-        best_data_scores = votes[np.arange(n_model_points), best_data_idx]
+        # Extracts data / model lines data with corresponding match scores
+        best_data_idx = np.argmax(votes, axis=1)
+        xs = raw_model_lines.copy()
+        ys = raw_data_lines[best_data_idx]
 
-        xs = raw_model_lines.copy()  # original (unrounded) model positions to plot
-        ys = raw_data_lines[best_data_idx]  # corresponding best observed positions
-        colors = best_data_scores.astype(float)
-
-        # normalize colors safely
-        if np.max(colors) > 0:
-            colors = colors / np.max(colors)
-        else:
-            colors = np.zeros_like(colors)
-
-        # ------------------------
-        # Iterative outlier trimming (same idea as original)
-        # Fit linear & remove high-std outliers iteratively (robust)
-        # ------------------------
-        # convert xs, ys to numpy arrays
         xs_fit = np.array(xs)
         ys_fit = np.array(ys)
 
-        # iterative removal up to len(model)/2
+        # (FIXME: For now, holding these constant for development)
         max_removals = int(len(xs_fit) / 2)
         removed = 0
         thresh = 5.0
+
+        # Iteratively removes outliers before fitting polynomial
         for _ in range(max_removals):
             if len(xs_fit) < 3:
                 break
-            # simple linear fit used for trimming (as your original)
+
+            # (FIXME: probably a better way to do this than a linear fit?)
             p_extracted_linear = np.poly1d(np.polyfit(xs_fit, ys_fit, deg=1))
             residuals = np.abs(p_extracted_linear(xs_fit) - ys_fit)
-            # scale residuals by robust scale
+
+            # In case of zero-like residuals, all scales are 1.0
             scl = mad_std(residuals)
             if scl == 0:
                 scl = np.std(residuals) if np.std(residuals) > 0 else 1.0
+
+            # Finds which point is the largest outlier
             residuals_scaled = residuals / scl
             max_idx = np.argmax(residuals_scaled)
+
+            # Removes points exceeding the threshold
             if residuals_scaled[max_idx] > thresh:
-                # delete this point
                 xs_fit = np.delete(xs_fit, max_idx)
                 ys_fit = np.delete(ys_fit, max_idx)
                 colors = np.delete(colors, max_idx)
@@ -483,56 +475,43 @@ def match_features(
             else:
                 break
 
-        # final fit (degree=order) using surviving xs_fit, ys_fit
+        # Fits a polynomial to the remaining points
         if len(xs_fit) >= order + 1:
             p_extracted = np.poly1d(np.polyfit(xs_fit, ys_fit, deg=order))
-            # p_extracted = np.poly1d(np.polyfit(xs_fit, ys_fit, deg=1))
         else:
-            # fallback to linear if not enough points
             p_extracted = np.poly1d(
                 np.polyfit(xs_fit, ys_fit, deg=min(1, max(1, len(xs_fit) - 1)))
             )
 
-        # ------------------------
-        # Plot frames (kept from original; simplified)
-        # ------------------------
-        fig, axs = plt.subplots(3, 1, figsize=(12, 6), sharex=True)
-
         votes = (votes - np.min(votes)) / (np.max(votes) - np.min(votes))
 
-        for i in range(n_model_points):
-            for j in range(n_data_points):
-                axs[2].scatter(
-                    raw_model_lines[i], raw_data_lines[j], color="k", alpha=votes[i][j]
-                )
+        # Optional plotting
+        if debug:
+            fig, axs = plt.subplots(3, 1, figsize=(12, 6), sharex=True)
+            for i in range(n_model_points):
+                for j in range(n_data_points):
+                    axs[2].scatter(
+                        raw_model_lines[i],
+                        raw_data_lines[j],
+                        color="k",
+                        alpha=votes[i][j],
+                    )
+            for x in raw_model_lines:
+                axs[0].axvline(x, color="k")
+            for x in raw_data_lines:
+                axs[1].axvline(x, color="k")
+            axs[0].set_title(f"Iteration: {iteration}")
+            axs[0].set_ylabel("Model Lines")
+            axs[1].set_ylabel("Data Lines")
+            axs[2].plot(xs, p_extracted(xs), color="red", ls="--")
+            axs[2].set_ylabel("Inferred Fit")
+            plt.tight_layout()
+            plt.show()
 
-        for x in raw_model_lines:
-            axs[0].axvline(x, color="k")
-        for x in raw_data_lines:
-            axs[1].axvline(x, color="k")
-        axs[0].set_title(f"Iteration: {iteration}")
-        axs[0].set_ylabel("Model Lines")
-        axs[1].set_ylabel("Data Lines")
+            # Modify 'model lines' using extracted polynomial transformation
+            raw_model_lines = p_extracted(raw_model_lines)
+            model_lines_round = np.round(
+                raw_model_lines, rounding, out=np.empty_like(model_lines_round)
+            )
 
-        # axs[2].scatter(xs, ys)
-        axs[2].plot(xs, p_extracted(xs), color="red", ls="--")
-        axs[2].set_ylabel("Inferred Fit")
-
-        plt.tight_layout()
-        plt.savefig(f"./frames/frame_{iteration:04d}.png")
-        plt.clf()
-        plt.close()
-
-        # ------------------------
-        # Update for next iteration (same as original)
-        # ------------------------
-        data_lines_round = np.round(
-            raw_data_lines, rounding, out=np.empty_like(data_lines_round)
-        )
-        # transform raw_model_lines by extracted polynomial (project forward)
-        raw_model_lines = p_extracted(raw_model_lines)
-        model_lines_round = np.round(
-            raw_model_lines, rounding, out=np.empty_like(model_lines_round)
-        )
-
-    return None
+    return votes
