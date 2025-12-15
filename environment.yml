@@ -6,6 +6,8 @@ dependencies:
   - pip
   - pip:
       - snakemake
+      - black
+      - flake8
       - astropy>=7.0
       - ipywidgets>=8.0
       - joblib>=1.0
