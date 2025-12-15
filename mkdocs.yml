@@ -1,0 +1,62 @@
+site_name: specsuite
+
+nav:
+  - Home: index.ipynb
+  - Quickstart: quickstart.ipynb
+  - Basic Tools:
+    - Loading Data: loading.ipynb
+    - Model Image Distortion: dewarping.ipynb
+    - Background Subtraction: background_extraction.ipynb
+    - Flux Extraction: flux_extraction.ipynb
+    - Wavelength Calibration: wavelength_calibration.ipynb
+  - Additional Tools:
+    - Flux Calibration: flux_calibration.ipynb
+  - Examples:
+    - KOSMOS: kosmos_example.ipynb
+    - GMOS-N: gmos_example.ipynb
+  - Contact Us: contact.ipynb
+  - Docstrings: docstring_documentation.md
+
+repo_url: https://github.com/Autumn10677/specsuite
+repo_name: specsuite
+
+theme:
+  name: "material"
+  palette: 
+    - primary: deep purple
+    - accent: amber
+  features:
+    - navigation.footer
+  icon:
+    logo: fontawesome/solid/star
+
+plugins:
+  - search
+  - mkdocs-jupyter:
+      kernel_name: python3
+      execute: False
+
+markdown_extensions:
+  - attr_list
+  - md_in_html
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.arithmatex:
+      generic: True
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Autumn10677
+    - icon: material/email
+      link: mailto:aust8150@colorado.edu
+
+copyright: Copyright &copy; 2025 Autumn Stephens
+
+# These allow for extra customization
+extra_css:
+  - css/extra.css
+extra_javascript:
+  - js/hide_input_toggle.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
