@@ -212,7 +212,7 @@ def horne_extraction(
     backgrounds: np.ndarray,
     profile: str = "moffat",
     profile_order: int = 3,
-    RN: float = 0.0,
+    RN: float | np.ndarray = 0.0,
     bin_size: int = 16,
     max_iter: int = 5,
     repeat: bool = True,
@@ -220,36 +220,55 @@ def horne_extraction(
     update: bool = False,
 ) -> tuple[np.ndarray, np.ndarray]:
     """
-    FIXME
+    Performs a profile-weighted (Horne) extraction for a series
+    of science exposures.
 
     Parameters:
     -----------
     images :: np.ndarray
-
+        A single (or multiple) 2D exposures containing a point-source
+        trace to extract flux from.
     backgrounds :: np.ndarray
-
+        A single (or multiple) 2D exposures contianing the background
+        subtracted off of the science exposures. Used for calculating
+        the uncertainty of the reduction.
     profile :: str
-
+        Which type of 1D profile to use for generating a spatial
+        profile. Valid options are 'moffat' or 'gaussian'.
     profile_order :: int
-
-    RN :: float
-
+        The polynomial order that describes how the 1D profile (in the
+        fitted spatial profile) changes with pixel position along the
+        dispersion axis.
+    RN :: float | np.ndarray
+        The read noise of your exposure. If the provided argument is a
+        float, then every pixel will be assigned an equal read noise.
+        Otherwise, if provided a 2D array, then each exposure will be
+        assigned the corresponding value for that pixel.
     bin_size :: int
-
+        The number of pixels (dispersion axis) to lump into a single
+        bin when generating a spatial profile. Generally, a higher value
+        increases the probability that 'generate_spatial_profile()'
+        converges, but the precision of the extracted profile is lower.
     max_iter :: int
-
+        The number of iterations to repeat the Horne extraction algorithm
+        for. The cosmic ray masking has been removed, so the only benefit
+        from increasing 'max_iter' is the potential to get a better
+        constraint on the spatial profile.
     repeat :: bool
-
+        Whether to repeat the spatial profile generation once an initial
+        pass has been made. When your data is particularly noisy, it is
+        helpful to keep this as 'True'.
     debug :: bool
-
+        Allows for optional plotting.
     update :: bool
+        Enables a progress bar to be displayed.
 
     Returns:
     --------
     flux :: np.ndarray
-
+        An array containing the extracted flux for each exposure.
     flux_err :: np.ndarray
-
+        An array containing the extracted error for each exposure.
     """
 
     # Converts 2D arrays to 3D arrays

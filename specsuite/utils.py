@@ -58,9 +58,9 @@ def plot_image(
 
         # Necessary to prevent weird behavior at edges of image
         if xlim is None:
-            xlim = [0, len(image[0])]
+            xlim = [-0.5, len(image[0]) - 0.5]
         if ylim is None:
-            ylim = [0, len(image)]
+            ylim = [-0.5, len(image) - 0.5]
 
         plt.rcParams["figure.figsize"] = figsize
         plt.imshow(

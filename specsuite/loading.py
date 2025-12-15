@@ -327,7 +327,7 @@ def collect_images_array(
         )
         return None
 
-    return np.array(image_collection)[:, crop_bds[0] : crop_bds[1]]
+    return np.array(image_collection)[:, crop_bds[0] : crop_bds[1]].astype(float)
 
 
 def average_matching_files(
@@ -397,7 +397,7 @@ def average_matching_files(
         print(rf"     Mean: {round(np.mean(avg_image.flatten()), 3)}")
         print(rf"      STD: {round(np.std(avg_image.flatten()), 3)}")
 
-    return avg_image[crop_bds[0] : crop_bds[1]]
+    return avg_image[crop_bds[0] : crop_bds[1]].astype(float)
 
 
 def load_metadata(
