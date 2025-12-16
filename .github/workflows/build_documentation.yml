@@ -18,17 +18,21 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.14'
 
-      - name: Install dependencies
+      - name: Install specsuite dependencies
         run: |
-          pip install -U pip
+            python -m pip install --upgrade pip
+            pip install .
+            pip install astropy joblib lxml matplotlib numpy pandas requests scipy tqdm
+
+      - name: Install MKdocs dependencies
+        run: |
           pip install \
             mkdocs \
             mkdocs-material \
             mkdocs-jupyter \
             pymdown-extensions
-          pip install .
 
       - name: Deploy docs
         run: mkdocs gh-deploy --force
