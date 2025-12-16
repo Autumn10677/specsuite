@@ -18,8 +18,9 @@ To install the most recent version of ```specsuite```, run the following command
 pip install specsuite
 ```
 OR if you would like to install a version from this repository, the run...
-```
+```bash
 git clone https://github.com/Autumn10677/specsuite.git
+cd specsuite
 pip install .
 ```
 
