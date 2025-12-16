@@ -1,9 +1,6 @@
 name: Python Style Checks
 
-on:
-  push:
-  pull_request:
-    branches: [ main ]
+on: push
 
 jobs:
   core-style-checks:

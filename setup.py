@@ -11,7 +11,9 @@ setup(
     install_requires=[
         'astropy>=7.0',
         'ipywidgets>=8.0',
+        'ipympl',
         'joblib>=1.0',
+        'lxml',
         'matplotlib>=3.0',
         'numpy>=2.0',
         'pandas>=2.0',

@@ -1,4 +1,5 @@
 site_name: specsuite
+site_url: https://Autumn10677.github.io/specsuite
 
 nav:
   - Home: index.ipynb
@@ -14,8 +15,8 @@ nav:
   - Examples:
     - KOSMOS: kosmos_example.ipynb
     - GMOS-N: gmos_example.ipynb
-  - Contact Us: contact.ipynb
   - Docstrings: docstring_documentation.md
+  - Contact Us: contact.ipynb
 
 repo_url: https://github.com/Autumn10677/specsuite
 repo_name: specsuite
@@ -34,7 +35,7 @@ plugins:
   - search
   - mkdocs-jupyter:
       kernel_name: python3
-      execute: False
+      execute: True
 
 markdown_extensions:
   - attr_list
