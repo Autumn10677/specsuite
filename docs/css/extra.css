@@ -45,12 +45,10 @@ html .md-typeset .admonition > :last-child, html .md-typeset details > :last-chi
 
 .description-label {
   font-weight: bold;
-  font-family:'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif';
 }
 
 .parameters-label {
   font-weight: bold;
-  /* font-family: monospace; */
 }
 
 .function-header-wrapper {
