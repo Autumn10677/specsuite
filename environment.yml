@@ -8,8 +8,10 @@ dependencies:
       - snakemake
       - black
       - flake8
+      - lxml
       - astropy>=7.0
       - ipywidgets>=8.0
+      - ipympl
       - joblib>=1.0
       - matplotlib>=3.0
       - numpy>=2.0
