@@ -2,7 +2,7 @@
 ### _GMOS_loader {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.loading</span>.<span class='function-name'>_GMOS_loader</span> (<br>&emsp;&emsp;<span class='arg-var-name'>path</span>,<br>&emsp;&emsp;<span class='arg-var-name'>file</span>,<br>&emsp;&emsp;<span class='arg-var-name'>return_RN</span> = <span class='arg-default'>False</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/loading.py#L108-L176' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L108-L176' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Controls how to load data from Gemini Observatory's GMOS-N instrument. The resulting output will be oriented such that the x-axis is the dispersion axis (left is blue / right is red) and the y-axis is the cross-dispersion axis.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>path</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Directory pointing toward the FITS file you wish to
@@ -14,7 +14,7 @@
 ### _kosmos_loader {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.loading</span>.<span class='function-name'>_kosmos_loader</span> (<br>&emsp;&emsp;<span class='arg-var-name'>path</span>,<br>&emsp;&emsp;<span class='arg-var-name'>file</span>,<br>&emsp;&emsp;<span class='arg-var-name'>clip_overscan</span> = <span class='arg-default'>True</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/loading.py#L179-L234' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L179-L234' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Controls how to load data from Apache Point Observatory's KOSMOS instrument. The resulting output will be oriented such that the x-axis is the dispersion axis (left is blue / right is red) and the y-axis is the cross-dispersion axis.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>path</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Directory pointing toward the FITS file you wish to
@@ -26,7 +26,7 @@
 ### average_matching_files {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.loading</span>.<span class='function-name'>average_matching_files</span> (<br>&emsp;&emsp;<span class='arg-var-name'>path</span>,<br>&emsp;&emsp;<span class='arg-var-name'>tag</span>,<br>&emsp;&emsp;<span class="arg-var-name">instrument</span> = <span class="arg-default">"kosmos"</span>,<br>&emsp;&emsp;<span class='arg-var-name'>ignore</span> = <span class='arg-default'>[]</span>,<br>&emsp;&emsp;<span class='arg-var-name'>crop_bds</span> = <span class='arg-default'>[0, None]</span>,<br>&emsp;&emsp;<span class="arg-var-name">mode</span> = <span class="arg-default">"median"</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>&emsp;&emsp;<span class='arg-var-name'>progress</span> = <span class='arg-default'>False</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/loading.py#L333-L400' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L333-L400' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Extracts images from a user-given path, and finds the average pixel value for every pixel across all images. This defaults to the 'median' average, but can be changed to take the 'mean' average as well.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>path</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Path to data directory.</span><br><span class='variable-name'>tag</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Tag to search for in filenames.</span><br><span class='variable-name'>instrument</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>The name of the instrument your FITS data was taken from. This
@@ -37,7 +37,7 @@
 ### collect_images_array {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.loading</span>.<span class='function-name'>collect_images_array</span> (<br>&emsp;&emsp;<span class='arg-var-name'>path</span>,<br>&emsp;&emsp;<span class='arg-var-name'>tag</span>,<br>&emsp;&emsp;<span class='arg-var-name'>ignore</span> = <span class='arg-default'>None</span>,<br>&emsp;&emsp;<span class='arg-var-name'>crop_bds</span> = <span class='arg-default'>[0, None]</span>,<br>&emsp;&emsp;<span class="arg-var-name">instrument</span> = <span class="arg-default">"kosmos"</span>,<br>&emsp;&emsp;<span class='arg-var-name'>clip_overscan</span> = <span class='arg-default'>True</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>&emsp;&emsp;<span class='arg-var-name'>progress</span> = <span class='arg-default'>False</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/loading.py#L237-L330' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L237-L330' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Collect a list of images from a user-given path corresponding to a specified tag. Images can be ignore by passing their indexes as an additional argument.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>path</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Path to data directory containing image
@@ -54,7 +54,7 @@
 ### extract_image {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.loading</span>.<span class='function-name'>extract_image</span> (<br>&emsp;&emsp;<span class='arg-var-name'>path</span>,<br>&emsp;&emsp;<span class='arg-var-name'>file</span>,<br>&emsp;&emsp;<span class='arg-var-name'>instrument</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/loading.py#L62-L105' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L62-L105' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Attempts to extract image data from a given FITS file using a method specific to the user-specified instrument.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>path</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Directory pointing toward the FITS file you wish to
@@ -71,7 +71,7 @@
 ### extract_times {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.loading</span>.<span class='function-name'>extract_times</span> (<br>&emsp;&emsp;<span class='arg-var-name'>path</span>,<br>&emsp;&emsp;<span class='arg-var-name'>tag</span>,<br>&emsp;&emsp;<span class='arg-var-name'>ignore</span> = <span class='arg-default'>[]</span>,<br>&emsp;&emsp;<span class="arg-var-name">time_lbl</span> = <span class="arg-default">"DATE-OBS"</span>,<br>&emsp;&emsp;<span class="arg-var-name">ra_lbl</span> = <span class="arg-default">"RA"</span>,<br>&emsp;&emsp;<span class="arg-var-name">dec_lbl</span> = <span class="arg-default">"DEC"</span>,<br>&emsp;&emsp;<span class="arg-var-name">lat_lbl</span> = <span class="arg-default">"LATITUDE"</span>,<br>&emsp;&emsp;<span class="arg-var-name">long_lbl</span> = <span class="arg-default">"LONGITUD"</span>,<br>&emsp;&emsp;<span class="arg-var-name">time_format</span> = <span class="arg-default">"isot"</span>,<br>&emsp;&emsp;<span class="arg-var-name">time_scale</span> = <span class="arg-default">"tai"</span>,<br>&emsp;&emsp;<span class='arg-var-name'>loc_units</span> = <span class='arg-default'>(Unit("hourangle"), Unit("deg"))</span>,<br>&emsp;&emsp;<span class="arg-var-name">loc_frame</span> = <span class="arg-default">"icrs"</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/loading.py#L467-L560' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L467-L560' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Extracts time data from the headers of a set of observations. Assumes that the header has information about the observation time.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>path</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Directory pointing toward the FITS file you wish to
@@ -93,7 +93,7 @@
 ### filter_files {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.loading</span>.<span class='function-name'>filter_files</span> (<br>&emsp;&emsp;<span class='arg-var-name'>files</span>,<br>&emsp;&emsp;<span class='arg-var-name'>tag</span>,<br>&emsp;&emsp;<span class='arg-var-name'>ignore</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/loading.py#L26-L59' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L26-L59' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Filters down a list of filenames if they to not satisfy the following requirements...
 
     1) The file ends with '.fits' extension
@@ -111,7 +111,7 @@
 ### load_metadata {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.loading</span>.<span class='function-name'>load_metadata</span> (<br>&emsp;&emsp;<span class='arg-var-name'>path</span>,<br>&emsp;&emsp;<span class='arg-var-name'>tag</span>,<br>&emsp;&emsp;<span class='arg-var-name'>ignore</span> = <span class='arg-default'>[]</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/loading.py#L403-L464' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L403-L464' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Loads an dictionary of all data for a collection of FITS files. This metadata comes from the header of the first FITS card.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>path</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Path to data directory.</span><br><span class='variable-name'>tag</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Tag to search for in filenames.</span><br><span class='variable-name'>ignore</span> :: <span class='variable-type'>list</span><br><span class='variable-desc'>List of data indexes to ignore.</span><br></span></p>
@@ -123,7 +123,7 @@
 ### split_chips {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.loading</span>.<span class='function-name'>split_chips</span> (<br>&emsp;&emsp;<span class='arg-var-name'>images</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/loading.py#L563-L599' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L563-L599' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Attempts to split up a series of 2D images into separate arrays for each "chip" that has been combined. This function assumes that "chip gaps" are indicated by a column that is entirely comprised of NaN values.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>images</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A series of images that are comprised of multiple chips
@@ -134,7 +134,7 @@
 ### combine_within_tolerance {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.warping</span>.<span class='function-name'>combine_within_tolerance</span> (<br>&emsp;&emsp;<span class='arg-var-name'>values</span>,<br>&emsp;&emsp;<span class='arg-var-name'>tolerance</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/warping.py#L134-L184' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/warping.py#L134-L184' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Takes a user-given list and combines values that are within a given tolerance. This is helpful for when a dense sample of features is non-ideal and should be combined into a single feature.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>values</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>List of values to be analyzed.</span><br><span class='variable-name'>tolerance</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>The theshold at which two data points should be combined.</span><br></span></p>
@@ -143,7 +143,7 @@
 ### dewarp_image {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.warping</span>.<span class='function-name'>dewarp_image</span> (<br>&emsp;&emsp;<span class='arg-var-name'>image</span>,<br>&emsp;&emsp;<span class='arg-var-name'>models</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>&emsp;&emsp;<span class='arg-var-name'>progress</span> = <span class='arg-default'>False</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/warping.py#L351-L462' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/warping.py#L351-L462' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Uses a 'warp model' to undo distortion in a 2D image. This is done by rebinning each row onto a consistent wavelength bin proportional to the overlapping area between the raw image data and a warped set of new pixel locations.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>image</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Image that is horizontally warped according
@@ -153,7 +153,7 @@
 ### extract_background {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.warping</span>.<span class='function-name'>extract_background</span> (<br>&emsp;&emsp;<span class='arg-var-name'>images</span>,<br>&emsp;&emsp;<span class='arg-var-name'>warp_model</span>,<br>&emsp;&emsp;<span class='arg-var-name'>mask_region</span> = <span class='arg-default'>(None, None)</span>,<br>&emsp;&emsp;<span class='arg-var-name'>return_spectrum</span> = <span class='arg-default'>False</span>,<br>&emsp;&emsp;<span class='arg-var-name'>progress</span> = <span class='arg-default'>False</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/warping.py#L502-L649' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/warping.py#L502-L649' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Extracts the sky background for a series of exposures where a trace should be masked out. It uses a 'warp model' that describes how straight emission lines are 'bent' on the imaging plane. This function assumes that flatfielding has been applied and that sky emissions are approximately uniform along the spatial axis.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>images</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A series of exposures to extract backgrounds from.</span><br><span class='variable-name'>warp_model</span> :: <span class='variable-type'>list</span><br><span class='variable-desc'>List of models that describe how vertical lines
@@ -172,7 +172,7 @@
 ### find_cal_lines {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.warping</span>.<span class='function-name'>find_cal_lines</span> (<br>&emsp;&emsp;<span class='arg-var-name'>image</span>,<br>&emsp;&emsp;<span class='arg-var-name'>std_variation</span> = <span class='arg-default'>50.0</span>,<br>&emsp;&emsp;<span class='arg-var-name'>row</span> = <span class='arg-default'>None</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/warping.py#L18-L131' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/warping.py#L18-L131' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Finds pixel positions of spectral lines in a provided image. The image does not need to range from any specific wavelength to another. The only requirement is that the lines are located vertically on the image plane.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>image</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Image with calibration lines.</span><br><span class='variable-name'>std_variation</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>How many standard deviations a peak must exceed the baseline to
@@ -183,7 +183,7 @@
 ### generate_effpix_map {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.warping</span>.<span class='function-name'>generate_effpix_map</span> (<br>&emsp;&emsp;<span class='arg-var-name'>xs</span>,<br>&emsp;&emsp;<span class='arg-var-name'>rows</span>,<br>&emsp;&emsp;<span class='arg-var-name'>models</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/warping.py#L465-L499' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/warping.py#L465-L499' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Generates a 2D map of the effective location of each pixel center across the detector. It uses models that describe the warping across the detector as a function of row and column positions.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>xs</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array holding all column pixel positions.</span><br><span class='variable-name'>rows</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array holding all row pixel positions.</span><br><span class='variable-name'>models</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>An array holding how light warping changes as a function of
@@ -193,7 +193,7 @@
 ### generate_warp_model {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.warping</span>.<span class='function-name'>generate_warp_model</span> (<br>&emsp;&emsp;<span class='arg-var-name'>image</span>,<br>&emsp;&emsp;<span class='arg-var-name'>guess</span>,<br>&emsp;&emsp;<span class='arg-var-name'>tolerance</span> = <span class='arg-default'>16</span>,<br>&emsp;&emsp;<span class='arg-var-name'>line_order</span> = <span class='arg-default'>2</span>,<br>&emsp;&emsp;<span class='arg-var-name'>warp_order</span> = <span class='arg-default'>1</span>,<br>&emsp;&emsp;<span class='arg-var-name'>ref_idx</span> = <span class='arg-default'>None</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/warping.py#L187-L348' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/warping.py#L187-L348' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Models how straight vertical lines in a wavelength calibration image are being warped. Assumes a relatively low amount of straight-line warping and that these lines are continuous. This function allows for the type of warping to change along the horizontal axis of the detector. This is functionally achieved by binning down a given image and identifying the brightest pixels across the vertical axis of a detector in a small region around each line.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>image</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 2D arclamp image with strong emission features.</span><br><span class='variable-name'>guess</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The pixel positions (along the dispersion axis) of strong
@@ -214,7 +214,7 @@
 ### _gaussian {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.utils</span>.<span class='function-name'>_gaussian</span> (<br>&emsp;&emsp;<span class='arg-var-name'>x</span>,<br>&emsp;&emsp;<span class='arg-var-name'>A</span>,<br>&emsp;&emsp;<span class='arg-var-name'>mu</span>,<br>&emsp;&emsp;<span class='arg-var-name'>sigma</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/utils.py#L92-L126' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L92-L126' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Generates a 1D Gaussian profile on the user-provided grid of x-points. If an error is encountered, then 'None' will be returned instead of a Numpy array.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>x</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A set of x-points over which to evaluate the Gaussian profile.
@@ -224,7 +224,7 @@
 ### _moffat {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.utils</span>.<span class='function-name'>_moffat</span> (<br>&emsp;&emsp;<span class='arg-var-name'>x</span>,<br>&emsp;&emsp;<span class='arg-var-name'>A</span>,<br>&emsp;&emsp;<span class='arg-var-name'>mu</span>,<br>&emsp;&emsp;<span class='arg-var-name'>gamma</span>,<br>&emsp;&emsp;<span class='arg-var-name'>offset</span> = <span class='arg-default'>0.0</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/utils.py#L129-L172' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L129-L172' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Generates a 1D Moffat profile on the user-provided grid of x-points. If an error is encountered, then 'None' will be returned instead of a Numpy array. Note: This is technically a 'modified Moffat profile' since the exponent has been set to 2.5.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>x</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A set of x-points over which to evaluate the Moffat profile.
@@ -234,7 +234,7 @@
 ### flatfield_correction {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.utils</span>.<span class='function-name'>flatfield_correction</span> (<br>&emsp;&emsp;<span class='arg-var-name'>image</span>,<br>&emsp;&emsp;<span class='arg-var-name'>flat</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/utils.py#L209-L252' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L209-L252' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Applies a simple flatfield correction to one or more 2D images. This function assumes that each entry along the first axis is a 2D image with the same size as 'flat'.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>image</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Image(s) that should be divided by the normalized flatfield
@@ -245,7 +245,7 @@
 ### plot_image {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.utils</span>.<span class='function-name'>plot_image</span> (<br>&emsp;&emsp;<span class='arg-var-name'>image</span>,<br>&emsp;&emsp;<span class='arg-var-name'>xlim</span> = <span class='arg-default'>None</span>,<br>&emsp;&emsp;<span class='arg-var-name'>ylim</span> = <span class='arg-default'>None</span>,<br>&emsp;&emsp;<span class="arg-var-name">xlabel</span> = <span class="arg-default">"Dispersion Axis (pix)"</span>,<br>&emsp;&emsp;<span class="arg-var-name">ylabel</span> = <span class="arg-default">"Cross-Dispersion Axis (pix)"</span>,<br>&emsp;&emsp;<span class="arg-var-name">cbar_label</span> = <span class="arg-default">"Counts"</span>,<br>&emsp;&emsp;<span class="arg-var-name">title</span> = <span class="arg-default">""</span>,<br>&emsp;&emsp;<span class='arg-var-name'>figsize</span> = <span class='arg-default'>(10, 3)</span>,<br>&emsp;&emsp;<span class="arg-var-name">cmap</span> = <span class="arg-default">"inferno"</span>,<br>&emsp;&emsp;<span class="arg-var-name">savedir</span> = <span class="arg-default">"None"</span>,<br>&emsp;&emsp;<span class='arg-var-name'>kwargs</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/utils.py#L6-L89' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L6-L89' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>A simple wrapper for matplotlib.pyplot.imshow(). By default, this function uses a handful of style options to keep all visualizations consistent within our documentation. You should be able to overwrite these options and provide any of the standard additional KWARGS.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>image</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A single 2D array. If it is not a Numpy array, the function
@@ -257,7 +257,7 @@
 ### rebin_image_columns {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.utils</span>.<span class='function-name'>rebin_image_columns</span> (<br>&emsp;&emsp;<span class='arg-var-name'>image</span>,<br>&emsp;&emsp;<span class='arg-var-name'>bin</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/utils.py#L175-L206' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L175-L206' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Rebins an image along a single axis. The bin size must be an integer multiple of the axis size being rebinned.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>image</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Original image to be rebinned.</span><br><span class='variable-name'>bin</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>Size each bin in pixels along the columns of the provided
@@ -268,7 +268,7 @@
 ### generate_flux_conversion {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.throughput</span>.<span class='function-name'>generate_flux_conversion</span> (<br>&emsp;&emsp;<span class='arg-var-name'>w_measured</span>,<br>&emsp;&emsp;<span class='arg-var-name'>w_model</span>,<br>&emsp;&emsp;<span class='arg-var-name'>f_measured</span>,<br>&emsp;&emsp;<span class='arg-var-name'>f_model</span>,<br>&emsp;&emsp;<span class='arg-var-name'>err</span>,<br>&emsp;&emsp;<span class='arg-var-name'>sigma_clip</span> = <span class='arg-default'>50.0</span>,<br>&emsp;&emsp;<span class='arg-var-name'>order</span> = <span class='arg-default'>7</span>,<br>&emsp;&emsp;<span class='arg-var-name'>max_iter</span> = <span class='arg-default'>50</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/throughput.py#L135-L243' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/throughput.py#L135-L243' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Generates a numpy polynomial that predicts the physical flux [flam] / CCD count as a function of wavelength [Angstroms].
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>w_measured</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array of wavelengths for your CCD spectrum (in Angstroms).</span><br><span class='variable-name'>w_model</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array of wavelengths for your known spectrum (in Angstroms).</span><br><span class='variable-name'>f_measured</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array of flux for your CCD spectrum.</span><br><span class='variable-name'>f_model</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array of flux for your known spectrum.</span><br><span class='variable-name'>err</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array of errors for you CCD flux.</span><br><span class='variable-name'>sigma_clip</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>The max number of standard deviations a point is allowed to be
@@ -280,7 +280,7 @@
 ### load_STIS_spectra {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.throughput</span>.<span class='function-name'>load_STIS_spectra</span> (<br>&emsp;&emsp;<span class="arg-var-name">name</span> = <span class="arg-default">"None"</span>,<br>&emsp;&emsp;<span class="arg-var-name">filetype</span> = <span class="arg-default">"model"</span>,<br>&emsp;&emsp;<span class='arg-var-name'>wavelength_bounds</span> = <span class='arg-default'>None</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/throughput.py#L26-L132' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/throughput.py#L26-L132' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Attempts to download spectra data from the STIS website (see url below). It only looks for data contained in the first data table.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>name</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Name of the star to load data for. This should match an entry
@@ -292,7 +292,7 @@
 ### boxcar_extraction {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.extraction</span>.<span class='function-name'>boxcar_extraction</span> (<br>&emsp;&emsp;<span class='arg-var-name'>images</span>,<br>&emsp;&emsp;<span class='arg-var-name'>backgrounds</span>,<br>&emsp;&emsp;<span class='arg-var-name'>RN</span> = <span class='arg-default'>0.0</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/extraction.py#L127-L207' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/extraction.py#L127-L207' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Performs a simple boxcar extraction on an image (or series of images). This assumes that both arrays of images of dimensions corresponding to...
 
     (cross-dispersion, dispersion)
@@ -308,7 +308,7 @@ If that is not the case, please rotate your data arrays before feeding them into
 ### generate_spatial_profile {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.extraction</span>.<span class='function-name'>generate_spatial_profile</span> (<br>&emsp;&emsp;<span class='arg-var-name'>image</span>,<br>&emsp;&emsp;<span class="arg-var-name">profile</span> = <span class="arg-default">"moffat"</span>,<br>&emsp;&emsp;<span class='arg-var-name'>profile_order</span> = <span class='arg-default'>7</span>,<br>&emsp;&emsp;<span class='arg-var-name'>bin_size</span> = <span class='arg-default'>8</span>,<br>&emsp;&emsp;<span class='arg-var-name'>repeat</span> = <span class='arg-default'>True</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/extraction.py#L10-L124' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/extraction.py#L10-L124' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Generates a 'spatial profile' as outlined in Horne (1986). Spatial profiles predict the likelihood that a photon would land at a given cross-dispersion location for each wavelength. This function assumes that the dispersion axis is located along the x-axis.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>image</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The image that a spatial profile is fit to.</span><br><span class='variable-name'>profile</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Name of the type of profile to fit for. Currently, the
@@ -323,7 +323,7 @@ If that is not the case, please rotate your data arrays before feeding them into
 ### horne_extraction {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.extraction</span>.<span class='function-name'>horne_extraction</span> (<br>&emsp;&emsp;<span class='arg-var-name'>images</span>,<br>&emsp;&emsp;<span class='arg-var-name'>backgrounds</span>,<br>&emsp;&emsp;<span class="arg-var-name">profile</span> = <span class="arg-default">"moffat"</span>,<br>&emsp;&emsp;<span class='arg-var-name'>profile_order</span> = <span class='arg-default'>3</span>,<br>&emsp;&emsp;<span class='arg-var-name'>RN</span> = <span class='arg-default'>0.0</span>,<br>&emsp;&emsp;<span class='arg-var-name'>bin_size</span> = <span class='arg-default'>16</span>,<br>&emsp;&emsp;<span class='arg-var-name'>max_iter</span> = <span class='arg-default'>5</span>,<br>&emsp;&emsp;<span class='arg-var-name'>repeat</span> = <span class='arg-default'>True</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>&emsp;&emsp;<span class='arg-var-name'>progress</span> = <span class='arg-default'>False</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/extraction.py#L210-L356' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/extraction.py#L210-L356' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Performs a profile-weighted (Horne) extraction for a series of science exposures.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>images</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A single (or multiple) 2D exposures containing a point-source
@@ -348,7 +348,7 @@ If that is not the case, please rotate your data arrays before feeding them into
 ### trace_fit {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.extraction</span>.<span class='function-name'>trace_fit</span> (<br>&emsp;&emsp;<span class='arg-var-name'>image</span>,<br>&emsp;&emsp;<span class='arg-var-name'>bin</span> = <span class='arg-default'>16</span>,<br>&emsp;&emsp;<span class='arg-var-name'>trace_order</span> = <span class='arg-default'>2</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/extraction.py#L359-L468' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/extraction.py#L359-L468' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Fits a trace to a signal across the horizontal axis of an image. This is done by rebinning a user-given image, fitting a gaussian to each rebinned column, and fitting an n-dimensional curve to these gaussian positions.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>image</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Image with a signal spanning the horizontal
@@ -367,7 +367,7 @@ If that is not the case, please rotate your data arrays before feeding them into
 ### calculate_evidence {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.wavecal</span>.<span class='function-name'>calculate_evidence</span> (<br>&emsp;&emsp;<span class='arg-var-name'>valid_keys</span>,<br>&emsp;&emsp;<span class='arg-var-name'>d_obs</span>,<br>&emsp;&emsp;<span class='arg-var-name'>sig_d</span>,<br>&emsp;&emsp;<span class='arg-var-name'>pad</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/wavecal.py#L127-L186' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/wavecal.py#L127-L186' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Calculates the Bayesian evidence (i.e., the probability of a given key being calculated integrated over all triplet pairs).
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>valid_keys</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>All possibe keys (rounded distances) across all triplet
@@ -381,7 +381,7 @@ If that is not the case, please rotate your data arrays before feeding them into
 ### cast_votes {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.wavecal</span>.<span class='function-name'>cast_votes</span> (<br>&emsp;&emsp;<span class='arg-var-name'>n_model_points</span>,<br>&emsp;&emsp;<span class='arg-var-name'>n_data_points</span>,<br>&emsp;&emsp;<span class='arg-var-name'>prob_mass</span>,<br>&emsp;&emsp;<span class='arg-var-name'>evidence</span>,<br>&emsp;&emsp;<span class='arg-var-name'>valid_keys</span>,<br>&emsp;&emsp;<span class='arg-var-name'>hash_table</span>,<br>&emsp;&emsp;<span class='arg-var-name'>di_v</span>,<br>&emsp;&emsp;<span class='arg-var-name'>dj_v</span>,<br>&emsp;&emsp;<span class='arg-var-name'>dk_v</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/wavecal.py#L189-L266' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/wavecal.py#L189-L266' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Casts votes for each possible combination of points using a traditional geometric hashing scheme. If a pair of triplets produces a key found in the hash table, then the data points will be added as a possible match for each of model points listed for that entry in the hash table. However, the votes are weighted by the Bayesian probability of that match being correct.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>n_model_points</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>The total number of model points.</span><br><span class='variable-name'>n_data_points</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>The total number of data points.</span><br><span class='variable-name'>prob_mass</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 2D array containing the probability mass for all possible
@@ -394,7 +394,7 @@ If that is not the case, please rotate your data arrays before feeding them into
 ### compute_triplet_values_from_indices {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.wavecal</span>.<span class='function-name'>compute_triplet_values_from_indices</span> (<br>&emsp;&emsp;<span class='arg-var-name'>lines_round</span>,<br>&emsp;&emsp;<span class='arg-var-name'>triplet_idx</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/wavecal.py#L10-L81' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/wavecal.py#L10-L81' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Using a list of rounded line positions, this function calculates the relative distances of each possible triplet of points. It also returns some related, useful arrays that can be used for filtering. All calculations are vectorized to reduce runtime.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>lines_round</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array containing rounded line positions.</span><br><span class='variable-name'>triplet_idx</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 2D array (N x 3) containing the indices of each line that
@@ -410,7 +410,7 @@ If that is not the case, please rotate your data arrays before feeding them into
 ### match_features {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.wavecal</span>.<span class='function-name'>match_features</span> (<br>&emsp;&emsp;<span class='arg-var-name'>raw_data_lines</span>,<br>&emsp;&emsp;<span class='arg-var-name'>raw_model_lines</span>,<br>&emsp;&emsp;<span class='arg-var-name'>iterations</span> = <span class='arg-default'>10</span>,<br>&emsp;&emsp;<span class='arg-var-name'>rounding</span> = <span class='arg-default'>3</span>,<br>&emsp;&emsp;<span class='arg-var-name'>sigma</span> = <span class='arg-default'>2.0</span>,<br>&emsp;&emsp;<span class='arg-var-name'>order</span> = <span class='arg-default'>2</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/wavecal.py#L269-L516' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/wavecal.py#L269-L516' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Attempts to find the most probable matches in lines bewteen two lists. This function assumes that the model lines have no (or negligible) error, and that all data lines have a constant error described by 'sigma'.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>raw_data_lines</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D list of lines indicating the pixel positions
@@ -431,7 +431,7 @@ If that is not the case, please rotate your data arrays before feeding them into
 ### sigma_d_from_triplets {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.wavecal</span>.<span class='function-name'>sigma_d_from_triplets</span> (<br>&emsp;&emsp;<span class='arg-var-name'>b1</span>,<br>&emsp;&emsp;<span class='arg-var-name'>b2</span>,<br>&emsp;&emsp;<span class='arg-var-name'>p</span>,<br>&emsp;&emsp;<span class='arg-var-name'>sigma_measured</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/dev/specsuite/wavecal.py#L84-L124' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/wavecal.py#L84-L124' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Calculates the uncertainty in relative distance measurements for a given triplet of points.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>b1</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array containing all of the first base points.</span><br><span class='variable-name'>b2</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array containing all of the second base points.</span><br><span class='variable-name'>p</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array containing all of the reference points.</span><br><span class='variable-name'>sigma_measured</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>An estimate of the uncertainty in line positions.
