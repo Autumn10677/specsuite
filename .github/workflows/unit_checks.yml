@@ -1,12 +1,22 @@
 name: Unit Tests
 
-on: push
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - main
 
 jobs:
   run-unit-tests:
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0   # Required for accurate diffs
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -19,18 +29,44 @@ jobs:
         pip install .
         pip install astropy joblib lxml matplotlib numpy pandas requests scipy tqdm
 
-    - name: Test 'loading' functions
+    - name: Determine which tests to run
+      id: changes
+      shell: bash
       run: |
-        python tests/unit/test_loading.py
+        # Always run all tests on:
+        #  - pushes to main
+        #  - pull requests targeting main
+        if [[ "${{ github.ref }}" == "refs/heads/main" || "${{ github.event_name }}" == "pull_request" ]]; then
+          echo "run_all=true" >> $GITHUB_OUTPUT
+          exit 0
+        fi
 
-    - name: Test 'util' functions
-      run: |
-        python tests/unit/test_utils.py
+        # Diff against main to capture all changes in the branch
+        git diff --name-only origin/main...HEAD > changed_files.txt
+
+        echo "run_all=false" >> $GITHUB_OUTPUT
+        echo "run_loading=$(grep -q '^specsuite/loading.py' changed_files.txt && echo true || echo false)" >> $GITHUB_OUTPUT
+        echo "run_utils=$(grep -q '^specsuite/utils.py' changed_files.txt && echo true || echo false)" >> $GITHUB_OUTPUT
+        echo "run_warping=$(grep -q '^specsuite/warping.py' changed_files.txt && echo true || echo false)" >> $GITHUB_OUTPUT
+        echo "run_warping=$(grep -q '^specsuite/extraction.py' changed_files.txt && echo true || echo false)" >> $GITHUB_OUTPUT
+        echo "run_throughput=$(grep -q '^specsuite/throughput.py' changed_files.txt && echo true || echo false)" >> $GITHUB_OUTPUT
+
+    - name: Test 'loading' functions
+      if: steps.changes.outputs.run_all == 'true' || steps.changes.outputs.run_loading == 'true'
+      run: python tests/unit/test_loading.py
+
+    - name: Test 'utils' functions
+      if: steps.changes.outputs.run_all == 'true' || steps.changes.outputs.run_utils == 'true'
+      run: python tests/unit/test_utils.py
 
     - name: Test 'warping' functions
-      run: |
-        python tests/unit/test_warping.py
+      if: steps.changes.outputs.run_all == 'true' || steps.changes.outputs.run_warping == 'true'
+      run: python tests/unit/test_warping.py
+
+    - name: Test 'extraction' functions
+      if: steps.changes.outputs.run_all == 'true' || steps.changes.outputs.run_extraction == 'true'
+      run: python tests/unit/test_extraction.py
 
     - name: Test 'throughput' functions
-      run: |
-        python tests/unit/test_throughput.py
+      if: steps.changes.outputs.run_all == 'true' || steps.changes.outputs.run_throughput == 'true'
+      run: python tests/unit/test_throughput.py

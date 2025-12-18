@@ -1,17 +1,9 @@
-import sys
 import unittest
-import warnings
 import numpy as np
 
 import specsuite.loading as loading
 import specsuite.warping as warping
 import specsuite.utils as utils
-
-# sys.path.append("specsuite/")
-
-# import loading  # noqa
-# import warping
-# import utils
 
 CAL_PATH = "data/KOSMOS/calibrations"
 DATA_PATH = "data/KOSMOS/target"
@@ -24,6 +16,7 @@ flat = loading.average_matching_files(CAL_PATH, "flat", crop_bds=trace_region) -
 arc = loading.average_matching_files(CAL_PATH, "neon", crop_bds=trace_region) - bias
 data = loading.collect_images_array(DATA_PATH, "", crop_bds=trace_region) - bias
 arc = utils.flatfield_correction(arc, flat)
+
 
 class TestWarpingFunctions(unittest.TestCase):
 
@@ -41,7 +34,7 @@ class TestWarpingFunctions(unittest.TestCase):
             _, _ = warping.find_cal_lines(arc, std_variation=1e4, debug=True)
         self.assertEqual(
             str(cm.exception),
-            "No pixels were found above the provided threshold (10000.0)"
+            "No pixels were found above the provided threshold (10000.0)",
         )
 
     def test_combine_within_tolerance(self):
@@ -51,28 +44,24 @@ class TestWarpingFunctions(unittest.TestCase):
         self.assertTrue(
             np.array_equal(
                 warping.combine_within_tolerance(example_list, 1),
-                np.array([1.5, 5.5, 10.])
+                np.array([1.5, 5.5, 10.0]),
             )
         )
 
         self.assertTrue(
             np.array_equal(
                 warping.combine_within_tolerance(example_list, 0.999),
-                np.array([1., 2., 5., 6., 10.])
+                np.array([1.0, 2.0, 5.0, 6.0, 10.0]),
             )
         )
 
         self.assertTrue(
-            np.array_equal(
-                warping.combine_within_tolerance([], 1.0),
-                np.array([])
-            )
+            np.array_equal(warping.combine_within_tolerance([], 1.0), np.array([]))
         )
 
         self.assertTrue(
             np.array_equal(
-                warping.combine_within_tolerance([1, 2, 3, 4], None),
-                np.array([])
+                warping.combine_within_tolerance([1, 2, 3, 4], None), np.array([])
             )
         )
 
@@ -106,21 +95,21 @@ class TestWarpingFunctions(unittest.TestCase):
             self.assertTrue(warp_models is None)
 
             warp_models = warping.generate_warp_model(
-                image = arc,
-                guess = locs,
-                tolerance = None,
+                image=arc,
+                guess=locs,
+                tolerance=None,
             )
 
             warp_models = warping.generate_warp_model(
-                image = arc,
-                guess = locs,
-                line_order = None,
+                image=arc,
+                guess=locs,
+                line_order=None,
             )
 
             warp_models = warping.generate_warp_model(
-                image = arc,
-                guess = locs,
-                warp_order = None,
+                image=arc,
+                guess=locs,
+                warp_order=None,
             )
 
     def test_dewarp_image(self):
@@ -135,11 +124,7 @@ class TestWarpingFunctions(unittest.TestCase):
         # If multiple images are provided, spit back out the original array
         with self.assertWarns(UserWarning):
             test_array = warping.dewarp_image(data, warp_models, progress=True)
-            self.assertTrue(
-                np.array_equal(
-                    test_array, data
-                )
-            )
+            self.assertTrue(np.array_equal(test_array, data))
 
     def test_extract_background(self):
 
@@ -149,8 +134,8 @@ class TestWarpingFunctions(unittest.TestCase):
         backgrounds = warping.extract_background(
             data,
             warp_models,
-            mask_region = (60, 100),
-            progress = True,
+            mask_region=(60, 100),
+            progress=True,
         )
         self.assertTrue(backgrounds.shape == data.shape)
         self.assertIsInstance(backgrounds, np.ndarray)
@@ -159,16 +144,15 @@ class TestWarpingFunctions(unittest.TestCase):
         bgs, super_effpix, super_spectra, effpix_map = warping.extract_background(
             data,
             warp_models,
-            mask_region = (60, 100),
-            progress = True,
-            return_spectrum = True,
+            mask_region=(60, 100),
+            progress=True,
+            return_spectrum=True,
         )
         self.assertTrue(bgs.shape == data.shape)
         self.assertIsInstance(bgs, np.ndarray)
         self.assertTrue(super_spectra.shape == (len(data), len(super_effpix)))
         self.assertTrue(effpix_map.shape == data[0].shape)
 
-        # FIXME: Need to add some error handling checks
 
 if __name__ == "__main__":
     unittest.main()

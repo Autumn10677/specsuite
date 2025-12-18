@@ -192,6 +192,8 @@ def rebin_image_columns(image: np.ndarray, bin: int) -> np.ndarray:
         pixels.
     """
 
+    assert isinstance(bin, int), f"Bin size must be an int, not {type(bin)}"
+
     # Initializes list for rebinned columns
     rebinned_columns = []
 
@@ -231,6 +233,14 @@ def flatfield_correction(
         The resulting image(s) after being divided by the normalized
         flatfield.
     """
+
+    image = np.array(image)
+    flat = np.array(flat)
+
+    assert image.shape[-2:] == flat.shape, (
+        "Image(s) and flatfield are not compatible shapes"
+        f"({image.shape} vs. {flat.shape})"
+    )
 
     # Calculates flatfield corrections
     normed_flat = flat / np.median(flat, axis=0)
