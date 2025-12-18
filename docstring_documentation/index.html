@@ -1,0 +1,2075 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://Autumn10677.github.io/specsuite/docstring_documentation/">
+      
+      
+        <link rel="prev" href="../gmos_example/">
+      
+      
+        <link rel="next" href="../contact/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Docstrings - specsuite</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../css/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_gmos_loader" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="specsuite" class="md-header__button md-logo" aria-label="specsuite" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M309.5-18.9c-4.1-8-12.4-13.1-21.4-13.1s-17.3 5.1-21.4 13.1l-73.6 144.2-159.9 25.4c-8.9 1.4-16.3 7.7-19.1 16.3s-.5 18 5.8 24.4l114.4 114.5-25.2 159.9c-1.4 8.9 2.3 17.9 9.6 23.2s16.9 6.1 25 2l144.4-73.4L432.4 491c8 4.1 17.7 3.3 25-2s11-14.2 9.6-23.2l-25.3-159.9 114.4-114.5c6.4-6.4 8.6-15.8 5.8-24.4s-10.1-14.9-19.1-16.3L383 125.3z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            specsuite
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Docstrings
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="amber"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Autumn10677/specsuite" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    specsuite
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="specsuite" class="md-nav__button md-logo" aria-label="specsuite" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M309.5-18.9c-4.1-8-12.4-13.1-21.4-13.1s-17.3 5.1-21.4 13.1l-73.6 144.2-159.9 25.4c-8.9 1.4-16.3 7.7-19.1 16.3s-.5 18 5.8 24.4l114.4 114.5-25.2 159.9c-1.4 8.9 2.3 17.9 9.6 23.2s16.9 6.1 25 2l144.4-73.4L432.4 491c8 4.1 17.7 3.3 25-2s11-14.2 9.6-23.2l-25.3-159.9 114.4-114.5c6.4-6.4 8.6-15.8 5.8-24.4s-10.1-14.9-19.1-16.3L383 125.3z"/></svg>
+
+    </a>
+    specsuite
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Autumn10677/specsuite" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    specsuite
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Welcome to specsuite!
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Basic Tools
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Basic Tools
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../loading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loading Data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dewarping/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model Image Distortion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../background_extraction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Background Subtraction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../flux_extraction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Flux Extraction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wavelength_calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wavelength Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Additional Tools
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Additional Tools
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../flux_calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Flux Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kosmos_example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    KOSMOS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gmos_example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GMOS-N
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docstrings
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docstrings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_gmos_loader" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _GMOS_loader
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_kosmos_loader" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _kosmos_loader
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#average_matching_files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        average_matching_files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#collect_images_array" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        collect_images_array
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extract_image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        extract_image
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extract_times" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        extract_times
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filter_files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        filter_files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#load_metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        load_metadata
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#split_chips" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        split_chips
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#combine_within_tolerance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        combine_within_tolerance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dewarp_image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dewarp_image
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extract_background" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        extract_background
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#find_cal_lines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        find_cal_lines
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generate_effpix_map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        generate_effpix_map
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generate_warp_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        generate_warp_model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_gaussian" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _gaussian
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_moffat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _moffat
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flatfield_correction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        flatfield_correction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plot_image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        plot_image
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rebin_image_columns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rebin_image_columns
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generate_flux_conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        generate_flux_conversion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#load_stis_spectra" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        load_STIS_spectra
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#boxcar_extraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        boxcar_extraction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generate_spatial_profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        generate_spatial_profile
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#horne_extraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        horne_extraction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trace_fit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        trace_fit
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#calculate_evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        calculate_evidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cast_votes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cast_votes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compute_triplet_values_from_indices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compute_triplet_values_from_indices
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#match_features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        match_features
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sigma_d_from_triplets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sigma_d_from_triplets
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contact/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contact Us
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_gmos_loader" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _GMOS_loader
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_kosmos_loader" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _kosmos_loader
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#average_matching_files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        average_matching_files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#collect_images_array" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        collect_images_array
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extract_image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        extract_image
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extract_times" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        extract_times
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filter_files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        filter_files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#load_metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        load_metadata
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#split_chips" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        split_chips
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#combine_within_tolerance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        combine_within_tolerance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dewarp_image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dewarp_image
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extract_background" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        extract_background
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#find_cal_lines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        find_cal_lines
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generate_effpix_map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        generate_effpix_map
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generate_warp_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        generate_warp_model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_gaussian" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _gaussian
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_moffat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _moffat
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flatfield_correction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        flatfield_correction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plot_image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        plot_image
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rebin_image_columns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rebin_image_columns
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generate_flux_conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        generate_flux_conversion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#load_stis_spectra" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        load_STIS_spectra
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#boxcar_extraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        boxcar_extraction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generate_spatial_profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        generate_spatial_profile
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#horne_extraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        horne_extraction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trace_fit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        trace_fit
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#calculate_evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        calculate_evidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cast_votes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cast_votes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compute_triplet_values_from_indices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compute_triplet_values_from_indices
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#match_features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        match_features
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sigma_d_from_triplets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sigma_d_from_triplets
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Docstrings</h1>
+
+<h3 class="hidden-heading" id="_gmos_loader">_GMOS_loader</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.loading</span>.<span class='function-name'>_GMOS_loader</span> (<br>&emsp;&emsp;<span class='arg-var-name'>path</span>,<br>&emsp;&emsp;<span class='arg-var-name'>file</span>,<br>&emsp;&emsp;<span class='arg-var-name'>return_RN</span> = <span class='arg-default'>False</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L108-L176' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Controls how to load data from Gemini Observatory's GMOS-N instrument. The resulting output will be oriented such that the x-axis is the dispersion axis (left is blue / right is red) and the y-axis is the cross-dispersion axis.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>path</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Directory pointing toward the FITS file you wish to
+    load. This should not include the name of the file
+    itself.</span><br><span class='variable-name'>file</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Name of the FITS file in the specified directory to
+    load.</span><br><span class='variable-name'>return_RN</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Determines whether the read noise image should be
+    returned as an additional return. Defaults to 'False'.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>image</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 2D array loaded in from the specified FITS file.</span><br></span></p></div>
+<h3 class="hidden-heading" id="_kosmos_loader">_kosmos_loader</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.loading</span>.<span class='function-name'>_kosmos_loader</span> (<br>&emsp;&emsp;<span class='arg-var-name'>path</span>,<br>&emsp;&emsp;<span class='arg-var-name'>file</span>,<br>&emsp;&emsp;<span class='arg-var-name'>clip_overscan</span> = <span class='arg-default'>True</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L179-L234' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Controls how to load data from Apache Point Observatory's KOSMOS instrument. The resulting output will be oriented such that the x-axis is the dispersion axis (left is blue / right is red) and the y-axis is the cross-dispersion axis.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>path</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Directory pointing toward the FITS file you wish to
+    load. This should not include the name of the file
+    itself.</span><br><span class='variable-name'>file</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Name of the FITS file in the specified directory to
+    load.</span><br><span class='variable-name'>clip_overscan</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Determines whether to clip the overscan region of the
+    detector.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>image_data</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 2D array loaded in from the specified FITS file.</span><br></span></p></div>
+<h3 class="hidden-heading" id="average_matching_files">average_matching_files</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.loading</span>.<span class='function-name'>average_matching_files</span> (<br>&emsp;&emsp;<span class='arg-var-name'>path</span>,<br>&emsp;&emsp;<span class='arg-var-name'>tag</span>,<br>&emsp;&emsp;<span class="arg-var-name">instrument</span> = <span class="arg-default">"kosmos"</span>,<br>&emsp;&emsp;<span class='arg-var-name'>ignore</span> = <span class='arg-default'>[]</span>,<br>&emsp;&emsp;<span class='arg-var-name'>crop_bds</span> = <span class='arg-default'>[0, None]</span>,<br>&emsp;&emsp;<span class="arg-var-name">mode</span> = <span class="arg-default">"median"</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>&emsp;&emsp;<span class='arg-var-name'>progress</span> = <span class='arg-default'>False</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L333-L400' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Extracts images from a user-given path, and finds the average pixel value for every pixel across all images. This defaults to the 'median' average, but can be changed to take the 'mean' average as well.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>path</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Path to data directory.</span><br><span class='variable-name'>tag</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Tag to search for in filenames.</span><br><span class='variable-name'>instrument</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>The name of the instrument your FITS data was taken from. This
+    is only used to determine which loading function to use.</span><br><span class='variable-name'>ignore</span> :: <span class='variable-type'>list</span><br><span class='variable-desc'>List of data indexes to ignore in averaging.</span><br><span class='variable-name'>crop_bds</span> :: <span class='variable-type'>list</span><br><span class='variable-desc'>The region along the cross-dispersion (spatial) axis
+    to keep (all other rows will be dropped).</span><br><span class='variable-name'>mode</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Type of average to take of images. Valid inputs
+    include 'median' and 'mean'.</span><br><span class='variable-name'>debug</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Toggles the display of image stats.</span><br><span class='variable-name'>progress</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Toggles the progress bar.</span><br></span></p>
+<p class='written-parameters-wrapper'></p></div>
+<h3 class="hidden-heading" id="collect_images_array">collect_images_array</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.loading</span>.<span class='function-name'>collect_images_array</span> (<br>&emsp;&emsp;<span class='arg-var-name'>path</span>,<br>&emsp;&emsp;<span class='arg-var-name'>tag</span>,<br>&emsp;&emsp;<span class='arg-var-name'>ignore</span> = <span class='arg-default'>None</span>,<br>&emsp;&emsp;<span class='arg-var-name'>crop_bds</span> = <span class='arg-default'>[0, None]</span>,<br>&emsp;&emsp;<span class="arg-var-name">instrument</span> = <span class="arg-default">"kosmos"</span>,<br>&emsp;&emsp;<span class='arg-var-name'>clip_overscan</span> = <span class='arg-default'>True</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>&emsp;&emsp;<span class='arg-var-name'>progress</span> = <span class='arg-default'>False</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L237-L330' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Collect a list of images from a user-given path corresponding to a specified tag. Images can be ignore by passing their indexes as an additional argument.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>path</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Path to data directory containing image
+    data.</span><br><span class='variable-name'>tag</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Tag to search for in filenames.</span><br><span class='variable-name'>ignore</span> :: <span class='variable-type'>list</span><br><span class='variable-desc'>List of file indexes to ignore.</span><br><span class='variable-name'>crop_bds</span> :: <span class='variable-type'>list</span><br><span class='variable-desc'>The region along the cross-dispersion (spatial) axis
+    to keep (all other rows will be dropped).</span><br><span class='variable-name'>instrument</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>The name of the instrument the FITS data was
+    taken from. This is used to determine which loading
+    function should be used.</span><br><span class='variable-name'>clip_overscan</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Allows the overscan region to be cropped out of
+    the returned array.</span><br><span class='variable-name'>debug</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Allows for diagnostic information to be printed.
+    This includes the names of all files found with
+    the given 'tag' and whether any of them failed
+    to load.</span><br><span class='variable-name'>progress</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Whether a progress bar should be displayed.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>image_collection</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>An array of 2D images corresponding to each valid
+    file found in the provided path.</span><br></span></p></div>
+<h3 class="hidden-heading" id="extract_image">extract_image</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.loading</span>.<span class='function-name'>extract_image</span> (<br>&emsp;&emsp;<span class='arg-var-name'>path</span>,<br>&emsp;&emsp;<span class='arg-var-name'>file</span>,<br>&emsp;&emsp;<span class='arg-var-name'>instrument</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L62-L105' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Attempts to extract image data from a given FITS file using a method specific to the user-specified instrument.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>path</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Directory pointing toward the FITS file you wish to
+    load. This should not include the name of the file
+    itself.</span><br><span class='variable-name'>file</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Name of the FITS file in the specified directory to
+    load.</span><br><span class='variable-name'>instrument</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Specifies which loading function should be used for
+    the FITS file. Currently, the only supported instruments
+    are...
+        - KOSMOS
+        - GMOS</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>image</span> :: <span class='variable-type'>np.ndarray | None</span><br><span class='variable-desc'>A 2D array containing the image found in the resulting FITS
+    file. If there is issue with loading the data, a 'None' is
+    returned.</span><br></span></p></div>
+<h3 class="hidden-heading" id="extract_times">extract_times</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.loading</span>.<span class='function-name'>extract_times</span> (<br>&emsp;&emsp;<span class='arg-var-name'>path</span>,<br>&emsp;&emsp;<span class='arg-var-name'>tag</span>,<br>&emsp;&emsp;<span class='arg-var-name'>ignore</span> = <span class='arg-default'>[]</span>,<br>&emsp;&emsp;<span class="arg-var-name">time_lbl</span> = <span class="arg-default">"DATE-OBS"</span>,<br>&emsp;&emsp;<span class="arg-var-name">ra_lbl</span> = <span class="arg-default">"RA"</span>,<br>&emsp;&emsp;<span class="arg-var-name">dec_lbl</span> = <span class="arg-default">"DEC"</span>,<br>&emsp;&emsp;<span class="arg-var-name">lat_lbl</span> = <span class="arg-default">"LATITUDE"</span>,<br>&emsp;&emsp;<span class="arg-var-name">long_lbl</span> = <span class="arg-default">"LONGITUD"</span>,<br>&emsp;&emsp;<span class="arg-var-name">time_format</span> = <span class="arg-default">"isot"</span>,<br>&emsp;&emsp;<span class="arg-var-name">time_scale</span> = <span class="arg-default">"tai"</span>,<br>&emsp;&emsp;<span class='arg-var-name'>loc_units</span> = <span class='arg-default'>(Unit("hourangle"), Unit("deg"))</span>,<br>&emsp;&emsp;<span class="arg-var-name">loc_frame</span> = <span class="arg-default">"icrs"</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L467-L560' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Extracts time data from the headers of a set of observations. Assumes that the header has information about the observation time.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>path</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Directory pointing toward the FITS file you wish to
+    load. This should not include the name of the file
+    itself.</span><br><span class='variable-name'>tag</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>A sub-string that can help differentiate between
+    desired and undesired files in a directory. If
+    an empty string is provided, no files are filtered
+    out (based on the 'tag' criteria).</span><br><span class='variable-name'>ignore</span> :: <span class='variable-type'>list</span><br><span class='variable-desc'>Filenames to ignore when loading in data. The 'ignore'
+    filenames must exactly match how they appear in the
+    file navigator (including .fits extension).</span><br><span class='variable-name'>time_lbl</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Header label for observation time.</span><br><span class='variable-name'>ra_lbl</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Header label for RA of target.</span><br><span class='variable-name'>dec_lbl</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Header label for DEC of target.</span><br><span class='variable-name'>lat_lbl</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Header label for latitude of target.</span><br><span class='variable-name'>long_lbl</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Header label for longitude of target.</span><br><span class='variable-name'>time_format</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Astropy Time() format that represents the
+    time data in the header.</span><br><span class='variable-name'>time_scale</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Astropy Time() scale that represents the
+    time data in the header.</span><br><span class='variable-name'>loc_units</span> :: <span class='variable-type'>tuple</span><br><span class='variable-desc'>Astropy SkyCoord() units that represents
+    the (RA, DEC) data in the header.</span><br><span class='variable-name'>loc_frame</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Astropy SkyCoord() frame that represents
+    the (RA, DEC) data in the header.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>times_bc</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Array of JD barycentric times that have
+    been corrected for variations in light
+    travel time. Has attached astropy units
+    of days.</span><br></span></p></div>
+<h3 class="hidden-heading" id="filter_files">filter_files</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.loading</span>.<span class='function-name'>filter_files</span> (<br>&emsp;&emsp;<span class='arg-var-name'>files</span>,<br>&emsp;&emsp;<span class='arg-var-name'>tag</span>,<br>&emsp;&emsp;<span class='arg-var-name'>ignore</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L26-L59' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Filters down a list of filenames if they to not satisfy the following requirements...
+
+    1) The file ends with '.fits' extension
+    2) The provided 'tag' is not in the filename
+    3) The filename is not given in 'ignore' list
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>files</span> :: <span class='variable-type'>list</span><br><span class='variable-desc'>Several filenames to filter based on the above
+    criteria.</span><br><span class='variable-name'>tag</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>A sub-string that can help differentiate between
+    desired and undesired files in a directory. If
+    an empty string is provided, no files are filtered
+    out (based on the 'tag' criteria).</span><br><span class='variable-name'>ignore</span> :: <span class='variable-type'>list</span><br><span class='variable-desc'>Filenames to ignore when loading in data. The 'ignore'
+    filenames must exactly match how they appear in the
+    file navigator (including .fits extension).</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>files</span> :: <span class='variable-type'>list</span><br><span class='variable-desc'>All remaining files once filtering has been performed.</span><br></span></p></div>
+<h3 class="hidden-heading" id="load_metadata">load_metadata</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.loading</span>.<span class='function-name'>load_metadata</span> (<br>&emsp;&emsp;<span class='arg-var-name'>path</span>,<br>&emsp;&emsp;<span class='arg-var-name'>tag</span>,<br>&emsp;&emsp;<span class='arg-var-name'>ignore</span> = <span class='arg-default'>[]</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L403-L464' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Loads an dictionary of all data for a collection of FITS files. This metadata comes from the header of the first FITS card.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>path</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Path to data directory.</span><br><span class='variable-name'>tag</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Tag to search for in filenames.</span><br><span class='variable-name'>ignore</span> :: <span class='variable-type'>list</span><br><span class='variable-desc'>List of data indexes to ignore.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>metadata</span> :: <span class='variable-type'>dict</span><br><span class='variable-desc'>Dictionary containing the metadata
+    found for each key in the FITS headers.
+    Keys-value pairs that are identical
+    across all exposures are combined into
+    a single value.</span><br></span></p></div>
+<h3 class="hidden-heading" id="split_chips">split_chips</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.loading</span>.<span class='function-name'>split_chips</span> (<br>&emsp;&emsp;<span class='arg-var-name'>images</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L563-L599' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Attempts to split up a series of 2D images into separate arrays for each "chip" that has been combined. This function assumes that "chip gaps" are indicated by a column that is entirely comprised of NaN values.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>images</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A series of images that are comprised of multiple chips
+    joined by a "chip gap" comprised of NaN values.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>sub_images</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A list of images where each entry has N sub-images that
+    make up each chip that was detected.</span><br></span></p></div>
+<h3 class="hidden-heading" id="combine_within_tolerance">combine_within_tolerance</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.warping</span>.<span class='function-name'>combine_within_tolerance</span> (<br>&emsp;&emsp;<span class='arg-var-name'>values</span>,<br>&emsp;&emsp;<span class='arg-var-name'>tolerance</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/warping.py#L134-L184' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Takes a user-given list and combines values that are within a given tolerance. This is helpful for when a dense sample of features is non-ideal and should be combined into a single feature.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>values</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>List of values to be analyzed.</span><br><span class='variable-name'>tolerance</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>The theshold at which two data points should be combined.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>combined_values</span> :: <span class='variable-type'>list</span><br><span class='variable-desc'>List of values where close points have been averaged and
+    combined.</span><br></span></p></div>
+<h3 class="hidden-heading" id="dewarp_image">dewarp_image</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.warping</span>.<span class='function-name'>dewarp_image</span> (<br>&emsp;&emsp;<span class='arg-var-name'>image</span>,<br>&emsp;&emsp;<span class='arg-var-name'>models</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>&emsp;&emsp;<span class='arg-var-name'>progress</span> = <span class='arg-default'>False</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/warping.py#L351-L462' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Uses a 'warp model' to undo distortion in a 2D image. This is done by rebinning each row onto a consistent wavelength bin proportional to the overlapping area between the raw image data and a warped set of new pixel locations.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>image</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Image that is horizontally warped according
+    to a set of models the user also provides.</span><br><span class='variable-name'>models</span> :: <span class='variable-type'>list</span><br><span class='variable-desc'>List of models that describe how vertical lines
+    are warped along the image's horizontal axis.</span><br><span class='variable-name'>debug</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Enables diagnostic plots.</span><br><span class='variable-name'>progress</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Enables a progress bar.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>unwarped_image</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A dewarped version of the provided image.</span><br></span></p></div>
+<h3 class="hidden-heading" id="extract_background">extract_background</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.warping</span>.<span class='function-name'>extract_background</span> (<br>&emsp;&emsp;<span class='arg-var-name'>images</span>,<br>&emsp;&emsp;<span class='arg-var-name'>warp_model</span>,<br>&emsp;&emsp;<span class='arg-var-name'>mask_region</span> = <span class='arg-default'>(None, None)</span>,<br>&emsp;&emsp;<span class='arg-var-name'>return_spectrum</span> = <span class='arg-default'>False</span>,<br>&emsp;&emsp;<span class='arg-var-name'>progress</span> = <span class='arg-default'>False</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/warping.py#L502-L649' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Extracts the sky background for a series of exposures where a trace should be masked out. It uses a 'warp model' that describes how straight emission lines are 'bent' on the imaging plane. This function assumes that flatfielding has been applied and that sky emissions are approximately uniform along the spatial axis.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>images</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A series of exposures to extract backgrounds from.</span><br><span class='variable-name'>warp_model</span> :: <span class='variable-type'>list</span><br><span class='variable-desc'>List of models that describe how vertical lines
+    are warped along the image's horizontal axis.</span><br><span class='variable-name'>mask_region</span> :: <span class='variable-type'>tuple</span><br><span class='variable-desc'>The pixel locations (vertical) to mask out during the
+    background extraction.</span><br><span class='variable-name'>return_spectrum</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Whether or not to return the super-sampled spectra used for
+    interpolating the sky background. If 'True', three additional
+    arguments are returned. These are the effective pixel
+    locations, effective flux, and the 'effpix map'.</span><br><span class='variable-name'>progress</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Controls whether or not progress bars are shown.</span><br><span class='variable-name'>debug</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Allows for diagnostic plots to be shown.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>background_images</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A series of images representing the approximated sky background
+    for each image.</span><br><span class='variable-name'>supersampled_effpix</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The grid of 'effective pixel locations' that the sky emission
+    spectra was extracted for. This is essentially a flattened
+    version of the 'effpix_map'.</span><br><span class='variable-name'>supersampled_spectra</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The effective flux found for each of the effective pixel
+    locations.</span><br><span class='variable-name'>effpix_map</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 2D array with the same size as an individual image. The value
+    at each pixel represents the 'effective pixel location' for
+    that given pixel.</span><br></span></p></div>
+<h3 class="hidden-heading" id="find_cal_lines">find_cal_lines</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.warping</span>.<span class='function-name'>find_cal_lines</span> (<br>&emsp;&emsp;<span class='arg-var-name'>image</span>,<br>&emsp;&emsp;<span class='arg-var-name'>std_variation</span> = <span class='arg-default'>50.0</span>,<br>&emsp;&emsp;<span class='arg-var-name'>row</span> = <span class='arg-default'>None</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/warping.py#L18-L131' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Finds pixel positions of spectral lines in a provided image. The image does not need to range from any specific wavelength to another. The only requirement is that the lines are located vertically on the image plane.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>image</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Image with calibration lines.</span><br><span class='variable-name'>std_variation</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>How many standard deviations a peak must exceed the baseline to
+    be counted as a line.</span><br><span class='variable-name'>row</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>Which row to pull a 1D profile from. If no argument is
+    provided, this function will default to the row at the center
+    of the cross-dispersion axis.</span><br><span class='variable-name'>debug</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Allows for a diagnostic plot to be shown.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>non_zero_indices</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>List of pixel locations for detected lines.</span><br><span class='variable-name'>rel_intensity</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>List of the relative intensity of the detected lines.</span><br></span></p></div>
+<h3 class="hidden-heading" id="generate_effpix_map">generate_effpix_map</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.warping</span>.<span class='function-name'>generate_effpix_map</span> (<br>&emsp;&emsp;<span class='arg-var-name'>xs</span>,<br>&emsp;&emsp;<span class='arg-var-name'>rows</span>,<br>&emsp;&emsp;<span class='arg-var-name'>models</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/warping.py#L465-L499' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Generates a 2D map of the effective location of each pixel center across the detector. It uses models that describe the warping across the detector as a function of row and column positions.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>xs</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array holding all column pixel positions.</span><br><span class='variable-name'>rows</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array holding all row pixel positions.</span><br><span class='variable-name'>models</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>An array holding how light warping changes as a function of
+    column and row pixel positions. This function assumes that each
+    fitting coefficient changes according to a linear relationship.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>effpix_map</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 2D array detailing the effective location of each pixel center.</span><br></span></p></div>
+<h3 class="hidden-heading" id="generate_warp_model">generate_warp_model</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.warping</span>.<span class='function-name'>generate_warp_model</span> (<br>&emsp;&emsp;<span class='arg-var-name'>image</span>,<br>&emsp;&emsp;<span class='arg-var-name'>guess</span>,<br>&emsp;&emsp;<span class='arg-var-name'>tolerance</span> = <span class='arg-default'>16</span>,<br>&emsp;&emsp;<span class='arg-var-name'>line_order</span> = <span class='arg-default'>2</span>,<br>&emsp;&emsp;<span class='arg-var-name'>warp_order</span> = <span class='arg-default'>1</span>,<br>&emsp;&emsp;<span class='arg-var-name'>ref_idx</span> = <span class='arg-default'>None</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/warping.py#L187-L348' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Models how straight vertical lines in a wavelength calibration image are being warped. Assumes a relatively low amount of straight-line warping and that these lines are continuous. This function allows for the type of warping to change along the horizontal axis of the detector. This is functionally achieved by binning down a given image and identifying the brightest pixels across the vertical axis of a detector in a small region around each line.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>image</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 2D arclamp image with strong emission features.</span><br><span class='variable-name'>guess</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The pixel positions (along the dispersion axis) of strong
+    emissions features in the provided image. These can be slightly
+    wrong, as the 'tolerance' determines how broad of a region to
+    analyze around each of these guesses.</span><br><span class='variable-name'>tolerance</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>Number of pixels around your guess to use for building a warp
+    model. The tolerance should at least be large enough that the
+    entire emission line falls within a given window, but it is
+    often better to provide a slightly larger tolerance if you
+    are uncertain in the accuracy of your guesses.</span><br><span class='variable-name'>line_order</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>Order of x-warping (i.e. How does our vertial warping change
+    with x-position along the detector).</span><br><span class='variable-name'>warp_order</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>Order of y-warping (i.e. What shape does a straight line
+    projected onto our detector take on).</span><br><span class='variable-name'>ref_idx</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>Which row (along cross-dispersion axis) to use for measuring
+    the relative changes from row to row. This choice should be
+    near the brightest portion of the emission line.</span><br><span class='variable-name'>debug</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Allows for diagnostic plots to be displayed.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>warp_models</span> :: <span class='variable-type'>list</span><br><span class='variable-desc'>Collection of models describing how y-warping coefficients
+    change as a function of x.</span><br></span></p></div>
+<h3 class="hidden-heading" id="_gaussian">_gaussian</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.utils</span>.<span class='function-name'>_gaussian</span> (<br>&emsp;&emsp;<span class='arg-var-name'>x</span>,<br>&emsp;&emsp;<span class='arg-var-name'>A</span>,<br>&emsp;&emsp;<span class='arg-var-name'>mu</span>,<br>&emsp;&emsp;<span class='arg-var-name'>sigma</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L92-L126' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Generates a 1D Gaussian profile on the user-provided grid of x-points. If an error is encountered, then 'None' will be returned instead of a Numpy array.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>x</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A set of x-points over which to evaluate the Gaussian profile.
+    This can be a single value, but must still be contained in a
+    list (i.e., [1]).</span><br><span class='variable-name'>A</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>The amplitude of the Gaussian profile.</span><br><span class='variable-name'>mu</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>The mean of the Gaussian profile.</span><br><span class='variable-name'>sigma</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>The standard deviation of the Gaussian profile.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>profile</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The 1D Gaussian profile evaluated on the provided grid of x-points.</span><br></span></p></div>
+<h3 class="hidden-heading" id="_moffat">_moffat</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.utils</span>.<span class='function-name'>_moffat</span> (<br>&emsp;&emsp;<span class='arg-var-name'>x</span>,<br>&emsp;&emsp;<span class='arg-var-name'>A</span>,<br>&emsp;&emsp;<span class='arg-var-name'>mu</span>,<br>&emsp;&emsp;<span class='arg-var-name'>gamma</span>,<br>&emsp;&emsp;<span class='arg-var-name'>offset</span> = <span class='arg-default'>0.0</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L129-L172' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Generates a 1D Moffat profile on the user-provided grid of x-points. If an error is encountered, then 'None' will be returned instead of a Numpy array. Note: This is technically a 'modified Moffat profile' since the exponent has been set to 2.5.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>x</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A set of x-points over which to evaluate the Moffat profile.
+    This can be a single value, but must still be contained in a
+    list (i.e., [1]).</span><br><span class='variable-name'>A</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>The amplitude of the Moffat profile.</span><br><span class='variable-name'>mu</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>The mean of the Moffat profile.</span><br><span class='variable-name'>gamma</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>A shape parameter for the Moffat profile.</span><br><span class='variable-name'>offset</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>A constant offset applied to all points.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>profile</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The 1D Moffat profile evaluated on the provided grid of x-points.</span><br></span></p></div>
+<h3 class="hidden-heading" id="flatfield_correction">flatfield_correction</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.utils</span>.<span class='function-name'>flatfield_correction</span> (<br>&emsp;&emsp;<span class='arg-var-name'>image</span>,<br>&emsp;&emsp;<span class='arg-var-name'>flat</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L211-L262' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Applies a simple flatfield correction to one or more 2D images. This function assumes that each entry along the first axis is a 2D image with the same size as 'flat'.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>image</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Image(s) that should be divided by the normalized flatfield
+    image. This can be a single 2D image or an array of 2D images.</span><br><span class='variable-name'>flat</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A single unnormalized flatfield image, ideally the median of
+    several flatfield exposures.</span><br><span class='variable-name'>debug</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Allows for diagnostic plotting.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>flatfielded_ims</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The resulting image(s) after being divided by the normalized
+    flatfield.</span><br></span></p></div>
+<h3 class="hidden-heading" id="plot_image">plot_image</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.utils</span>.<span class='function-name'>plot_image</span> (<br>&emsp;&emsp;<span class='arg-var-name'>image</span>,<br>&emsp;&emsp;<span class='arg-var-name'>xlim</span> = <span class='arg-default'>None</span>,<br>&emsp;&emsp;<span class='arg-var-name'>ylim</span> = <span class='arg-default'>None</span>,<br>&emsp;&emsp;<span class="arg-var-name">xlabel</span> = <span class="arg-default">"Dispersion Axis (pix)"</span>,<br>&emsp;&emsp;<span class="arg-var-name">ylabel</span> = <span class="arg-default">"Cross-Dispersion Axis (pix)"</span>,<br>&emsp;&emsp;<span class="arg-var-name">cbar_label</span> = <span class="arg-default">"Counts"</span>,<br>&emsp;&emsp;<span class="arg-var-name">title</span> = <span class="arg-default">""</span>,<br>&emsp;&emsp;<span class='arg-var-name'>figsize</span> = <span class='arg-default'>(10, 3)</span>,<br>&emsp;&emsp;<span class="arg-var-name">cmap</span> = <span class="arg-default">"inferno"</span>,<br>&emsp;&emsp;<span class="arg-var-name">savedir</span> = <span class="arg-default">"None"</span>,<br>&emsp;&emsp;<span class='arg-var-name'>kwargs</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L6-L89' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>A simple wrapper for matplotlib.pyplot.imshow(). By default, this function uses a handful of style options to keep all visualizations consistent within our documentation. You should be able to overwrite these options and provide any of the standard additional KWARGS.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>image</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A single 2D array. If it is not a Numpy array, the function
+    will attempt to convert it into one.</span><br><span class='variable-name'>xlim</span> :: <span class='variable-type'>tuple</span><br><span class='variable-desc'>The (xmin, xmax) to show. If none is provided, defaults to the
+    entire horizontal span of the image.</span><br><span class='variable-name'>ylim</span> :: <span class='variable-type'>tuple</span><br><span class='variable-desc'>The (ymin, ymax) to show. If none is provided, defaults to the
+    entire vertical span of the image.</span><br><span class='variable-name'>xlabel</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Text to write along the x-axis (bottom) of the image.</span><br><span class='variable-name'>ylabel</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Text to write along the y-axis (left) of the image.</span><br><span class='variable-name'>cbar_label</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>A text label assigned to the colorbar.</span><br><span class='variable-name'>title</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>A title to plot at the top of the image.</span><br><span class='variable-name'>figsize</span> :: <span class='variable-type'>tuple</span><br><span class='variable-desc'>The dimensions (horizontal, vertical) of the image.</span><br><span class='variable-name'>cmap</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Name of the matplotlib colormap to use.</span><br><span class='variable-name'>savedir</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Directory (+filename) to save the generated image at. If an argument
+    is provided, then 'plt.show()' will not run.</span><br></span></p>
+<p class='written-parameters-wrapper'></p></div>
+<h3 class="hidden-heading" id="rebin_image_columns">rebin_image_columns</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.utils</span>.<span class='function-name'>rebin_image_columns</span> (<br>&emsp;&emsp;<span class='arg-var-name'>image</span>,<br>&emsp;&emsp;<span class='arg-var-name'>bin</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L175-L208' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Rebins an image along a single axis. The bin size must be an integer multiple of the axis size being rebinned.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>image</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Original image to be rebinned.</span><br><span class='variable-name'>bin</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>Size each bin in pixels along the columns of the provided
+    image.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>rebinned_image</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>An image where the columns have been rebinned into bin length
+    pixels.</span><br></span></p></div>
+<h3 class="hidden-heading" id="generate_flux_conversion">generate_flux_conversion</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.throughput</span>.<span class='function-name'>generate_flux_conversion</span> (<br>&emsp;&emsp;<span class='arg-var-name'>w_measured</span>,<br>&emsp;&emsp;<span class='arg-var-name'>w_model</span>,<br>&emsp;&emsp;<span class='arg-var-name'>f_measured</span>,<br>&emsp;&emsp;<span class='arg-var-name'>f_model</span>,<br>&emsp;&emsp;<span class='arg-var-name'>err</span>,<br>&emsp;&emsp;<span class='arg-var-name'>sigma_clip</span> = <span class='arg-default'>50.0</span>,<br>&emsp;&emsp;<span class='arg-var-name'>order</span> = <span class='arg-default'>7</span>,<br>&emsp;&emsp;<span class='arg-var-name'>max_iter</span> = <span class='arg-default'>50</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/throughput.py#L135-L243' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Generates a numpy polynomial that predicts the physical flux [flam] / CCD count as a function of wavelength [Angstroms].
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>w_measured</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array of wavelengths for your CCD spectrum (in Angstroms).</span><br><span class='variable-name'>w_model</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array of wavelengths for your known spectrum (in Angstroms).</span><br><span class='variable-name'>f_measured</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array of flux for your CCD spectrum.</span><br><span class='variable-name'>f_model</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array of flux for your known spectrum.</span><br><span class='variable-name'>err</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array of errors for you CCD flux.</span><br><span class='variable-name'>sigma_clip</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>The max number of standard deviations a point is allowed to be
+    from the calibration model. Outlier points are removed from
+    future fits.</span><br><span class='variable-name'>order</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>Polynomial order of the flux conversion.</span><br><span class='variable-name'>max_iter</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>Maximum number of fits to perform before manually stopping.</span><br><span class='variable-name'>debug</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Plots the final fit against the user-provided data.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>p_flux_conversion</span> :: <span class='variable-type'>np.poly1d</span><br><span class='variable-desc'>An n-th order polynomial that takes wavelength [Angstroms] as
+    an argument. The returned value converts CCD counts into
+    physical units [flam], meaning it is in units of flam/count.</span><br></span></p></div>
+<h3 class="hidden-heading" id="load_stis_spectra">load_STIS_spectra</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.throughput</span>.<span class='function-name'>load_STIS_spectra</span> (<br>&emsp;&emsp;<span class="arg-var-name">name</span> = <span class="arg-default">"None"</span>,<br>&emsp;&emsp;<span class="arg-var-name">filetype</span> = <span class="arg-default">"model"</span>,<br>&emsp;&emsp;<span class='arg-var-name'>wavelength_bounds</span> = <span class='arg-default'>None</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/throughput.py#L26-L132' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Attempts to download spectra data from the STIS website (see url below). It only looks for data contained in the first data table.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>name</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Name of the star to load data for. This should match an entry
+    in the "Star name" column of Table 1.</span><br><span class='variable-name'>filetype</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Determines which type of model to load from the STIS database.
+    The only valid options are "model" or "stis".</span><br><span class='variable-name'>wavelength_bounds</span> :: <span class='variable-type'>tuple</span><br><span class='variable-desc'>The (wmin, wmax) region of the STIS spectra to keep. Both
+    values must have astropy units compatible with wavelength.</span><br><span class='variable-name'>debug</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Allows diagnostic information to be output.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>wavs</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Retrieved model wavelengths (Angstroms)</span><br><span class='variable-name'>flux</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Retrieved model flux (flam)</span><br><span class='variable-name'>cont</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Retrieved model flux (flam)</span><br></span></p></div>
+<h3 class="hidden-heading" id="boxcar_extraction">boxcar_extraction</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.extraction</span>.<span class='function-name'>boxcar_extraction</span> (<br>&emsp;&emsp;<span class='arg-var-name'>images</span>,<br>&emsp;&emsp;<span class='arg-var-name'>backgrounds</span>,<br>&emsp;&emsp;<span class='arg-var-name'>RN</span> = <span class='arg-default'>0.0</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/extraction.py#L127-L207' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Performs a simple boxcar extraction on an image (or series of images). This assumes that both arrays of images of dimensions corresponding to...
+
+    (cross-dispersion, dispersion)
+
+If that is not the case, please rotate your data arrays before feeding them into this function.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>images</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 2D (or array of several 2D) science exposures that
+    have been background subtracted.</span><br><span class='variable-name'>backgrounds</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 2D (or array of several 2D) background exposures
+    that have been subtracted off of your science images.</span><br><span class='variable-name'>RN</span> :: <span class='variable-type'>float | np.ndarray</span><br><span class='variable-desc'>The read noise associated with your detector.</span><br><span class='variable-name'>debug</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Allows for optional plotting.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>flux_array</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 2D array containing the flux of each provided exposure.
+    Has a shape of (image index, pixel position).</span><br><span class='variable-name'>error_array</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 2D array containing the undertainty of each provided
+    exposure. Has a shape of (image index, pixel position).</span><br></span></p></div>
+<h3 class="hidden-heading" id="generate_spatial_profile">generate_spatial_profile</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.extraction</span>.<span class='function-name'>generate_spatial_profile</span> (<br>&emsp;&emsp;<span class='arg-var-name'>image</span>,<br>&emsp;&emsp;<span class="arg-var-name">profile</span> = <span class="arg-default">"moffat"</span>,<br>&emsp;&emsp;<span class='arg-var-name'>profile_order</span> = <span class='arg-default'>7</span>,<br>&emsp;&emsp;<span class='arg-var-name'>bin_size</span> = <span class='arg-default'>8</span>,<br>&emsp;&emsp;<span class='arg-var-name'>repeat</span> = <span class='arg-default'>True</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/extraction.py#L10-L124' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Generates a 'spatial profile' as outlined in Horne (1986). Spatial profiles predict the likelihood that a photon would land at a given cross-dispersion location for each wavelength. This function assumes that the dispersion axis is located along the x-axis.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>image</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The image that a spatial profile is fit to.</span><br><span class='variable-name'>profile</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Name of the type of profile to fit for. Currently, the
+    only valid options are...
+        - moffat
+        - gaussian</span><br><span class='variable-name'>profile_order</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>The order of the polynomial used to fit to each constant
+    in the specified spatial profile (i.e., along the dispersion
+    axis, the mean evolve as what order of polynomial?)</span><br><span class='variable-name'>bin_size</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>Size of each bin used for 'binning down' the provided image
+    before fitting.</span><br><span class='variable-name'>repeat</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Allows the initial fit to each parameter to influence the
+    initial guesses in a second series of fits.</span><br><span class='variable-name'>debug</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Allows for optional debugging plots to be shown.</span><br></span></p>
+<p class='written-parameters-wrapper'></p></div>
+<h3 class="hidden-heading" id="horne_extraction">horne_extraction</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.extraction</span>.<span class='function-name'>horne_extraction</span> (<br>&emsp;&emsp;<span class='arg-var-name'>images</span>,<br>&emsp;&emsp;<span class='arg-var-name'>backgrounds</span>,<br>&emsp;&emsp;<span class="arg-var-name">profile</span> = <span class="arg-default">"moffat"</span>,<br>&emsp;&emsp;<span class='arg-var-name'>profile_order</span> = <span class='arg-default'>3</span>,<br>&emsp;&emsp;<span class='arg-var-name'>RN</span> = <span class='arg-default'>0.0</span>,<br>&emsp;&emsp;<span class='arg-var-name'>bin_size</span> = <span class='arg-default'>16</span>,<br>&emsp;&emsp;<span class='arg-var-name'>max_iter</span> = <span class='arg-default'>5</span>,<br>&emsp;&emsp;<span class='arg-var-name'>repeat</span> = <span class='arg-default'>True</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>&emsp;&emsp;<span class='arg-var-name'>progress</span> = <span class='arg-default'>False</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/extraction.py#L210-L356' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Performs a profile-weighted (Horne) extraction for a series of science exposures.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>images</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A single (or multiple) 2D exposures containing a point-source
+    trace to extract flux from.</span><br><span class='variable-name'>backgrounds</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A single (or multiple) 2D exposures contianing the background
+    subtracted off of the science exposures. Used for calculating
+    the uncertainty of the reduction.</span><br><span class='variable-name'>profile</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Which type of 1D profile to use for generating a spatial
+    profile. Valid options are 'moffat' or 'gaussian'.</span><br><span class='variable-name'>profile_order</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>The polynomial order that describes how the 1D profile (in the
+    fitted spatial profile) changes with pixel position along the
+    dispersion axis.</span><br><span class='variable-name'>RN</span> :: <span class='variable-type'>float | np.ndarray</span><br><span class='variable-desc'>The read noise of your exposure. If the provided argument is a
+    float, then every pixel will be assigned an equal read noise.
+    Otherwise, if provided a 2D array, then each exposure will be
+    assigned the corresponding value for that pixel.</span><br><span class='variable-name'>bin_size</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>The number of pixels (dispersion axis) to lump into a single
+    bin when generating a spatial profile. Generally, a higher value
+    increases the probability that 'generate_spatial_profile()'
+    converges, but the precision of the extracted profile is lower.</span><br><span class='variable-name'>max_iter</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>The number of iterations to repeat the Horne extraction algorithm
+    for. The cosmic ray masking has been removed, so the only benefit
+    from increasing 'max_iter' is the potential to get a better
+    constraint on the spatial profile.</span><br><span class='variable-name'>repeat</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Whether to repeat the spatial profile generation once an initial
+    pass has been made. When your data is particularly noisy, it is
+    helpful to keep this as 'True'.</span><br><span class='variable-name'>debug</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Allows for optional plotting.</span><br><span class='variable-name'>progress</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Enables a progress bar to be displayed.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>flux</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>An array containing the extracted flux for each exposure.</span><br><span class='variable-name'>flux_err</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>An array containing the extracted error for each exposure.</span><br></span></p></div>
+<h3 class="hidden-heading" id="trace_fit">trace_fit</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.extraction</span>.<span class='function-name'>trace_fit</span> (<br>&emsp;&emsp;<span class='arg-var-name'>image</span>,<br>&emsp;&emsp;<span class='arg-var-name'>bin</span> = <span class='arg-default'>16</span>,<br>&emsp;&emsp;<span class='arg-var-name'>trace_order</span> = <span class='arg-default'>2</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/extraction.py#L359-L468' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Fits a trace to a signal across the horizontal axis of an image. This is done by rebinning a user-given image, fitting a gaussian to each rebinned column, and fitting an n-dimensional curve to these gaussian positions.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>image</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Image with a signal spanning the horizontal
+    axis of the detector.</span><br><span class='variable-name'>bin</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>Number of pixels to group into a single bin.
+    Must be an integer multiple of the horizontal
+    pixel count.</span><br><span class='variable-name'>trace_order</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>Order of the polynomial to be fit to our
+    trace fit data.</span><br><span class='variable-name'>debug</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Allows plot generation.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>xpoints</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Horizontal pixel positions corresponding
+    to our detected trace fit. This has been
+    converted from the downsampled x-values
+    to the original image x-values.</span><br><span class='variable-name'>locs</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Vertical locations of the detected trace
+    positions.</span><br><span class='variable-name'>stds</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Standard deviations associated with each
+    gaussian fit in the downsampled image.</span><br><span class='variable-name'>p_center</span> :: <span class='variable-type'>np.poly1d</span><br><span class='variable-desc'>Polynomial fit that traces our signal
+    out across the detector.</span><br></span></p></div>
+<h3 class="hidden-heading" id="calculate_evidence">calculate_evidence</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.wavecal</span>.<span class='function-name'>calculate_evidence</span> (<br>&emsp;&emsp;<span class='arg-var-name'>valid_keys</span>,<br>&emsp;&emsp;<span class='arg-var-name'>d_obs</span>,<br>&emsp;&emsp;<span class='arg-var-name'>sig_d</span>,<br>&emsp;&emsp;<span class='arg-var-name'>pad</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/wavecal.py#L127-L186' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Calculates the Bayesian evidence (i.e., the probability of a given key being calculated integrated over all triplet pairs).
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>valid_keys</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>All possibe keys (rounded distances) across all triplet
+    pairs.</span><br><span class='variable-name'>d_obs</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The calculated relative distances corresponding to each
+    triplet pair.</span><br><span class='variable-name'>sig_d</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The calculated error in each distance measurement provided
+    in 'd_obs'.</span><br><span class='variable-name'>pad</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>The size of half a bin in the geometric hashing routine.
+    This should be equivalent to 0.5 * 10^(-rounding).</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>evidence</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array containing the probability that each key is measured
+    across all possible triplet combinations.</span><br><span class='variable-name'>prob_mass</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 2D array containing the probability mass for all possible
+    triplet combinations.</span><br></span></p></div>
+<h3 class="hidden-heading" id="cast_votes">cast_votes</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.wavecal</span>.<span class='function-name'>cast_votes</span> (<br>&emsp;&emsp;<span class='arg-var-name'>n_model_points</span>,<br>&emsp;&emsp;<span class='arg-var-name'>n_data_points</span>,<br>&emsp;&emsp;<span class='arg-var-name'>prob_mass</span>,<br>&emsp;&emsp;<span class='arg-var-name'>evidence</span>,<br>&emsp;&emsp;<span class='arg-var-name'>valid_keys</span>,<br>&emsp;&emsp;<span class='arg-var-name'>hash_table</span>,<br>&emsp;&emsp;<span class='arg-var-name'>di_v</span>,<br>&emsp;&emsp;<span class='arg-var-name'>dj_v</span>,<br>&emsp;&emsp;<span class='arg-var-name'>dk_v</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/wavecal.py#L189-L266' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Casts votes for each possible combination of points using a traditional geometric hashing scheme. If a pair of triplets produces a key found in the hash table, then the data points will be added as a possible match for each of model points listed for that entry in the hash table. However, the votes are weighted by the Bayesian probability of that match being correct.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>n_model_points</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>The total number of model points.</span><br><span class='variable-name'>n_data_points</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>The total number of data points.</span><br><span class='variable-name'>prob_mass</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 2D array containing the probability mass for all possible
+    triplet combinations.</span><br><span class='variable-name'>evidence</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array containing the probability that each key is measured
+    across all possible triplet combinations.</span><br><span class='variable-name'>valid_keys</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A list of all possible keys in the hash table. This is stored
+    in a separate list to prevent unecessary duplicate lookups.</span><br><span class='variable-name'>hash_table</span> :: <span class='variable-type'>dict</span><br><span class='variable-desc'>A hash table where each key corresponds to the relative distance
+    calculated from three points.</span><br><span class='variable-name'>di_v</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The indices of all b1 values in the data triplet array.</span><br><span class='variable-name'>dj_v</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The indices of all b2 values in the data triplet array.</span><br><span class='variable-name'>dk_v</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The indices of all p values in the data triplet array.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>votes</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The probability-weighted votes indicating which pairs of model and
+    data points is most likely.</span><br></span></p></div>
+<h3 class="hidden-heading" id="compute_triplet_values_from_indices">compute_triplet_values_from_indices</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.wavecal</span>.<span class='function-name'>compute_triplet_values_from_indices</span> (<br>&emsp;&emsp;<span class='arg-var-name'>lines_round</span>,<br>&emsp;&emsp;<span class='arg-var-name'>triplet_idx</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/wavecal.py#L10-L81' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Using a list of rounded line positions, this function calculates the relative distances of each possible triplet of points. It also returns some related, useful arrays that can be used for filtering. All calculations are vectorized to reduce runtime.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>lines_round</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array containing rounded line positions.</span><br><span class='variable-name'>triplet_idx</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 2D array (N x 3) containing the indices of each line that
+    make up the triplet. The length N should be equal to the total
+    number of valid triplets that can be formed from 'lines_round',
+    and each entry should be a value representing an index location
+    in the 'lines_round' array.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>b1</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array containing all of the first base points.</span><br><span class='variable-name'>b2</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array containing all of the second base points.</span><br><span class='variable-name'>p</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array containing all of the reference points.</span><br><span class='variable-name'>d</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array containing all of the scale-normalized distances
+    calculated using b1, b2, and p. If the calculated scale is
+    0.0 or the reference point is the same as one of the base
+    points, the corresponding entry is replaced with a NaN value.</span><br><span class='variable-name'>valid</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array filled with boolean entries indicating whether the
+    calculated distance is a NaN or not.</span><br><span class='variable-name'>i</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The indices of all b1 values in the 'triplet_idx' array.</span><br><span class='variable-name'>j</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The indices of all b2 values in the 'triplet_idx' array.</span><br><span class='variable-name'>k</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The indices of all p values in the 'triplet_idx' array.</span><br></span></p></div>
+<h3 class="hidden-heading" id="match_features">match_features</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.wavecal</span>.<span class='function-name'>match_features</span> (<br>&emsp;&emsp;<span class='arg-var-name'>raw_data_lines</span>,<br>&emsp;&emsp;<span class='arg-var-name'>raw_model_lines</span>,<br>&emsp;&emsp;<span class='arg-var-name'>iterations</span> = <span class='arg-default'>10</span>,<br>&emsp;&emsp;<span class='arg-var-name'>rounding</span> = <span class='arg-default'>3</span>,<br>&emsp;&emsp;<span class='arg-var-name'>sigma</span> = <span class='arg-default'>2.0</span>,<br>&emsp;&emsp;<span class='arg-var-name'>order</span> = <span class='arg-default'>2</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/wavecal.py#L269-L516' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Attempts to find the most probable matches in lines bewteen two lists. This function assumes that the model lines have no (or negligible) error, and that all data lines have a constant error described by 'sigma'.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>raw_data_lines</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D list of lines indicating the pixel positions
+    of line emissions.</span><br><span class='variable-name'>raw_model_lines</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D list of line indicating the known wavelengths
+    of some of the observed data lines. This list can
+    be shorter or longer than 'raw_data_lines,' but
+    this will impact the accuracy of the voting routine.</span><br><span class='variable-name'>iterations</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>The number of iterations to repeat feature matching.
+    For well-behaved examples, the votes will converge
+    to a consistent answer after a handful of iterations.
+    However, excessive looping can lead to a gradual break
+    in the accuracy of the calculated matches.</span><br><span class='variable-name'>rounding</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>How many decimal places to measure relative distances
+    to. For example, using 'rounding=3' will calculate
+    distances to three decimal places.</span><br><span class='variable-name'>sigma</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>The uncertainty (in the same units as 'raw_data_lines')
+    of data line locations.</span><br><span class='variable-name'>order</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>The polynomial order to fit to the matched features. We
+    highly recommend keeping this at 'order=2'.</span><br><span class='variable-name'>debug</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Allows for diagnostic plots to be shown.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>votes</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 2D array showing the probability of a given data line
+    being paired with a given model line.</span><br></span></p></div>
+<h3 class="hidden-heading" id="sigma_d_from_triplets">sigma_d_from_triplets</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.wavecal</span>.<span class='function-name'>sigma_d_from_triplets</span> (<br>&emsp;&emsp;<span class='arg-var-name'>b1</span>,<br>&emsp;&emsp;<span class='arg-var-name'>b2</span>,<br>&emsp;&emsp;<span class='arg-var-name'>p</span>,<br>&emsp;&emsp;<span class='arg-var-name'>sigma_measured</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/wavecal.py#L84-L124' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Calculates the uncertainty in relative distance measurements for a given triplet of points.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>b1</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array containing all of the first base points.</span><br><span class='variable-name'>b2</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array containing all of the second base points.</span><br><span class='variable-name'>p</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array containing all of the reference points.</span><br><span class='variable-name'>sigma_measured</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>An estimate of the uncertainty in line positions.
+    Assumes that the same error applies to all points.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>sigma_d</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array representing the uncertainty in distance
+    measurements for each triplet.</span><br></span></p></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../gmos_example/" class="md-footer__link md-footer__link--prev" aria-label="Previous: GMOS-N">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                GMOS-N
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../contact/" class="md-footer__link md-footer__link--next" aria-label="Next: Contact Us">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Contact Us
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Autumn Stephens
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/Autumn10677" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="mailto:aust8150@colorado.edu" target="_blank" rel="noopener" title="" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m20 8-8 5-8-5V6l8 5 8-5m0-2H4c-1.11 0-2 .89-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.footer"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../js/hide_input_toggle.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
