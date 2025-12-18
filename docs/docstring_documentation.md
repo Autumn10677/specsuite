@@ -1,4 +1,3 @@
-## LOADING
 ### _GMOS_loader {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.loading</span>.<span class='function-name'>_GMOS_loader</span> (<br>&emsp;&emsp;<span class='arg-var-name'>path</span>,<br>&emsp;&emsp;<span class='arg-var-name'>file</span>,<br>&emsp;&emsp;<span class='arg-var-name'>return_RN</span> = <span class='arg-default'>False</span>,<br>):
@@ -130,7 +129,6 @@
     joined by a "chip gap" comprised of NaN values.</span><br></span></p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>sub_images</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A list of images where each entry has N sub-images that
     make up each chip that was detected.</span><br></span></p></div>
-## WARPING
 ### combine_within_tolerance {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.warping</span>.<span class='function-name'>combine_within_tolerance</span> (<br>&emsp;&emsp;<span class='arg-var-name'>values</span>,<br>&emsp;&emsp;<span class='arg-var-name'>tolerance</span>,<br>):
@@ -210,7 +208,6 @@
     near the brightest portion of the emission line.</span><br><span class='variable-name'>debug</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Allows for diagnostic plots to be displayed.</span><br></span></p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>warp_models</span> :: <span class='variable-type'>list</span><br><span class='variable-desc'>Collection of models describing how y-warping coefficients
     change as a function of x.</span><br></span></p></div>
-## UTILS
 ### _gaussian {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.utils</span>.<span class='function-name'>_gaussian</span> (<br>&emsp;&emsp;<span class='arg-var-name'>x</span>,<br>&emsp;&emsp;<span class='arg-var-name'>A</span>,<br>&emsp;&emsp;<span class='arg-var-name'>mu</span>,<br>&emsp;&emsp;<span class='arg-var-name'>sigma</span>,<br>):
@@ -234,7 +231,7 @@
 ### flatfield_correction {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.utils</span>.<span class='function-name'>flatfield_correction</span> (<br>&emsp;&emsp;<span class='arg-var-name'>image</span>,<br>&emsp;&emsp;<span class='arg-var-name'>flat</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L209-L252' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L211-L262' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Applies a simple flatfield correction to one or more 2D images. This function assumes that each entry along the first axis is a 2D image with the same size as 'flat'.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>image</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Image(s) that should be divided by the normalized flatfield
@@ -257,14 +254,13 @@
 ### rebin_image_columns {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.utils</span>.<span class='function-name'>rebin_image_columns</span> (<br>&emsp;&emsp;<span class='arg-var-name'>image</span>,<br>&emsp;&emsp;<span class='arg-var-name'>bin</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L175-L206' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L175-L208' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Rebins an image along a single axis. The bin size must be an integer multiple of the axis size being rebinned.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>image</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Original image to be rebinned.</span><br><span class='variable-name'>bin</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>Size each bin in pixels along the columns of the provided
     image.</span><br></span></p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>rebinned_image</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>An image where the columns have been rebinned into bin length
     pixels.</span><br></span></p></div>
-## THROUGHPUT
 ### generate_flux_conversion {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.throughput</span>.<span class='function-name'>generate_flux_conversion</span> (<br>&emsp;&emsp;<span class='arg-var-name'>w_measured</span>,<br>&emsp;&emsp;<span class='arg-var-name'>w_model</span>,<br>&emsp;&emsp;<span class='arg-var-name'>f_measured</span>,<br>&emsp;&emsp;<span class='arg-var-name'>f_model</span>,<br>&emsp;&emsp;<span class='arg-var-name'>err</span>,<br>&emsp;&emsp;<span class='arg-var-name'>sigma_clip</span> = <span class='arg-default'>50.0</span>,<br>&emsp;&emsp;<span class='arg-var-name'>order</span> = <span class='arg-default'>7</span>,<br>&emsp;&emsp;<span class='arg-var-name'>max_iter</span> = <span class='arg-default'>50</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
@@ -288,7 +284,6 @@
     The only valid options are "model" or "stis".</span><br><span class='variable-name'>wavelength_bounds</span> :: <span class='variable-type'>tuple</span><br><span class='variable-desc'>The (wmin, wmax) region of the STIS spectra to keep. Both
     values must have astropy units compatible with wavelength.</span><br><span class='variable-name'>debug</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Allows diagnostic information to be output.</span><br></span></p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>wavs</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Retrieved model wavelengths (Angstroms)</span><br><span class='variable-name'>flux</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Retrieved model flux (flam)</span><br><span class='variable-name'>cont</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Retrieved model flux (flam)</span><br></span></p></div>
-## EXTRACTION
 ### boxcar_extraction {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.extraction</span>.<span class='function-name'>boxcar_extraction</span> (<br>&emsp;&emsp;<span class='arg-var-name'>images</span>,<br>&emsp;&emsp;<span class='arg-var-name'>backgrounds</span>,<br>&emsp;&emsp;<span class='arg-var-name'>RN</span> = <span class='arg-default'>0.0</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
@@ -363,7 +358,6 @@ If that is not the case, please rotate your data arrays before feeding them into
     positions.</span><br><span class='variable-name'>stds</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Standard deviations associated with each
     gaussian fit in the downsampled image.</span><br><span class='variable-name'>p_center</span> :: <span class='variable-type'>np.poly1d</span><br><span class='variable-desc'>Polynomial fit that traces our signal
     out across the detector.</span><br></span></p></div>
-## WAVECAL
 ### calculate_evidence {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.wavecal</span>.<span class='function-name'>calculate_evidence</span> (<br>&emsp;&emsp;<span class='arg-var-name'>valid_keys</span>,<br>&emsp;&emsp;<span class='arg-var-name'>d_obs</span>,<br>&emsp;&emsp;<span class='arg-var-name'>sig_d</span>,<br>&emsp;&emsp;<span class='arg-var-name'>pad</span>,<br>):
