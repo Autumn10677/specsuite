@@ -1,5 +1,5 @@
 # Welcome to specsuite!
-For help with getting ```specsuite``` running on your own data, please check out our documentation (FIXME)!
+For help with getting ```specsuite``` running on your own data, please check out the <a href="https://www.autumnstephens.net/specsuite" target="_blank"><strong>documentation page</strong></a>!
 
 ## Introduction
 Although other spectroscopic reduction tools exist, they are often designed for a small subset of instruments, have hard-to-read documentation, or are difficult to debug. ```specsuite``` was designed to address all three of these concerns, providing a set of robust, generalized, and user-friendly reduction tools! As of writing, this reduction pipeline has been tested this reduction pipeline against data from...
