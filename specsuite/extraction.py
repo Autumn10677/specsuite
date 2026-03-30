@@ -311,12 +311,14 @@ def horne_extraction(
                 debug=False,
             )
 
-            V = RN**2 + np.abs(f * P + S)
-            V = np.clip(V, 1e-20, None)
+            V = RN**2 + np.abs(f * P.copy() + S)
+            V[V < 1e-20] = 0
+            # V = np.clip(V, 1e-20, None)
 
             # Re-calculates flux and variance using updated arrays
-            numerator = np.sum(P * (D - S) / V, axis=0)
-            denominator = np.sum(P**2 / V, axis=0)
+            numerator = np.sum(P.copy() * (D - S) / V.copy(), axis=0)
+            denominator = np.sum(P.copy() ** 2 / V.copy(), axis=0)
+
             f = numerator / denominator
             f_var = np.sum(P, axis=0) / denominator
 
