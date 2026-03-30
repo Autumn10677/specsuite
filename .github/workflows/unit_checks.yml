@@ -18,16 +18,11 @@ jobs:
       with:
         fetch-depth: 0   # Required for accurate diffs
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - name: Set up micromamba and create env
+      uses: mamba-org/setup-micromamba@v1
       with:
-        python-version: '3.14'
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install .
-        pip install astropy joblib lxml matplotlib numpy pandas requests scipy tqdm
+        environment-file: environment.yml
+        cache-environment: true
 
     - name: Determine which tests to run
       id: changes
