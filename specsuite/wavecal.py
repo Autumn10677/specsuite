@@ -599,7 +599,7 @@ def correct_wavelengths(
         wavs_2d.append(p_wavecal(pixel_positions - offset) * u.AA)
     wavs_2d = np.array(wavs_2d) * u.AA
 
-    # Adds 2D wavelength array to Rainbow object and aligns SEDs to common wavelength grid
+    # Adds 2D wav array to Rainbow object and aligns SEDs to common wavelength grid
     rainbow.wavelength_2d = wavs_2d.T
     rainbow = rainbow.align_wavelengths()
 
