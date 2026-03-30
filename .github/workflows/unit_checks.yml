@@ -23,6 +23,9 @@ jobs:
       with:
         environment-file: environment.yml
         cache-environment: true
+    
+    - name: Locally install 'specsuite' package
+      run: pip install -e .
 
     - name: Determine which tests to run
       id: changes
