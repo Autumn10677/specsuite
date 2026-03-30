@@ -4,6 +4,7 @@ import pkgutil
 import importlib
 import unittest
 import numpy as np
+import chromatic
 
 # --- Ensure project root is on sys.path so LOCAL specsuite loads ---
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -24,8 +25,10 @@ TYPE_MAP = {
     "list": list,
     "dict": dict,
     "tuple": tuple,
+    "np.poly1d": np.poly1d,
     "np.ndarray": np.ndarray,
     "numpy.ndarray": np.ndarray,
+    "Rainbow": chromatic.Rainbow,
 }
 
 

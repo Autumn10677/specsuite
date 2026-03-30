@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import subprocess
 import warnings
+import os
 
 
 def plot_image(
@@ -87,6 +89,74 @@ def plot_image(
 
     except AssertionError:
         warnings.warn("The provided image is not a valid 2D array")
+
+
+def animate_images(
+    image_array: np.ndarray,
+    delay: int = 10,
+    savedir: str = "result.gif",
+    iterable: list = None,
+    iterable_label: str = "Index",
+    **kwargs,
+):
+    """
+    Attempts to create a GIF from an array of 2D Numpy arrays.
+    This creates a series of temporary images in a '__TEMP_FRAMES__'
+    directory, then uses 'magick' to convert them to a GIF. These
+    frames should be deleted automatically once the GIF has been
+    created. All '**kwargs' will be fed directly into
+    'specsuite.plot_image'.
+
+    Parameters:
+    -----------
+    image_array :: np.ndarray
+        An array containing several 2D images. Each individual image
+        will become a frame in the resulting GIF. Additionally, the
+        GIF will preserve the order of this array.
+    delay :: int
+        The time (1/100 seconds) between frames.
+    savedir :: str
+        The directory (+filename) to save the GIF under.
+    iterable :: list
+        A 1D list with the same length as 'image_array'. This will be
+        plotted at the top of the plot and updates with every frame.
+        If none is provided, this defaults to the image index.
+    iterable_label :: str
+        The 'name' you would like to associate with the 'iterable'.
+        Defaults to 'Index'.
+    """
+
+    # Defaults to frame number
+    if iterable is None:
+        iterable = np.arange(1, len(image_array) + 1)
+
+    # If not required, function could fail without deleting temporary files
+    assert len(image_array) == len(
+        iterable
+    ), "Image array and iterable must have the same length"
+
+    # This should only trigger if function failed to finish before
+    try:
+        os.mkdir("__TEMP_FRAMES__")
+    except FileExistsError:
+        pass
+
+    # Saves every file in a temporary folder
+    for idx, im in enumerate(image_array):
+        plot_image(
+            im,
+            title=f"{iterable_label}: {iterable[idx]:04d}",
+            savedir=f"__TEMP_FRAMES__/{idx:04d}.png",
+            **kwargs,
+        )
+
+    # This runs a terminal command (creates the GIF using 'magick')
+    subprocess.run(["magick", "-delay", str(delay), "__TEMP_FRAMES__/*.png", savedir])
+
+    # Removes the temporary files / directory
+    for idx, _ in enumerate(image_array):
+        os.remove(f"__TEMP_FRAMES__/{idx:04d}.png")
+    os.rmdir("__TEMP_FRAMES__")
 
 
 def _gaussian(x: np.ndarray, A: float, mu: float, sigma: float) -> np.ndarray:
@@ -260,3 +330,64 @@ def flatfield_correction(
         )
 
     return flatfielded_ims
+
+
+def peak_phase_shift(ref_fft, data_fft, alpha=0.5):
+    cross = np.conjugate(ref_fft) * data_fft
+    R = cross / (np.abs(cross) ** alpha + 1e-12)
+
+    corr = np.real(np.fft.ifft(R))
+
+    i = np.argmax(corr)
+    N = len(corr)
+    if i > N // 2:
+        i -= N
+
+    # Sub-pixel quadratic refinement
+    im1 = (i - 1) % N
+    ip1 = (i + 1) % N
+    y0, y1, y2 = corr[im1], corr[i], corr[ip1]
+
+    denom = y0 - 2 * y1 + y2
+    if np.abs(denom) < 1e-12:
+        return float(i)
+
+    sub = 0.5 * (y0 - y2) / denom
+    return i + sub
+
+
+def phase_slope_shift(ref_fft, data_fft, power_frac=0.1):
+    ratio = data_fft / ref_fft
+    phase = np.unwrap(np.angle(ratio))
+    freq = np.fft.fftfreq(len(phase))
+
+    power = np.abs(ref_fft) ** 2
+    low = np.percentile(power, 10)
+    high = np.percentile(power, 95)
+
+    mask = (power > low) & (power < high)
+    mask &= freq != 0
+
+    if np.sum(mask) < 5:
+        return 0.0
+
+    slope, _ = np.polyfit(freq[mask], phase[mask], 1)
+    return -slope / (2 * np.pi)
+
+
+def estimate_shift(ref_fft, data_fft):
+    # Coarse, global estimate
+    coarse = peak_phase_shift(ref_fft, data_fft)
+
+    # Recenter data FFT
+    freq = np.fft.fftfreq(len(ref_fft))
+    data_fft_centered = data_fft * np.exp(2j * np.pi * freq * coarse)
+
+    # Fine, local estimate
+    fine = phase_slope_shift(ref_fft, data_fft_centered)
+
+    # Enforce validity
+    if not np.isfinite(fine) or abs(fine) > 0.5:
+        fine = 0.0
+
+    return coarse + fine
