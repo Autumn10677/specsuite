@@ -1,4 +1,4 @@
-name: specsuite_env_test
+name: specsuite_env
 channels:
   - defaults
 dependencies:
