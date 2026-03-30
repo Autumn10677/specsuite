@@ -1,4 +1,4 @@
-name: specsuite_env
+name: specsuite_env_test
 channels:
   - defaults
 dependencies:
@@ -21,4 +21,4 @@ dependencies:
       - requests>=2.0
       - scipy>=1.0
       - tqdm>=4.0
-      - chromatic
+      - chromatic-lightcurves
