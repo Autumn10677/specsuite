@@ -82,7 +82,7 @@ def load_STIS_spectra(
         ), f"'{name}' exists, but no '_stis' file exists..."
 
     # Loads FITS data for the specified star
-    filename = f"{df["Name"][0]}{df[filetype][0]}.fits"
+    filename = f"{df['Name'][0]}{df[filetype][0]}.fits"
     file_url = f"https://archive.stsci.edu/hlsps/reference-atlases/cdbs/current_calspec/{filename}"  # noqa: E501
     hdul = fits.open(file_url)
 
