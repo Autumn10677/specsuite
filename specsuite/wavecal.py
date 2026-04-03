@@ -5,6 +5,10 @@ from math import sqrt
 from scipy.special import erf
 from tqdm import tqdm
 from astropy.stats import mad_std
+from chromatic import Rainbow
+import astropy.units as u
+
+from .utils import estimate_shift
 
 
 def compute_triplet_values_from_indices(
@@ -514,3 +518,89 @@ def match_features(
             )
 
     return votes
+
+
+def correct_wavelengths(
+    rainbow: Rainbow,
+    p_wavecal: np.poly1d,
+    N_divisions: int = 5,
+):
+    """
+    Corrects for the sub-pixel shifts in the spectral energy
+    distributions (SEDs) of the Rainbow object. This is done by
+    splitting the SED into 'N_divisions' segments, estimating the
+    offset between each sement and a reference SED, and then
+    taking the median over all segments. Using the wavelength solution,
+    p_wavecal, the pixel position shifts are then converted into
+    wavelength shifts.
+
+    Parameters:
+    -----------
+    rainbow :: Rainbow
+        The Rainbow object to correct.
+    p_wavecal :: np.poly1d
+        The wavelength solution to use for converting pixel positions into
+        wavelengths (in units of Angstroms).
+    N_divisions :: int
+        The number of segments to split the SED into for estimating the
+        sub-pixel shifts. A higher number of divisions may yield a more
+        accurate estimate, but may also be more susceptible to noise.
+    """
+
+    # Extracted here for clearer code
+    wavs = rainbow.wavelength
+    flux = rainbow.flux.T
+
+    # Will be used to generate time-dependent wavelength solutions
+    pixel_positions = np.array(range(len(wavs)))
+
+    # Determines the size of each segment for splitting the SEDs
+    wav_indices = np.array(range(len(wavs)))
+    pad = len(wav_indices) // N_divisions
+
+    # I use in-place operations to save memory
+    offsets_array = np.zeros((len(flux), N_divisions))
+
+    # Splits SEDs into N_divisions segments for analysis
+    for idx in range(N_divisions):
+
+        # Uses the median of the first 5 exposrues for a reference SED
+        flux_reference_original = np.log(np.median(flux[:5], axis=0))
+
+        # The 'hanning' window is used to mitigate FFT edge effects
+        start, end = (idx * pad, (idx + 1) * pad)
+        flux_reference = flux_reference_original[start:end].copy()
+        window = np.hanning(len(flux_reference))
+        flux_reference *= window
+
+        reference_freqs = np.fft.fft(flux_reference)
+        offsets_temp = []
+
+        # Calculates the sub-pixel shift for each SED subregion
+        for row in flux:
+
+            # Again, using the 'hanning' window to mitigate FFT edge effects
+            flux_data = row.copy()[start:end].copy()
+            flux_data *= window
+
+            # While this is not perfect, all offsets are later averaged together
+            data_fft = np.fft.fft(flux_data)
+            shift = estimate_shift(reference_freqs, data_fft)
+            offsets_temp.append(shift)
+
+        offsets_array[:, idx] = offsets_temp
+
+    # Takes the average of the inferred offsets across all segments
+    avg_offset = np.median(offsets_array, axis=1)
+
+    # Uses the average offsets to approximate time-dependent wavelength solutions
+    wavs_2d = []
+    for offset in avg_offset:
+        wavs_2d.append(p_wavecal(pixel_positions - offset) * u.AA)
+    wavs_2d = np.array(wavs_2d) * u.AA
+
+    # Adds 2D wav array to Rainbow object and aligns SEDs to common wavelength grid
+    rainbow.wavelength_2d = wavs_2d.T
+    rainbow = rainbow.align_wavelengths()
+
+    return rainbow

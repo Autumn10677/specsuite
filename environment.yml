@@ -21,3 +21,4 @@ dependencies:
       - requests>=2.0
       - scipy>=1.0
       - tqdm>=4.0
+      - chromatic-lightcurves
