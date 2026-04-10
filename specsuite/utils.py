@@ -451,7 +451,7 @@ def estimate_shift(
     --------
     shift :: float
         The estimated sub-pixel shift between the two signals.
-    """    
+    """
 
     # Coarse, global estimate
     coarse = peak_phase_shift(ref_fft, data_fft)

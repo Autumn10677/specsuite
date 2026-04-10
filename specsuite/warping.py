@@ -559,7 +559,7 @@ def extract_background(
     science_images = images.copy()
     if len(science_images.shape) == 2:
         science_images = np.array([science_images])
-        single_image=True
+        single_image = True
     if None in mask_region:
         mask_region = (-1, -1)
 
