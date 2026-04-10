@@ -992,10 +992,43 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#estimate_shift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        estimate_shift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#flatfield_correction" class="md-nav__link">
     <span class="md-ellipsis">
       
         flatfield_correction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#peak_phase_shift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        peak_phase_shift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase_slope_shift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        phase_slope_shift
       
     </span>
   </a>
@@ -1516,10 +1549,43 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#estimate_shift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        estimate_shift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#flatfield_correction" class="md-nav__link">
     <span class="md-ellipsis">
       
         flatfield_correction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#peak_phase_shift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        peak_phase_shift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase_slope_shift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        phase_slope_shift
       
     </span>
   </a>
@@ -1913,7 +1979,7 @@
 <h3 class="hidden-heading" id="extract_background">extract_background</h3>
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.warping</span>.<span class='function-name'>extract_background</span> (<br>&emsp;&emsp;<span class='arg-var-name'>images</span>,<br>&emsp;&emsp;<span class='arg-var-name'>warp_model</span>,<br>&emsp;&emsp;<span class='arg-var-name'>mask_region</span> = <span class='arg-default'>(None, None)</span>,<br>&emsp;&emsp;<span class='arg-var-name'>return_spectrum</span> = <span class='arg-default'>False</span>,<br>&emsp;&emsp;<span class='arg-var-name'>progress</span> = <span class='arg-default'>False</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/warping.py#L502-L649' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/warping.py#L502-L657' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Extracts the sky background for a series of exposures where a trace should be masked out. It uses a 'warp model' that describes how straight emission lines are 'bent' on the imaging plane. This function assumes that flatfielding has been applied and that sky emissions are approximately uniform along the spatial axis.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>images</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A series of exposures to extract backgrounds from.</span><br><span class='variable-name'>warp_model</span> :: <span class='variable-type'>list</span><br><span class='variable-desc'>List of models that describe how vertical lines
@@ -2004,6 +2070,14 @@
     If none is provided, this defaults to the image index.</span><br><span class='variable-name'>iterable_label</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>The 'name' you would like to associate with the 'iterable'.
     Defaults to 'Index'.</span><br></span></p>
 <p class='written-parameters-wrapper'></p></div>
+<h3 class="hidden-heading" id="estimate_shift">estimate_shift</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.utils</span>.<span class='function-name'>estimate_shift</span> (<br>&emsp;&emsp;<span class='arg-var-name'>ref_fft</span>,<br>&emsp;&emsp;<span class='arg-var-name'>data_fft</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L433-L470' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Attempts to estimate the sub-pixel shift between two signals. This is done in two steps, first by finding the peak coarse shift, then by refining this estimate using the slope of the phase correlation.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>ref_fft</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The Fourier transform of the reference signal.</span><br><span class='variable-name'>data_fft</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The Fourier transform of the data signal.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>shift</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>The estimated sub-pixel shift between the two signals.</span><br></span></p></div>
 <h3 class="hidden-heading" id="flatfield_correction">flatfield_correction</h3>
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.utils</span>.<span class='function-name'>flatfield_correction</span> (<br>&emsp;&emsp;<span class='arg-var-name'>image</span>,<br>&emsp;&emsp;<span class='arg-var-name'>flat</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
@@ -2015,6 +2089,23 @@
     several flatfield exposures.</span><br><span class='variable-name'>debug</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Allows for diagnostic plotting.</span><br></span></p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>flatfielded_ims</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The resulting image(s) after being divided by the normalized
     flatfield.</span><br></span></p></div>
+<h3 class="hidden-heading" id="peak_phase_shift">peak_phase_shift</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.utils</span>.<span class='function-name'>peak_phase_shift</span> (<br>&emsp;&emsp;<span class='arg-var-name'>ref_fft</span>,<br>&emsp;&emsp;<span class='arg-var-name'>data_fft</span>,<br>&emsp;&emsp;<span class='arg-var-name'>alpha</span> = <span class='arg-default'>0.5</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L335-L386' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Estimates the shift between two signals by finding the peak of the phase correlation. This is a coarse estimate that can be refined using the 'phase_slope_shift' function.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>ref_fft</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The Fourier transform of the reference signal.</span><br><span class='variable-name'>data_fft</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The Fourier transform of the data signal.</span><br><span class='variable-name'>alpha</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>A power to apply to the magnitude of the cross-correlation. This</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>shift</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>The estimated shift between the two signals. This can be a
+    non-integer value due to sub-pixel refinement.</span><br></span></p></div>
+<h3 class="hidden-heading" id="phase_slope_shift">phase_slope_shift</h3>
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.utils</span>.<span class='function-name'>phase_slope_shift</span> (<br>&emsp;&emsp;<span class='arg-var-name'>ref_fft</span>,<br>&emsp;&emsp;<span class='arg-var-name'>data_fft</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L389-L430' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Estimates the sub-pixel shift between two signals by calculating the slope of the phase correlation. This is a refinement step that can be applied after finding the peak shift using 'peak_phase_shift'.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>ref_fft</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The Fourier transform of the reference signal.</span><br><span class='variable-name'>data_fft</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The Fourier transform of the data signal.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>shift</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>An estimate of the sub-pixel shift between the two signals.</span><br></span></p></div>
 <h3 class="hidden-heading" id="plot_image">plot_image</h3>
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.utils</span>.<span class='function-name'>plot_image</span> (<br>&emsp;&emsp;<span class='arg-var-name'>image</span>,<br>&emsp;&emsp;<span class='arg-var-name'>xlim</span> = <span class='arg-default'>None</span>,<br>&emsp;&emsp;<span class='arg-var-name'>ylim</span> = <span class='arg-default'>None</span>,<br>&emsp;&emsp;<span class="arg-var-name">xlabel</span> = <span class="arg-default">"Dispersion Axis (pix)"</span>,<br>&emsp;&emsp;<span class="arg-var-name">ylabel</span> = <span class="arg-default">"Cross-Dispersion Axis (pix)"</span>,<br>&emsp;&emsp;<span class="arg-var-name">cbar_label</span> = <span class="arg-default">"Counts"</span>,<br>&emsp;&emsp;<span class="arg-var-name">title</span> = <span class="arg-default">""</span>,<br>&emsp;&emsp;<span class='arg-var-name'>figsize</span> = <span class='arg-default'>(10, 3)</span>,<br>&emsp;&emsp;<span class="arg-var-name">cmap</span> = <span class="arg-default">"inferno"</span>,<br>&emsp;&emsp;<span class="arg-var-name">savedir</span> = <span class="arg-default">"None"</span>,<br>&emsp;&emsp;<span class='arg-var-name'>kwargs</span>,<br>):
