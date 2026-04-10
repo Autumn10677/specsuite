@@ -1,3 +1,4 @@
+from importlib.metadata import version
 from .extraction import *  # noqa
 from .loading import *  # noqa
 from .throughput import *  # noqa
@@ -7,4 +8,4 @@ from .widget import *  # noqa
 from .wavecal import *  # noqa
 
 __all__ = []
-__version__ = "1.1.2"
+__version__ = version("specsuite")
