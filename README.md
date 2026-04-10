@@ -31,7 +31,7 @@ We have provided a handful of files and scripts that should help you get started
 - ```specsuite_env.yml``` ~ A working Conda environment for the current version of the package.
 - ```workflow.smk``` ~ This is a "snakemake workflow" set to run on some sample data taken from APO's long-slit spectrograph.
 
-To run this workflow on your own computer, first clone the repository using...
+Note that using the 'specsuite_env.yml' requires you to have Conda already installed on your computer. Instructions on installing Conda for Windows, macOS, and Linux can be found <a href="https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html" target="_blank"><strong>here</strong></a>! To run this workflow on your own computer, first clone the repository using...
 ```bash
 git clone https://github.com/Autumn10677/specsuite.git
 cd specsuite

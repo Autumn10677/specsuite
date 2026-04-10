@@ -332,12 +332,38 @@ def flatfield_correction(
     return flatfielded_ims
 
 
-def peak_phase_shift(ref_fft, data_fft, alpha=0.5):
+def peak_phase_shift(
+    ref_fft: np.ndarray,
+    data_fft: np.ndarray,
+    alpha: float = 0.5,
+) -> float:
+    """
+    Estimates the shift between two signals by finding the peak of the
+    phase correlation. This is a coarse estimate that can be refined
+    using the 'phase_slope_shift' function.
+
+    Parameters:
+    -----------
+    ref_fft :: np.ndarray
+        The Fourier transform of the reference signal.
+    data_fft :: np.ndarray
+        The Fourier transform of the data signal.
+    alpha :: float
+        A power to apply to the magnitude of the cross-correlation. This
+
+    Returns:
+    --------
+    shift :: float
+        The estimated shift between the two signals. This can be a
+        non-integer value due to sub-pixel refinement.
+    """
+
+    # Calculates the phase correlation and applies a power to the magnitude
     cross = np.conjugate(ref_fft) * data_fft
     R = cross / (np.abs(cross) ** alpha + 1e-12)
-
     corr = np.real(np.fft.ifft(R))
 
+    # Finds the index of the peak correlation, adjusts if necessary
     i = np.argmax(corr)
     N = len(corr)
     if i > N // 2:
@@ -348,26 +374,55 @@ def peak_phase_shift(ref_fft, data_fft, alpha=0.5):
     ip1 = (i + 1) % N
     y0, y1, y2 = corr[im1], corr[i], corr[ip1]
 
+    # If the parabola is too flat, then the sub-pixel shift is likely not meaningful
     denom = y0 - 2 * y1 + y2
     if np.abs(denom) < 1e-12:
         return float(i)
 
+    # Calculates the sub-pixel shift by finding the vertex of the parabola
     sub = 0.5 * (y0 - y2) / denom
-    return i + sub
+    shift = i + sub
+
+    return shift
 
 
-def phase_slope_shift(ref_fft, data_fft, power_frac=0.1):
+def phase_slope_shift(
+    ref_fft: np.ndarray,
+    data_fft: np.ndarray,
+) -> float:
+    """
+    Estimates the sub-pixel shift between two signals by calculating the
+    slope of the phase correlation. This is a refinement step that can be
+    applied after finding the peak shift using 'peak_phase_shift'.
+
+    Parameters:
+    -----------
+    ref_fft :: np.ndarray
+        The Fourier transform of the reference signal.
+    data_fft :: np.ndarray
+        The Fourier transform of the data signal.
+
+    Returns:
+    --------
+    shift :: float
+        An estimate of the sub-pixel shift between the two signals.
+    """
+
+    # Calculates the phase correlation and unwraps it to prevent discontinuities
     ratio = data_fft / ref_fft
     phase = np.unwrap(np.angle(ratio))
     freq = np.fft.fftfreq(len(phase))
 
+    # Finds frequencies within a reasonable bandpass to mitigate noise/systematics
     power = np.abs(ref_fft) ** 2
     low = np.percentile(power, 10)
     high = np.percentile(power, 95)
 
+    # Masks undesired badpass
     mask = (power > low) & (power < high)
     mask &= freq != 0
 
+    # Triggers if too few frequencies are left over after masking
     if np.sum(mask) < 5:
         return 0.0
 
@@ -375,7 +430,29 @@ def phase_slope_shift(ref_fft, data_fft, power_frac=0.1):
     return -slope / (2 * np.pi)
 
 
-def estimate_shift(ref_fft, data_fft):
+def estimate_shift(
+    ref_fft: np.ndarray,
+    data_fft: np.ndarray,
+) -> float:
+    """
+    Attempts to estimate the sub-pixel shift between two signals.
+    This is done in two steps, first by finding the peak coarse
+    shift, then by refining this estimate using the slope of the phase
+    correlation.
+
+    Parameters:
+    -----------
+    ref_fft :: np.ndarray
+        The Fourier transform of the reference signal.
+    data_fft :: np.ndarray
+        The Fourier transform of the data signal.
+
+    Returns:
+    --------
+    shift :: float
+        The estimated sub-pixel shift between the two signals.
+    """
+
     # Coarse, global estimate
     coarse = peak_phase_shift(ref_fft, data_fft)
 

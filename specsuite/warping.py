@@ -552,10 +552,14 @@ def extract_background(
         that given pixel.
     """
 
+    # Used at the end to determine whether a 2D or 3D array should be returned
+    single_image = False
+
     # Ensure arrays are 3D and valid
     science_images = images.copy()
     if len(science_images.shape) == 2:
         science_images = np.array([science_images])
+        single_image = True
     if None in mask_region:
         mask_region = (-1, -1)
 
@@ -643,6 +647,10 @@ def extract_background(
             vmin=VMIN,
             vmax=VMAX,
         )
+
+    # Returns a 2D array if only a single image was provided
+    if single_image:
+        background_images = background_images[0]
 
     if return_spectrum:
         return background_images, supersampled_effpix, supersampled_spectra, effpix_map
