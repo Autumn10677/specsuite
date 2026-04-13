@@ -29,6 +29,7 @@ TYPE_MAP = {
     "np.ndarray": np.ndarray,
     "numpy.ndarray": np.ndarray,
     "Rainbow": chromatic.Rainbow,
+    "ExtinctionModel": specsuite.ExtinctionModel,
 }
 
 
