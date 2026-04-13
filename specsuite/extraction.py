@@ -534,6 +534,21 @@ def estimate_extinction_coefficients(
         1D array of uncertainties associated with each estimated extinction coefficient.
     """
 
+    assert (max_iterations > 0) and isinstance(
+        max_iterations, int
+    ), "'max_iterations' must be a positive integer!"
+    assert clip_threshold > 0, "'clip_threshold' must be positive!"
+
+    # Since '.shape' is used, this ensures provided data are Numpy arrays
+    flux = np.array(flux)
+    error = np.array(error)
+    airmass = np.array(airmass)
+
+    assert flux.shape == error.shape, "Flux and error arrays must have the same shape!"
+    assert flux.shape[0] == len(
+        airmass
+    ), "Number of observations in flux must match length of airmass array!"
+
     # Initialize empty arrays
     taus = np.array([])
     taus_error = np.array([])
@@ -1214,10 +1229,16 @@ def fit_achromatic_bumps(
         the multiplicative correction factor to remove achromatic bumps.
     """
 
-    assert flux.shape == error.shape, "Flux and error must have the same shape"
+    assert (
+        times.shape == airmasses.shape
+    ), "Times and airmasses must have the same shape!"
+    assert (
+        times.shape[0] == flux.shape[0]
+    ), "Times and flux must have the same number of exposures!"
+    assert flux.shape == error.shape, "Flux and error must have the same shape!"
     assert (max_iterations > 0) and isinstance(
         max_iterations, int
-    ), "max_iterations must be a positive integer"
+    ), "'max_iterations' must be a positive integer!"
 
     # Ensure times is a numpy array with no units
     if isinstance(times, u.Quantity):

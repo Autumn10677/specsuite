@@ -495,6 +495,14 @@ def convolve_to_resolution(
         Convolved flux array at the same wavelengths.
     """
 
+    # These are logical assertions, not technically required to run, though
+    assert len(x) == len(y), "Wavelength and flux arrays must have the same length!"
+    assert R > 0, "Resolution R must be a positive number!"
+
+    # Checks for NaN values, which would cause the convolution to fail
+    assert not np.any(np.isnan(x)), "Wavelength array cannot contain NaN values!"
+    assert not np.any(np.isnan(y)), "Flux array cannot contain NaN values!"
+
     # Compute the log-lambda spacing
     loglam = np.log(x)
     dloglam = np.mean(np.diff(loglam))
