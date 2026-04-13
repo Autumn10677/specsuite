@@ -603,39 +603,39 @@ def generate_extinction_model(
 
     Parameters:
     -----------
-    wavelengths: np.ndarray
+    wavelengths :: np.ndarray
         A 1D array of wavelengths at which to evaluate the extinction model.
         Ideally, this should have some astropy units attached, but if not
         will assume Angstroms.
-    rs_tau0: float
+    rs_tau0 :: float
         The unitless tau0 parameter for Rayleigh scattering, which sets the
         overall strength of the Rayleigh scattering contribution.
-    o2_abundance: float
+    o2_abundance :: float
         The abundance of O2 in the atmosphere, which scales the O2 absorption
         model. Typically, a value around 100000-300000 is reasonable for
         Earth's atmosphere.
-    humidity: float
+    humidity :: float
         The relative humidity percentage, which scales the H2O absorption model.
         Only values 0 <= humidity <= 100 are physically meaningful.
-    w_offset: float
+    w_offset :: float
         A wavelength offset in the same units as the input wavelengths, which
         accounts for a linear shift in the wavelength solution.
-    loss_constant: float
+    loss_constant :: float
         A constant multiplicative factor between 0 and 1 that accounts for
         achromatic losses such as clouds or instrumental throughput issues.
-    R: float
+    R :: float
         The spectral resolution (lambda/delta_lambda) to which the model should
         be convolved. Uses an FFT convolution for runtime efficiency.
-    airmass: float
+    airmass :: float
         The airmass of the observation, which scales all extinction components.
-    model_dir: str
+    model_dir :: str
         The directory where the pre-computed O2 and H2O extinction models are stored
         as .npy files. The function expects three files: 'o2_array.npy',
         'humidity_array.npy', and 'model_wavelengths.npy'.
 
     Returns:
     --------
-    complete_model: np.ndarray
+    complete_model :: np.ndarray
          The combined extinction model evaluated at the input wavelengths.
     """
 
@@ -710,7 +710,7 @@ def fit_extinction_model(
     taus_error: np.ndarray,
     p0: dict = None,
     bounds: dict = None,
-    debug=False,
+    debug: bool = False,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Fits a multi-component telluric extinction model to the input data.
@@ -1296,7 +1296,7 @@ def estimate_atmospheric_loss(
     max_iterations: int = 5,
     outlier_threshold: float = 5.0,
     return_components: bool = False,
-    debug=False,
+    debug: bool = False,
 ) -> np.ndarray | tuple[np.ndarray, dict[str, np.ndarray], np.ndarray]:
     """
     Uses a multi-component modelling approach to estimate atmospheric
