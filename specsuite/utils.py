@@ -1,3 +1,4 @@
+from scipy.signal import fftconvolve
 import matplotlib.pyplot as plt
 import numpy as np
 import subprocess
@@ -468,3 +469,53 @@ def estimate_shift(
         fine = 0.0
 
     return coarse + fine
+
+
+def convolve_to_resolution(
+    x: np.ndarray,
+    y: np.ndarray,
+    R: float,
+):
+    """
+    Convolves an input spectrum using a Gaussian kernel where the
+    kernel width is determined by the desired resolution R.
+
+    Parameters:
+    -----------
+    x :: np.ndarray
+        Wavelength array (in Angstroms).
+    y :: np.ndarray
+        Flux array corresponding to the wavelengths.
+    R :: float
+        Desired spectral resolution (lambda/delta_lambda).
+
+    Returns:
+    --------
+    y_conv :: np.ndarray
+        Convolved flux array at the same wavelengths.
+    """
+
+    # Compute the log-lambda spacing
+    loglam = np.log(x)
+    dloglam = np.mean(np.diff(loglam))
+
+    # Convert R to sigma in log-lambda space
+    sigma_loglam = 1 / R
+    sigma_pixels = sigma_loglam / dloglam
+
+    # Match scipy default: truncate at 4 sigma
+    truncate = 4.0
+    radius = int(truncate * sigma_pixels + 0.5)
+
+    # Build Gaussian kernel
+    grid = np.arange(-radius, radius + 1)
+    kernel = np.exp(-0.5 * (grid / sigma_pixels) ** 2)
+    kernel /= np.sum(kernel)
+
+    # Reflect padding to mimic gaussian_filter1d(mode='reflect')
+    y_padded = np.pad(y, pad_width=radius, mode="reflect")
+
+    # FFT convolution
+    y_conv = fftconvolve(y_padded, kernel, mode="same")[radius:-radius]
+
+    return y_conv
