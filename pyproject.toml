@@ -58,3 +58,9 @@ packages = ["specsuite"]
 [tool.hatch.version]
 source = "vcs"
 fallback-version = "0.0.0"
+
+[tool.hatch.build.targets.wheel]
+packages = ["specsuite"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"specsuite/extinction_models" = "specsuite/extinction_models"
