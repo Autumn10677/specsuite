@@ -1,4 +1,5 @@
 import unittest
+import numpy as np
 
 import specsuite.utils as utils
 import specsuite.loading as loading
@@ -133,6 +134,59 @@ class TestUtilFunctions(unittest.TestCase):
         # Ensures that invalid shapes are caught before running correction
         with self.assertRaises(AssertionError):
             utils.flatfield_correction(science, [[], []])
+
+    def test_convolve_to_resolution(self):
+
+        # Ensures that x and y must have the same length
+        with self.assertRaises(AssertionError):
+            utils.convolve_to_resolution(
+                x=[1, 2, 3, 4, 5],
+                y=[1, 2, 3, 4, 5, 6],
+                R=1000,
+            )
+
+        # Spectral resolution cannot be zero
+        with self.assertRaises(AssertionError):
+            utils.convolve_to_resolution(
+                x=[1, 2, 3, 4, 5, 6],
+                y=[1, 2, 3, 4, 5, 6],
+                R=0,
+            )
+
+        # Spectral resolution also cannot be negative
+        with self.assertRaises(AssertionError):
+            utils.convolve_to_resolution(
+                x=[1, 2, 3, 4, 5, 6],
+                y=[1, 2, 3, 4, 5, 6],
+                R=-10,
+            )
+
+        # Cannot have NaN values in your wavelengths
+        with self.assertRaises(AssertionError):
+            utils.convolve_to_resolution(
+                x=[1, 2, 3, 4, 5, np.nan],
+                y=[1, 2, 3, 4, 5, 6],
+                R=1000,
+            )
+
+        # Also cannot have NaN values in your fluxes
+        with self.assertRaises(AssertionError):
+            utils.convolve_to_resolution(
+                x=[1, 2, 3, 4, 5, 6],
+                y=[1, 2, 3, 4, 5, np.nan],
+                R=1000,
+            )
+
+        # Runs 10 random, valid calls to test expected behavior
+        for _ in range(10):
+            x = np.sort(np.random.uniform(5000, 6000, size=1000))
+            y = np.random.normal(loc=1.0, scale=0.1, size=1000)
+            R = np.random.uniform(500, 20000)
+
+            convolved_y = utils.convolve_to_resolution(x, y, R)
+
+            # Output should have the same shape as the input
+            self.assertTrue(convolved_y.shape == y.shape)
 
 
 if __name__ == "__main__":
