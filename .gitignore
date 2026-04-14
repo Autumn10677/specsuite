@@ -1,5 +1,4 @@
 .snakemake
-*.npy
 *.png
 sandbox/
 site/
