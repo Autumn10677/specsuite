@@ -5,33 +5,44 @@ on:
     types:
       - published
 
-permissions: {} # no permissions to the token at global level
+permissions: {} # no permissions globally
 
 jobs:
   build_package:
     name: Build the package
     runs-on: ubuntu-latest
+
     permissions:
-      contents: read # this job only needs read access
+      contents: read
+
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
+
       - name: Setup Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: "3.12" # Select the version that you want to build your package on
-      - name: Upgrade pip, install Hatch, and check Hatch version
+          python-version: "3.12"
+
+      - name: Upgrade pip and install Hatch
         run: |
-          pip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install --upgrade hatch
-          hatch --version # Verify that Hatch is installed
+          hatch --version
+
       - name: Build artifacts
         run: hatch build
-      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+
+      - name: Verify dist contents
+        run: ls -R dist
+
+      - name: Upload distribution artifacts
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
-          path: dist/
-          name: dist.zip
+          name: dist
+          path: dist/*
           if-no-files-found: error
           retention-days: 1
 
@@ -39,18 +50,27 @@ jobs:
     name: Publish release to PyPI
     needs: [build_package]
     runs-on: ubuntu-latest
+
     environment:
       name: pypi
       url: https://pypi.org/project/specsuite/
+
     permissions:
       contents: read
-      id-token: write
-    steps:
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
-        with:
-          name: dist.zip
-          path: dist/
+      id-token: write  # required for trusted publishing
 
-      - uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e
+    steps:
+      - name: Download distribution artifacts
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: dist
+          path: dist
+
+      - name: Verify dist contents
+        run: ls -R dist
+
+      - name: Publish package to PyPI
+        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e
         with:
           skip-existing: true
+          verbose: true
