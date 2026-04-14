@@ -2,6 +2,8 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import astropy.units as u
+import warnings
+from importlib.resources import files
 
 from tqdm import tqdm
 from astropy.stats import mad_std
@@ -13,6 +15,9 @@ from .utils import (
     convolve_to_resolution,
     plot_image,
 )
+
+
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 
 def generate_spatial_profile(
@@ -495,6 +500,11 @@ class ExtinctionModel:
         return np.exp(np.log(self.throughput_model) * airmass)
 
 
+def _load_extinction_file(name: str):
+    path = files("specsuite.extinction_models") / f"{name}.npy"
+    return np.load(path)
+
+
 def estimate_extinction_coefficients(
     airmass: np.ndarray,
     flux: np.ndarray,
@@ -604,10 +614,9 @@ def generate_extinction_model(
     o2_abundance: float = 20000,
     humidity: float = 50,
     w_offset: float = 0.0,
-    loss_constant: float = 0.0,
+    loss_constant: float = 1.0,
     R: float = 2000,
     airmass: float = 1.0,
-    model_dir: str = "./extinction_models",
 ) -> np.ndarray:
     """
     Generates a model for telluric extinction with individual contributions
@@ -643,10 +652,6 @@ def generate_extinction_model(
         be convolved. Uses an FFT convolution for runtime efficiency.
     airmass :: float
         The airmass of the observation, which scales all extinction components.
-    model_dir :: str
-        The directory where the pre-computed O2 and H2O extinction models are stored
-        as .npy files. The function expects three files: 'o2_array.npy',
-        'humidity_array.npy', and 'model_wavelengths.npy'.
 
     Returns:
     --------
@@ -670,23 +675,10 @@ def generate_extinction_model(
     assert airmass >= 1, "Airmass must be greater than or equal to 0!"
     assert 0 <= loss_constant <= 1, "Loss constant must be between 0 and 1!"
 
-    # Exception only triggers if one of the three files are not found
-    try:
-
-        # Loads loss rate models and masks out wavelengths outside the data range
-        o2_model = np.load(os.path.join(model_dir, "o2_array.npy"))
-        h2o_model = np.load(os.path.join(model_dir, "humidity_array.npy"))
-        model_wavelengths = np.load(os.path.join(model_dir, "model_wavelengths.npy"))
-
-    # Does not specify which specific file is missing
-    except FileNotFoundError:
-        raise FileNotFoundError(
-            f"Model files not found in '{model_dir}'!"
-            + "Ensure the following arrays are present:\n"
-            + "- 'o2_array.npy'\n"
-            + "- 'humidity_array.npy'\n"
-            + "- 'model_wavelengths.npy'"
-        )
+    # Loads loss rate models + wavelengths from package files
+    o2_model = _load_extinction_file("o2_array")
+    h2o_model = _load_extinction_file("humidity_array")
+    model_wavelengths = _load_extinction_file("model_wavelengths")
 
     # Restrict to the wavelength range of the data
     wmin, wmax = np.min(model_wavelengths), np.max(model_wavelengths)
