@@ -1419,8 +1419,6 @@ def estimate_atmospheric_loss(
         debug=debug,
     )
 
-    print("TRYING TO TEST A NEW INSTALL")
-
     # Step 5: Combine chromatic and achromatic corrections
     atmospheric_correction_model = 1 / achromatic_correction / chromatic_correction
 
