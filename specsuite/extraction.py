@@ -1155,7 +1155,7 @@ def _infer_achromatic_deviations(
         composite_mask[idx] = mask
 
         # In-place operation to save memory
-        achromatic_bump[idx] = 1 - np.nanmedian(ratios[idx][mask])
+        achromatic_bump[idx] = np.nanmedian(ratios[idx][mask])
         achromatic_bump_error[idx] = mad_std(ratios[idx][mask])
 
     if debug:
@@ -1261,7 +1261,7 @@ def fit_achromatic_bumps(
     )
 
     # Ensures that 'achromatic_correction' is a simple multiplicative correction
-    achromatic_correction = 1 + achromatic_bump.copy()
+    achromatic_correction = achromatic_bump.copy()
     achromatic_correction_error = achromatic_bump_error.copy()
 
     # Optional debugging plots
@@ -1420,7 +1420,7 @@ def estimate_atmospheric_loss(
     )
 
     # Step 5: Combine chromatic and achromatic corrections
-    atmospheric_correction_model = achromatic_correction / chromatic_correction
+    atmospheric_correction_model = 1 / achromatic_correction / chromatic_correction
 
     # Optional: Return individual extinction components if requested
     if return_components:
