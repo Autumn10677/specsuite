@@ -1268,7 +1268,7 @@ def fit_achromatic_bumps(
     if debug:
 
         # Flux array copied to prevent accidentally overwriting the original flux values
-        corrected_flux = flux_array * achromatic_correction
+        corrected_flux = flux_array / achromatic_correction
 
         _, axs = plt.subplots(1, 2, figsize=(16, 8), sharex=True, sharey=True)
         vmin, vmax = np.percentile(corrected_flux, [1, 99])
