@@ -12,6 +12,7 @@ nav:
     - Wavelength Calibration: wavelength_calibration.ipynb
   - Additional Tools:
     - Flux Calibration: flux_calibration.ipynb
+    - Telluric Correction: telluric_correction.ipynb
   - Examples:
     - KOSMOS: kosmos_example.ipynb
     - GMOS-N: gmos_example.ipynb
