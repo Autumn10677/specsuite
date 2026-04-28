@@ -92,7 +92,13 @@ def generate_spatial_profile(
         for idx in range(len(cols_binned)):
 
             try:
-                y = binned_image[:, idx]
+
+                # This should prevent -np.inf from slipping through
+                y = np.clip(
+                    binned_image[:, idx],
+                    -1e20,
+                    None,
+                )
 
                 if run_number == 0:
                     p0[1] = np.argmax(y)
@@ -226,6 +232,7 @@ def horne_extraction(
     RN: float | np.ndarray = 0.0,
     bin_size: int = 16,
     max_iter: int = 5,
+    return_spatial_profiles: bool = False,
     repeat: bool = True,
     debug: bool = False,
     progress: bool = False,
@@ -265,6 +272,10 @@ def horne_extraction(
         for. The cosmic ray masking has been removed, so the only benefit
         from increasing 'max_iter' is the potential to get a better
         constraint on the spatial profile.
+    return_spatial_profiles :: bool
+        Determines whether or not to return all spatial profiles. If yes, the
+        third output of this function will be an array filled with the final
+        spatial profile used to extract flux from the corresponding exposure.
     repeat :: bool
         Whether to repeat the spatial profile generation once an initial
         pass has been made. When your data is particularly noisy, it is
@@ -288,11 +299,17 @@ def horne_extraction(
         images = np.array([images])
         backgrounds = np.array([backgrounds])
 
-    # Initializes several useful arrays
+    # Extracts data shape information
     N_images = len(images)
+    N_locations = len(images[0])
     N_wavelengths = len(images[0][0])
+
+    # Initializes several useful arrays
     flux = np.zeros((N_wavelengths, N_images))
     flux_err = np.zeros((N_wavelengths, N_images))
+    all_spatial_profiles = np.zeros(
+        (N_images, N_locations, N_wavelengths)
+    )
 
     # Iterates over every image
     for idx in tqdm(
@@ -305,16 +322,21 @@ def horne_extraction(
         V = RN**2 + D
 
         # Initializes flux using median to mitigate cosmic rays
-        f = np.median(images + backgrounds, axis=0)
+        f = np.nanmedian(images + backgrounds, axis=0)
 
         step = 0
 
         # Iterates until erroneous pixels have been flagged and removed
         while step < max_iter:
 
+            # Should catch bad values caused by division with flux array
+            f = np.clip(f, 0, None)
+            normed_image = (D - S) / f
+            normed_image = np.nan_to_num(normed_image, nan=1.0, posinf=1.0)
+
             # Generates new spatial profile and variance estimate
             P = generate_spatial_profile(
-                (D - S) / f,
+                normed_image,
                 bin_size=bin_size,
                 profile=profile,
                 profile_order=profile_order,
@@ -324,7 +346,6 @@ def horne_extraction(
 
             V = RN**2 + np.abs(f * P.copy() + S)
             V[V < 1e-20] = 0
-            # V = np.clip(V, 1e-20, None)
 
             # Re-calculates flux and variance using updated arrays
             numerator = np.sum(P.copy() * (D - S) / V.copy(), axis=0)
@@ -337,6 +358,7 @@ def horne_extraction(
 
         flux[:, idx] = f
         flux_err[:, idx] = np.sqrt(f_var)
+        all_spatial_profiles[idx] = P
 
     flux = flux.T
     flux_err = flux_err.T
@@ -355,7 +377,7 @@ def horne_extraction(
         )
         plt.plot(
             pixel_positions,
-            np.median(flux, axis=0),
+            np.nanmedian(flux, axis=0),
             color="salmon",
             label="Median Exposure",
             zorder=-999,
@@ -365,6 +387,9 @@ def horne_extraction(
         plt.ylabel("Extracted Flux / Pixel")
         plt.legend()
         plt.show()
+
+    if return_spatial_profiles:
+        return flux, flux_err, all_spatial_profiles
 
     return flux, flux_err
 
