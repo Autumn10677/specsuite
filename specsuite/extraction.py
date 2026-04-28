@@ -307,9 +307,7 @@ def horne_extraction(
     # Initializes several useful arrays
     flux = np.zeros((N_wavelengths, N_images))
     flux_err = np.zeros((N_wavelengths, N_images))
-    all_spatial_profiles = np.zeros(
-        (N_images, N_locations, N_wavelengths)
-    )
+    all_spatial_profiles = np.zeros((N_images, N_locations, N_wavelengths))
 
     # Iterates over every image
     for idx in tqdm(
