@@ -1,11 +1,12 @@
 from importlib.metadata import version, PackageNotFoundError
-from .extraction import *  # noqa
-from .loading import *  # noqa
+from .cosmic_rays import *  # noqa
 from .throughput import *  # noqa
-from .utils import *  # noqa
+from .extraction import *  # noqa
 from .warping import *  # noqa
-from .widget import *  # noqa
+from .loading import *  # noqa
 from .wavecal import *  # noqa
+from .widget import *  # noqa
+from .utils import *  # noqa
 
 __all__ = []
 try:
