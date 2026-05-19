@@ -352,6 +352,8 @@ def peak_phase_shift(
         The Fourier transform of the data signal.
     alpha :: float
         A power to apply to the magnitude of the cross-correlation. This
+        can dampen or amplify the normalization factor, a factor of 0.5
+        has worked reasonably well as a default.
 
     Returns:
     --------
@@ -362,7 +364,7 @@ def peak_phase_shift(
 
     # Calculates the phase correlation and applies a power to the magnitude
     cross = np.conjugate(ref_fft) * data_fft
-    R = cross / (np.abs(cross) ** alpha + 1e-12)
+    R = cross / np.clip(np.abs(cross) ** alpha, 1e-12, None)
     corr = np.real(np.fft.ifft(R))
 
     # Finds the index of the peak correlation, adjusts if necessary
@@ -378,6 +380,7 @@ def peak_phase_shift(
 
     # If the parabola is too flat, then the sub-pixel shift is likely not meaningful
     denom = y0 - 2 * y1 + y2
+
     if np.abs(denom) < 1e-12:
         return float(i)
 
