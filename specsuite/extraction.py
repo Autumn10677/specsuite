@@ -92,7 +92,13 @@ def generate_spatial_profile(
         for idx in range(len(cols_binned)):
 
             try:
-                y = binned_image[:, idx]
+
+                # This should prevent -np.inf from slipping through
+                y = np.clip(
+                    binned_image[:, idx],
+                    -1e20,
+                    None,
+                )
 
                 if run_number == 0:
                     p0[1] = np.argmax(y)
@@ -226,6 +232,8 @@ def horne_extraction(
     RN: float | np.ndarray = 0.0,
     bin_size: int = 16,
     max_iter: int = 5,
+    masks: np.ndarray = None,
+    return_spatial_profiles: bool = False,
     repeat: bool = True,
     debug: bool = False,
     progress: bool = False,
@@ -265,6 +273,14 @@ def horne_extraction(
         for. The cosmic ray masking has been removed, so the only benefit
         from increasing 'max_iter' is the potential to get a better
         constraint on the spatial profile.
+    masks :: np.ndarray
+        A single (or multiple) 2D mask containing pixels that represent
+        known outliers in your data. This can be used to handle dead pixels,
+        cosmic rays, etc.
+    return_spatial_profiles :: bool
+        Determines whether or not to return all spatial profiles. If yes, the
+        third output of this function will be an array filled with the final
+        spatial profile used to extract flux from the corresponding exposure.
     repeat :: bool
         Whether to repeat the spatial profile generation once an initial
         pass has been made. When your data is particularly noisy, it is
@@ -282,17 +298,28 @@ def horne_extraction(
         An array containing the extracted error for each exposure.
     """
 
+    if masks is None:
+        M = np.ones(images.shape)
+    else:
+        assert images.shape == masks.shape
+        M = masks.copy()
+
     # Converts 2D arrays to 3D arrays
     original_shape = images.shape
     if len(original_shape) == 2:
         images = np.array([images])
         backgrounds = np.array([backgrounds])
+        masks = np.array([masks])
+
+    # Extracts data shape information
+    N_images = len(images)
+    N_locations = len(images[0])
+    N_wavelengths = len(images[0][0])
 
     # Initializes several useful arrays
-    N_images = len(images)
-    N_wavelengths = len(images[0][0])
     flux = np.zeros((N_wavelengths, N_images))
     flux_err = np.zeros((N_wavelengths, N_images))
+    all_spatial_profiles = np.zeros((N_images, N_locations, N_wavelengths))
 
     # Iterates over every image
     for idx in tqdm(
@@ -305,16 +332,21 @@ def horne_extraction(
         V = RN**2 + D
 
         # Initializes flux using median to mitigate cosmic rays
-        f = np.median(images + backgrounds, axis=0)
+        f = np.sum(D - S, axis=0)
 
         step = 0
 
         # Iterates until erroneous pixels have been flagged and removed
         while step < max_iter:
 
+            # Should catch bad values caused by division with flux array
+            f = np.clip(f, 0, None)
+            normed_image = (D - S) / f
+            normed_image = np.nan_to_num(normed_image, nan=1.0, posinf=1.0)
+
             # Generates new spatial profile and variance estimate
             P = generate_spatial_profile(
-                (D - S) / f,
+                normed_image,
                 bin_size=bin_size,
                 profile=profile,
                 profile_order=profile_order,
@@ -324,19 +356,19 @@ def horne_extraction(
 
             V = RN**2 + np.abs(f * P.copy() + S)
             V[V < 1e-20] = 0
-            # V = np.clip(V, 1e-20, None)
 
             # Re-calculates flux and variance using updated arrays
-            numerator = np.sum(P.copy() * (D - S) / V.copy(), axis=0)
-            denominator = np.sum(P.copy() ** 2 / V.copy(), axis=0)
+            numerator = np.sum(M[idx] * P.copy() * (D - S) / V.copy(), axis=0)
+            denominator = np.sum(M[idx] * P.copy() ** 2 / V.copy(), axis=0)
 
             f = numerator / denominator
-            f_var = np.sum(P, axis=0) / denominator
+            f_var = np.sum(M[idx] * P, axis=0) / denominator
 
             step += 1
 
         flux[:, idx] = f
         flux_err[:, idx] = np.sqrt(f_var)
+        all_spatial_profiles[idx] = P
 
     flux = flux.T
     flux_err = flux_err.T
@@ -355,7 +387,7 @@ def horne_extraction(
         )
         plt.plot(
             pixel_positions,
-            np.median(flux, axis=0),
+            np.nanmedian(flux, axis=0),
             color="salmon",
             label="Median Exposure",
             zorder=-999,
@@ -365,6 +397,9 @@ def horne_extraction(
         plt.ylabel("Extracted Flux / Pixel")
         plt.legend()
         plt.show()
+
+    if return_spatial_profiles:
+        return flux, flux_err, all_spatial_profiles
 
     return flux, flux_err
 
@@ -483,13 +518,23 @@ def trace_fit(
 
 class ExtinctionModel:
     def __init__(
-        self, throughput_model, rs_tau0, o2_abundance, humidity, loss_constant, R
+        self,
+        throughput_model,
+        rs_tau0,
+        aero_tau0,
+        o2_abundance,
+        o3_abundance,
+        humidity,
+        loss_constant,
+        R,
     ):
 
         # Stores the parameters of the extinction model as attributes of the class
         self.throughput_model = throughput_model
         self.rs_tau0 = rs_tau0
+        self.aero_tau0 = aero_tau0
         self.o2_abundance = o2_abundance
+        self.o3_abundance = o3_abundance
         self.humidity = humidity
         self.loss_constant = loss_constant
         self.R = R
@@ -609,7 +654,9 @@ def estimate_extinction_coefficients(
 def generate_extinction_model(
     wavelengths: np.ndarray,
     rs_tau0: float = 0.0,
+    aero_tau0: float = 0.0,
     o2_abundance: float = 20000,
+    o3_abundance: float = 258,
     humidity: float = 50,
     w_offset: float = 0.0,
     loss_constant: float = 1.0,
@@ -632,10 +679,18 @@ def generate_extinction_model(
     rs_tau0 :: float
         The unitless tau0 parameter for Rayleigh scattering, which sets the
         overall strength of the Rayleigh scattering contribution.
+    aero_tau0 :: float
+        The unitless tau0 parameter for Rayleigh scattering, which sets the
+        overall strength of the aerosol scattering contribution.
     o2_abundance :: float
         The abundance of O2 in the atmosphere, which scales the O2 absorption
         model. Typically, a value around 100000-300000 is reasonable for
         Earth's atmosphere.
+    o3_abundance :: float
+        The column density of O3 in the atmosphere, which scales the O3 absorption
+        model. Typically, a value around 250-300 is reasonable for Earth's
+        atmosphere. Technically, this is in Dobson units, but converting into ppm
+        can be fairly tricky.
     humidity :: float
         The relative humidity percentage, which scales the H2O absorption model.
         Only values 0 <= humidity <= 100 are physically meaningful.
@@ -675,6 +730,7 @@ def generate_extinction_model(
 
     # Loads loss rate models + wavelengths from package files
     o2_model = _load_extinction_file("o2_array")
+    o3_model = _load_extinction_file("o3_array")
     h2o_model = _load_extinction_file("humidity_array")
     model_wavelengths = _load_extinction_file("model_wavelengths")
 
@@ -684,16 +740,23 @@ def generate_extinction_model(
 
     # Masks out wavelengths outside the data range + clips NaNs in models s
     o2_model = np.nan_to_num(o2_model[mask], nan=0.0)
+    o3_model = np.nan_to_num(o3_model[mask], nan=0.0)
     h2o_model = np.nan_to_num(h2o_model[mask], nan=0.0)
     model_wavelengths = model_wavelengths[mask]
 
     # Scales models by abundance / rate and airmass
     h2o_model *= humidity * airmass
     o2_model *= o2_abundance * airmass
-    rayleigh_model = -rs_tau0 * (5000 / model_wavelengths) ** 4 * airmass
+    o3_model *= o3_abundance * airmass
 
-    #
-    complete_model = loss_constant * np.exp(o2_model + h2o_model + rayleigh_model)
+    # I chose 'alpha=-1.38' to match Sec. 6.1 of Cerro Paranal Advanced Sky Model
+    rayleigh_model = -rs_tau0 * (5000 / model_wavelengths) ** 4 * airmass
+    aerosol_model = -aero_tau0 * (5000 / model_wavelengths) ** 1.38 * airmass
+
+    # Combines all model components into a single throughput array
+    complete_model = loss_constant * np.exp(
+        o2_model + o3_model + h2o_model + rayleigh_model + aerosol_model
+    )
 
     # Hopefully no NaNs make it this far, but this acts as a final safety
     complete_model = np.nan_to_num(complete_model, nan=1.0, posinf=1.0, neginf=0.0)
@@ -770,7 +833,9 @@ def fit_extinction_model(
     if p0 is None:
         p0 = {
             "rs_tau0": 0.1,
+            "aero_tau0": 0.05,
             "o2_abundance": 30000,
+            "o3_abundance": 350,
             "humidity": 50,
             "w_offset": 0.0,
             "loss_constant": 1.0,
@@ -779,7 +844,9 @@ def fit_extinction_model(
     if bounds is None:
         bounds = {
             "rs_tau0": (0.0, np.inf),
+            "aero_tau0": (0.0, np.inf),
             "o2_abundance": (0.0, np.inf),
+            "o3_abundance": (0.0, np.inf),
             "humidity": (0.0, 100.0),
             "w_offset": (-100.0, 100.0),
             "loss_constant": (0.0, 1.0),
@@ -791,7 +858,9 @@ def fit_extinction_model(
         key in p0
         for key in [
             "rs_tau0",
+            "aero_tau0",
             "o2_abundance",
+            "o3_abundance",
             "humidity",
             "w_offset",
             "loss_constant",
@@ -799,13 +868,16 @@ def fit_extinction_model(
         ]
     ), (
         "p0 must contain keys: "
-        + "'rs_tau0', 'o2_abundance', 'humidity', 'w_offset', 'loss_constant', 'R'"
+        + "'rs_tau0', 'aero_tau0', 'o2_abundance', 'o3_abundance', "
+        + "'humidity', 'w_offset', 'loss_constant', 'R'"
     )
     assert all(
         key in bounds
         for key in [
             "rs_tau0",
+            "aero_tau0",
             "o2_abundance",
+            "o3_abundance",
             "humidity",
             "w_offset",
             "loss_constant",
@@ -813,13 +885,16 @@ def fit_extinction_model(
         ]
     ), (
         "bounds must contain keys: "
-        + "'rs_tau0', 'o2_abundance', 'humidity', 'w_offset', 'loss_constant', 'R'"
+        + "'rs_tau0', 'aero_tau0', 'o2_abundance', 'o3_abundance', "
+        + "'humidity', 'w_offset', 'loss_constant', 'R'"
     )
 
     # Convert p0 and bounds to the format expected by curve_fit
     p0_values = [
         p0["rs_tau0"],
+        p0["aero_tau0"],
         p0["o2_abundance"],
+        p0["o3_abundance"],
         p0["humidity"],
         p0["w_offset"],
         p0["loss_constant"],
@@ -828,7 +903,9 @@ def fit_extinction_model(
     bounds_values = (
         [
             bounds["rs_tau0"][0],
+            bounds["aero_tau0"][0],
             bounds["o2_abundance"][0],
+            bounds["o3_abundance"][0],
             bounds["humidity"][0],
             bounds["w_offset"][0],
             bounds["loss_constant"][0],
@@ -836,7 +913,9 @@ def fit_extinction_model(
         ],
         [
             bounds["rs_tau0"][1],
+            bounds["aero_tau0"][1],
             bounds["o2_abundance"][1],
+            bounds["o3_abundance"][1],
             bounds["humidity"][1],
             bounds["w_offset"][1],
             bounds["loss_constant"][1],
@@ -869,11 +948,13 @@ def fit_extinction_model(
     best_model = generate_extinction_model(
         wavelengths=wavelengths,
         rs_tau0=fitted_values[0],
-        o2_abundance=fitted_values[1],
-        humidity=fitted_values[2],
-        w_offset=fitted_values[3],
-        loss_constant=fitted_values[4],
-        R=fitted_values[5],
+        aero_tau0=fitted_values[1],
+        o2_abundance=fitted_values[2],
+        o3_abundance=fitted_values[3],
+        humidity=fitted_values[4],
+        w_offset=fitted_values[5],
+        loss_constant=fitted_values[6],
+        R=fitted_values[7],
     )
 
     # Optional debugging plots
@@ -883,29 +964,46 @@ def fit_extinction_model(
         o2_component = generate_extinction_model(
             wavelengths=wavelengths,
             rs_tau0=0.0,
-            o2_abundance=fitted_values[1],
+            aero_tau0=0.0,
+            o2_abundance=fitted_values[2],
+            o3_abundance=0.0,
             humidity=0.0,
             w_offset=0.0,
             loss_constant=1.0,
-            R=fitted_values[5],
+            R=fitted_values[7],
+        )
+        o3_component = generate_extinction_model(
+            wavelengths=wavelengths,
+            rs_tau0=0.0,
+            aero_tau0=0.0,
+            o2_abundance=0.0,
+            o3_abundance=fitted_values[3],
+            humidity=0.0,
+            w_offset=0.0,
+            loss_constant=1.0,
+            R=fitted_values[7],
         )
         humidity_component = generate_extinction_model(
             wavelengths=wavelengths,
             rs_tau0=0.0,
+            aero_tau0=0.0,
             o2_abundance=0.0,
-            humidity=fitted_values[2],
+            o3_abundance=0.0,
+            humidity=fitted_values[4],
             w_offset=0.0,
             loss_constant=1.0,
-            R=fitted_values[5],
+            R=fitted_values[7],
         )
-        rayleigh_component = generate_extinction_model(
+        rayleigh_aero_component = generate_extinction_model(
             wavelengths=wavelengths,
             rs_tau0=fitted_values[0],
+            aero_tau0=fitted_values[1],
             o2_abundance=0.0,
+            o3_abundance=0.0,
             humidity=0.0,
             w_offset=0.0,
-            loss_constant=fitted_values[4],
-            R=fitted_values[5],
+            loss_constant=fitted_values[6],
+            R=fitted_values[7],
         )
 
         # Sets a reasonable y-scale for seeing the data + composite model
@@ -914,16 +1012,23 @@ def fit_extinction_model(
             data_min = 0.0
 
         # Sets a reasonable y-scale for seeing the individual components
-        component_min = np.min([o2_component, humidity_component, rayleigh_component])
+        component_min = np.min(
+            [
+                o2_component,
+                o3_component,
+                humidity_component,
+                rayleigh_aero_component,
+            ]
+        )
         component_min = np.max([component_min - 0.05, 0.0])
 
         # Creates a 4-panel plot showing the data + model and the individual components
         _, axs = plt.subplots(
-            4,
+            5,
             1,
             figsize=(8, 6),
             sharex=True,
-            gridspec_kw={"height_ratios": [3, 1, 1, 1]},
+            gridspec_kw={"height_ratios": [4, 1, 1, 1, 1]},
         )
 
         # Raw data + best-fit model
@@ -955,35 +1060,49 @@ def fit_extinction_model(
             verticalalignment="center",
         )
 
-        # H2O absorption component
-        axs[2].plot(wavelengths, humidity_component, color="orange")
-        axs[2].fill_between(
-            wavelengths, 1.1, humidity_component, color="orange", alpha=0.3
-        )
+        # O3 absorption component
+        axs[2].plot(wavelengths, o3_component, color="red")
+        axs[2].fill_between(wavelengths, 1.1, o3_component, color="red", alpha=0.3)
         axs[2].set_ylim(component_min, 1.0)
         axs[2].set_yticks([])
         axs[2].text(
             0.01,
             0.2,
-            "H2O Molecular Absorption",
+            "O3 Molecular Absorption",
             transform=axs[2].transAxes,
             fontsize=12,
             verticalalignment="center",
         )
 
-        # Rayleigh scattering + achromatic loss component
-        axs[3].plot(wavelengths, rayleigh_component, color="green", label="Rayleigh")
+        # H2O absorption component
+        axs[3].plot(wavelengths, humidity_component, color="orange")
         axs[3].fill_between(
-            wavelengths, 1.1, rayleigh_component, color="green", alpha=0.3
+            wavelengths, 1.1, humidity_component, color="orange", alpha=0.3
         )
         axs[3].set_ylim(component_min, 1.0)
         axs[3].set_yticks([])
-        axs[3].set_xlabel("Wavelength (Å)")
         axs[3].text(
             0.01,
             0.2,
-            "Rayleigh + Achromatic Losses",
+            "H2O Molecular Absorption",
             transform=axs[3].transAxes,
+            fontsize=12,
+            verticalalignment="center",
+        )
+
+        # Rayleigh scattering + achromatic loss component
+        axs[4].plot(wavelengths, rayleigh_aero_component, color="green")
+        axs[4].fill_between(
+            wavelengths, 1.1, rayleigh_aero_component, color="green", alpha=0.3
+        )
+        axs[4].set_ylim(component_min, 1.0)
+        axs[4].set_yticks([])
+        axs[4].set_xlabel("Wavelength (Å)")
+        axs[4].text(
+            0.01,
+            0.2,
+            "Rayleigh + Aerosol + Achromatic Losses",
+            transform=axs[4].transAxes,
             fontsize=12,
             verticalalignment="center",
         )
@@ -993,10 +1112,12 @@ def fit_extinction_model(
     extinction_model = ExtinctionModel(
         throughput_model=best_model,
         rs_tau0=fitted_values[0],
-        o2_abundance=fitted_values[1],
-        humidity=fitted_values[2],
-        loss_constant=fitted_values[4],
-        R=fitted_values[5],
+        aero_tau0=fitted_values[1],
+        o2_abundance=fitted_values[2],
+        o3_abundance=fitted_values[3],
+        humidity=fitted_values[4],
+        loss_constant=fitted_values[6],
+        R=fitted_values[7],
     )
 
     return extinction_model, fitted_values, fitted_values_errors
@@ -1429,29 +1550,35 @@ def estimate_atmospheric_loss(
         o2_component = generate_extinction_model(
             wavelengths=wavelengths,
             rs_tau0=0.0,
-            o2_abundance=fitted_values[1],
+            aero_tau0=0.0,
+            o2_abundance=fitted_values[2],
+            o3_abundance=0.0,
             humidity=0.0,
             w_offset=0.0,
             loss_constant=1.0,
-            R=fitted_values[5],
+            R=fitted_values[7],
         )
         humidity_component = generate_extinction_model(
             wavelengths=wavelengths,
             rs_tau0=0.0,
+            aero_tau0=0.0,
             o2_abundance=0.0,
-            humidity=fitted_values[2],
+            o3_abundance=0.0,
+            humidity=fitted_values[4],
             w_offset=0.0,
             loss_constant=1.0,
-            R=fitted_values[5],
+            R=fitted_values[7],
         )
         rayleigh_component = generate_extinction_model(
             wavelengths=wavelengths,
             rs_tau0=fitted_values[0],
+            aero_tau0=0.0,
             o2_abundance=0.0,
+            o3_abundance=0.0,
             humidity=0.0,
             w_offset=0.0,
-            loss_constant=fitted_values[4],
-            R=fitted_values[5],
+            loss_constant=fitted_values[6],
+            R=fitted_values[7],
         )
 
         # This seems like the easiest way to keep track of different components
