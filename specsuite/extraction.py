@@ -299,7 +299,7 @@ def horne_extraction(
     """
 
     if masks is None:
-        M = 1
+        M = np.ones(images.shape)
     else:
         assert images.shape == masks.shape
         M = masks.copy()
