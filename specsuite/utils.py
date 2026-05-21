@@ -244,6 +244,98 @@ def _moffat(
     return profile
 
 
+def butterworth_filter(
+    x: float,
+    x0: float,
+    n: float,
+    lower_limit: float = 0.0,
+    upper_limit: float = 1.0,
+) -> np.ndarray:
+    """
+    A 1D filter throughput model corresponding to the
+    'Butterworth' filter normalized between 0 and 1.
+
+    Parameters:
+    -----------
+    x :: float
+        A 1D array of values to generate the filter model on.
+    x0 :: float
+        The cutoff value at which the filter transitions
+        from its lower to upper limits.
+    n :: float
+        A shape parameter (filter order) that controls the
+        behavior of the filter near the cutoff value. A
+        negative value peaks on the left of 'x0', and a
+        positive value peaks to the right.
+    lower_limit :: float
+        An optional parameter that sets the lower limit of
+        the filter. Defaults to 0.0.
+    upper_limit :: float
+        An optional parameter that sets the upper limit of
+        the filter. Defaults to 1.0.
+
+    Returns:
+    --------
+    filter_throughput :: np.ndarray
+        The estimated filter throughput (0.0 - 1.0).
+    """
+
+    # Prevents function from making impossible filter models
+    assert 0.0 < lower_limit < 1.0, "'lower_limit' must be between 0 and 1!"
+    assert 0.0 < upper_limit < 1.0, "'upper_limit' must be between 0 and 1!"
+
+    # Defines the standard butterworth filter
+    filter_throughput = 1 / np.sqrt(1 + (x / x0) ** (2 * n))
+
+    # Re-scales the filter if desired
+    r = upper_limit - lower_limit
+    filter_throughput = r * filter_throughput + lower_limit
+
+    return filter_throughput
+
+
+def heavyside_step_filter(
+    x: float,
+    x0: float,
+    lower_limit: float = 0.0,
+    upper_limit: float = 1.0,
+) -> np.ndarray:
+    """
+    A 1D filter throughput model corresponding to the
+    'heavyside step' filter normalized between 0 and 1.
+
+    Parameters:
+    -----------
+    x :: float
+        A 1D array of values to generate the filter model on.
+    x0 :: float
+        The cutoff value at which the filter transitions
+        from its lower to upper limits.
+    lower_limit :: float
+        An optional parameter that sets the lower limit of
+        the filter. Defaults to 0.0.
+    upper_limit :: float
+        An optional parameter that sets the upper limit of
+        the filter. Defaults to 1.0.
+
+    Returns:
+    --------
+    filter_throughput :: np.ndarray
+        The estimated filter throughput (0.0 - 1.0).
+    """
+
+    # Prevents function from making impossible filter models
+    assert 0.0 < lower_limit < 1.0, "'lower_limit' must be between 0 and 1!"
+    assert 0.0 < upper_limit < 1.0, "'upper_limit' must be between 0 and 1!"
+
+    # NOTE: 'upper_limit' is allowed to be less than 'lower_limit'
+    filter_throughput = np.zeros_like(x)
+    filter_throughput[x < x0] = lower_limit
+    filter_throughput[x >= x0] = upper_limit
+
+    return filter_throughput
+
+
 def rebin_image_columns(image: np.ndarray, bin: int) -> np.ndarray:
     """
     Rebins an image along a single axis. The bin size must be an
