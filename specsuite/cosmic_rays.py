@@ -156,6 +156,7 @@ def flag_cosmic_rays(
     gauss_stds: np.ndarray = None,
     thresh: float = 2e3,
     group_radius: int = 20,
+    progress: bool = False,
     debug: bool = False,
 ) -> tuple[np.ndarray, np.ndarray]:
     """
@@ -213,7 +214,10 @@ def flag_cosmic_rays(
     # Locates bright pixels and collects them into a dictionary
     cosmic_ray_locs = {}
     if len(images.shape) == 3:
-        for idx in tqdm(range(len(images))):
+        for idx in tqdm(
+            range(len(images)),
+            disable = not progress,
+        ):
             y_locations, x_locations = np.where(reconstructed_ims[idx] > thresh)
             cosmic_ray_locs[idx] = _cluster_in_grid(
                 x_locations, y_locations, group_radius
@@ -294,6 +298,7 @@ def verify_cosmic_rays(
     time_kernel_size: int = 10,
     ray_padding: int = 1,
     group_radius: int = 20,
+    progress: bool = False,
     debug: bool = False,
 ) -> tuple[np.ndarray, dict]:
     """
@@ -356,7 +361,10 @@ def verify_cosmic_rays(
     masks = []
 
     # Iterates over each image
-    for idx in tqdm(range(len(images))):
+    for idx in tqdm(
+        range(len(images)),
+        disable = not progress,
+    ):
 
         # Initializes data structures for cosmic ray data
         verified_cosmic_rays[idx] = []
@@ -490,6 +498,7 @@ def replace_cosmic_rays(
     images: np.ndarray,
     masks: np.ndarray,
     time_kernel: int = 5,
+    progress: bool = False,
 ):
     """
     Parameters:
@@ -520,7 +529,10 @@ def replace_cosmic_rays(
     masks = np.array(masks).copy()
 
     # Iterates over every image
-    for image_idx in tqdm(range(len(images))):
+    for image_idx in tqdm(
+        range(len(images)),
+        disable = not progress,
+    ):
 
         # Determiens the closest image indices to use for median calculations
         start_idx = max(0, image_idx - time_kernel // 2)
