@@ -222,7 +222,7 @@ def flag_cosmic_rays(
     if len(images.shape) == 3:
         for idx in tqdm(
             range(len(images)),
-            disable = not progress,
+            disable=not progress,
         ):
             y_locations, x_locations = np.where(reconstructed_ims[idx] > thresh)
             cosmic_ray_locs[idx] = _cluster_in_grid(
@@ -371,7 +371,7 @@ def verify_cosmic_rays(
     # Iterates over each image
     for idx in tqdm(
         range(len(images)),
-        disable = not progress,
+        disable=not progress,
     ):
 
         # Initializes data structures for cosmic ray data
@@ -541,7 +541,7 @@ def replace_cosmic_rays(
     # Iterates over every image
     for image_idx in tqdm(
         range(len(images)),
-        disable = not progress,
+        disable=not progress,
     ):
 
         # Determiens the closest image indices to use for median calculations
