@@ -11,6 +11,7 @@ nav:
     - Flux Extraction: flux_extraction.ipynb
     - Wavelength Calibration: wavelength_calibration.ipynb
   - Additional Tools:
+    - Cosmic Ray Flagging: cosmic_ray_flagging.ipynb
     - Flux Calibration: flux_calibration.ipynb
     - Telluric Correction: telluric_correction.ipynb
   - Examples:
