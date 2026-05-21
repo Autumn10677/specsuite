@@ -158,7 +158,7 @@ def flag_cosmic_rays(
     group_radius: int = 20,
     progress: bool = False,
     debug: bool = False,
-) -> tuple[np.ndarray, np.ndarray]:
+) -> tuple[dict, np.ndarray]:
     """
     Masks out low-frequency features using a 3D DFT
     with several masks. This function will then attempt
@@ -185,6 +185,8 @@ def flag_cosmic_rays(
         The distance (pixels) within which two bright pixels
         will be grouped into a single coordinate at located
         between them.
+    progress :: bool
+        Toggles progress bar.
     debug :: bool
         Allows for diagnostic plotting.
 
@@ -194,6 +196,10 @@ def flag_cosmic_rays(
         A dictionary containing the image indexes in which
         cosmic rays were found, along with a list of each
         cosmic ray's location.
+    reconstructed_ims :: np.ndarray
+        An array of images where low-frequency contributions
+        have been damped in the FFT. Has the same shape as
+        the input image array.
     """
 
     if gauss_stds is None:
@@ -337,6 +343,8 @@ def verify_cosmic_rays(
         The distance (pixels) within which two bright pixels
         will be grouped into a single coordinate at located
         between them.
+    progress :: bool
+        Toggles progress bar.
     debug :: bool
         Allows for optional diagnostic plots.
 
@@ -499,7 +507,7 @@ def replace_cosmic_rays(
     masks: np.ndarray,
     time_kernel: int = 5,
     progress: bool = False,
-):
+) -> np.ndarray:
     """
     Parameters:
     -----------
@@ -515,6 +523,8 @@ def replace_cosmic_rays(
         The number of images to take the median over
         when converting the cosmic ray pixels into
         filtered ones.
+    progress :: bool
+        Toggles progress bar.
 
     Returns:
     --------
