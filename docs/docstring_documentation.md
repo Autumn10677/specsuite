@@ -247,7 +247,7 @@
 ### apply_new_pixel_grid {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.utils</span>.<span class='function-name'>apply_new_pixel_grid</span> (<br>&emsp;&emsp;<span class='arg-var-name'>flux</span>,<br>&emsp;&emsp;<span class='arg-var-name'>error</span>,<br>&emsp;&emsp;<span class='arg-var-name'>current_pixels</span>,<br>&emsp;&emsp;<span class='arg-var-name'>progress</span> = <span class='arg-default'>False</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L894-L963' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L989-L1058' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Corrects for pixel offsets between individual exposures by interpolating every exposure onto the same sub-pixel grid. This is done by linearly interpolating on the unnormalized cummulative distribution function of each exposure.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>flux</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 2D array of fluxes oriented so that the dimensions
@@ -259,10 +259,24 @@
     cannot be linearly interpolated without extrapolating
     outside the assumed pixel bounds.</span><br><span class='variable-name'>interpolated_error</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 2D array of error-propagated errors for the
     'interpolated_flux' array.</span><br></span></p></div>
+### butterworth_filter {: .hidden-heading }
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.utils</span>.<span class='function-name'>butterworth_filter</span> (<br>&emsp;&emsp;<span class='arg-var-name'>x</span>,<br>&emsp;&emsp;<span class='arg-var-name'>x0</span>,<br>&emsp;&emsp;<span class='arg-var-name'>n</span>,<br>&emsp;&emsp;<span class='arg-var-name'>lower_limit</span> = <span class='arg-default'>0.0</span>,<br>&emsp;&emsp;<span class='arg-var-name'>upper_limit</span> = <span class='arg-default'>1.0</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L247-L294' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>A 1D filter throughput model corresponding to the 'Butterworth' filter normalized between 0 and 1.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>x</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>A 1D array of values to generate the filter model on.</span><br><span class='variable-name'>x0</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>The cutoff value at which the filter transitions
+    from its lower to upper limits.</span><br><span class='variable-name'>n</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>A shape parameter (filter order) that controls the
+    behavior of the filter near the cutoff value. A
+    negative value peaks on the left of 'x0', and a
+    positive value peaks to the right.</span><br><span class='variable-name'>lower_limit</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>An optional parameter that sets the lower limit of
+    the filter. Defaults to 0.0.</span><br><span class='variable-name'>upper_limit</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>An optional parameter that sets the upper limit of
+    the filter. Defaults to 1.0.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>filter_throughput</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The estimated filter throughput (0.0 - 1.0).</span><br></span></p></div>
 ### convolve_to_resolution {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.utils</span>.<span class='function-name'>convolve_to_resolution</span> (<br>&emsp;&emsp;<span class='arg-var-name'>x</span>,<br>&emsp;&emsp;<span class='arg-var-name'>y</span>,<br>&emsp;&emsp;<span class='arg-var-name'>R</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L475-L530' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L570-L625' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Convolves an input spectrum using a Gaussian kernel where the kernel width is determined by the desired resolution R.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>x</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Wavelength array (in Angstroms).</span><br><span class='variable-name'>y</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Flux array corresponding to the wavelengths.</span><br><span class='variable-name'>R</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>Desired spectral resolution (lambda/delta_lambda).</span><br></span></p>
@@ -270,7 +284,7 @@
 ### correct_lightcurve_shifting {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.utils</span>.<span class='function-name'>correct_lightcurve_shifting</span> (<br>&emsp;&emsp;<span class='arg-var-name'>flux</span>,<br>&emsp;&emsp;<span class='arg-var-name'>error</span>,<br>&emsp;&emsp;<span class='arg-var-name'>N_divisions</span> = <span class='arg-default'>1</span>,<br>&emsp;&emsp;<span class='arg-var-name'>model_flux</span> = <span class='arg-default'>None</span>,<br>&emsp;&emsp;<span class="arg-var-name">mode</span> = <span class="arg-default">"median"</span>,<br>&emsp;&emsp;<span class='arg-var-name'>poly_order</span> = <span class='arg-default'>3</span>,<br>&emsp;&emsp;<span class='arg-var-name'>apply_window</span> = <span class='arg-default'>True</span>,<br>&emsp;&emsp;<span class='arg-var-name'>progress</span> = <span class='arg-default'>False</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L533-L611' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L628-L706' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Attempts to model the sub-pixel offsets between exposures in a spectrophotometric observation. Flux will be conserved during interpolation, meaning that non-constant offsets can create sudden jumps/drops in flux for pixels that are larger/smaller than they initially were. For any 'invalid' values that would require interpolating outside the range of the provided flux array will be returned as a NaN.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>flux</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 2D array of fluxes oriented so that the dimensions
@@ -291,7 +305,7 @@
 ### estimate_exposure_offsets {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.utils</span>.<span class='function-name'>estimate_exposure_offsets</span> (<br>&emsp;&emsp;<span class='arg-var-name'>flux</span>,<br>&emsp;&emsp;<span class='arg-var-name'>model_flux</span> = <span class='arg-default'>None</span>,<br>&emsp;&emsp;<span class='arg-var-name'>N_divisions</span> = <span class='arg-default'>1</span>,<br>&emsp;&emsp;<span class="arg-var-name">mode</span> = <span class="arg-default">"median"</span>,<br>&emsp;&emsp;<span class='arg-var-name'>poly_order</span> = <span class='arg-default'>3</span>,<br>&emsp;&emsp;<span class='arg-var-name'>apply_window</span> = <span class='arg-default'>True</span>,<br>&emsp;&emsp;<span class='arg-var-name'>progress</span> = <span class='arg-default'>False</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L614-L756' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L709-L851' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Attempts to estimate the effective pixel positions of the input 'flux' array compared to the 'model_flux'. This is done by performing a phase correlation of a model spectra against each individual exposure. The phase correlation produces an estimate of the sub-pixel offset(s) between the model and a given exposure. If 'N_divisions' > 1, this process is performed multiple sub-regions in every single exposure.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>flux</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 2D array of fluxes oriented so that the dimensions
@@ -313,7 +327,7 @@
 ### estimate_shift {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.utils</span>.<span class='function-name'>estimate_shift</span> (<br>&emsp;&emsp;<span class='arg-var-name'>ref_fft</span>,<br>&emsp;&emsp;<span class='arg-var-name'>data_fft</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L435-L472' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L530-L567' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Attempts to estimate the sub-pixel shift between two signals. This is done in two steps, first by finding the peak coarse shift, then by refining this estimate using the slope of the phase correlation.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>ref_fft</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The Fourier transform of the reference signal.</span><br><span class='variable-name'>data_fft</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The Fourier transform of the data signal.</span><br></span></p>
@@ -321,7 +335,7 @@
 ### flatfield_correction {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.utils</span>.<span class='function-name'>flatfield_correction</span> (<br>&emsp;&emsp;<span class='arg-var-name'>image</span>,<br>&emsp;&emsp;<span class='arg-var-name'>flat</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L283-L334' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L375-L426' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Applies a simple flatfield correction to one or more 2D images. This function assumes that each entry along the first axis is a 2D image with the same size as 'flat'.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>image</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Image(s) that should be divided by the normalized flatfield
@@ -329,19 +343,32 @@
     several flatfield exposures.</span><br><span class='variable-name'>debug</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Allows for diagnostic plotting.</span><br></span></p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>flatfielded_ims</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The resulting image(s) after being divided by the normalized
     flatfield.</span><br></span></p></div>
+### heavyside_step_filter {: .hidden-heading }
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.utils</span>.<span class='function-name'>heavyside_step_filter</span> (<br>&emsp;&emsp;<span class='arg-var-name'>x</span>,<br>&emsp;&emsp;<span class='arg-var-name'>x0</span>,<br>&emsp;&emsp;<span class='arg-var-name'>lower_limit</span> = <span class='arg-default'>0.0</span>,<br>&emsp;&emsp;<span class='arg-var-name'>upper_limit</span> = <span class='arg-default'>1.0</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L297-L336' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>A 1D filter throughput model corresponding to the 'heavyside step' filter normalized between 0 and 1.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>x</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>A 1D array of values to generate the filter model on.</span><br><span class='variable-name'>x0</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>The cutoff value at which the filter transitions
+    from its lower to upper limits.</span><br><span class='variable-name'>lower_limit</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>An optional parameter that sets the lower limit of
+    the filter. Defaults to 0.0.</span><br><span class='variable-name'>upper_limit</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>An optional parameter that sets the upper limit of
+    the filter. Defaults to 1.0.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>filter_throughput</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The estimated filter throughput (0.0 - 1.0).</span><br></span></p></div>
 ### peak_phase_shift {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.utils</span>.<span class='function-name'>peak_phase_shift</span> (<br>&emsp;&emsp;<span class='arg-var-name'>ref_fft</span>,<br>&emsp;&emsp;<span class='arg-var-name'>data_fft</span>,<br>&emsp;&emsp;<span class='arg-var-name'>alpha</span> = <span class='arg-default'>0.5</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L337-L388' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L429-L483' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Estimates the shift between two signals by finding the peak of the phase correlation. This is a coarse estimate that can be refined using the 'phase_slope_shift' function.
 </p>
-<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>ref_fft</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The Fourier transform of the reference signal.</span><br><span class='variable-name'>data_fft</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The Fourier transform of the data signal.</span><br><span class='variable-name'>alpha</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>A power to apply to the magnitude of the cross-correlation. This</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>ref_fft</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The Fourier transform of the reference signal.</span><br><span class='variable-name'>data_fft</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The Fourier transform of the data signal.</span><br><span class='variable-name'>alpha</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>A power to apply to the magnitude of the cross-correlation. This
+    can dampen or amplify the normalization factor, a factor of 0.5
+    has worked reasonably well as a default.</span><br></span></p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>shift</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>The estimated shift between the two signals. This can be a
     non-integer value due to sub-pixel refinement.</span><br></span></p></div>
 ### perform_cdf_interpolation {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.utils</span>.<span class='function-name'>perform_cdf_interpolation</span> (<br>&emsp;&emsp;<span class='arg-var-name'>flux</span>,<br>&emsp;&emsp;<span class='arg-var-name'>error</span>,<br>&emsp;&emsp;<span class='arg-var-name'>current_pixels</span>,<br>&emsp;&emsp;<span class='arg-var-name'>target_pixels</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L759-L891' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L854-L986' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Flux-conserving interpolation using linear interpolation of the cumulative distribution function (CDF). This function assumes that x-errors are negligible and that the input flux array has errors that are independent and random. Any 'target_pixels' that fall outside the range spanned by 'current_pixels' will be returned with a NaN value.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>flux</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The original flux values.</span><br><span class='variable-name'>error</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>1-sigma uncertainties corresponding to `flux`.</span><br><span class='variable-name'>current_pixels</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The pixels locations of that the 'flux' and 'error' arrays
@@ -352,7 +379,7 @@
 ### phase_slope_shift {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.utils</span>.<span class='function-name'>phase_slope_shift</span> (<br>&emsp;&emsp;<span class='arg-var-name'>ref_fft</span>,<br>&emsp;&emsp;<span class='arg-var-name'>data_fft</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L391-L432' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L486-L527' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Estimates the sub-pixel shift between two signals by calculating the slope of the phase correlation. This is a refinement step that can be applied after finding the peak shift using 'peak_phase_shift'.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>ref_fft</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The Fourier transform of the reference signal.</span><br><span class='variable-name'>data_fft</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>The Fourier transform of the data signal.</span><br></span></p>
@@ -372,7 +399,7 @@
 ### rebin_image_columns {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.utils</span>.<span class='function-name'>rebin_image_columns</span> (<br>&emsp;&emsp;<span class='arg-var-name'>image</span>,<br>&emsp;&emsp;<span class='arg-var-name'>bin</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L247-L280' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/utils.py#L339-L372' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Rebins an image along a single axis. The bin size must be an integer multiple of the axis size being rebinned.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>image</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Original image to be rebinned.</span><br><span class='variable-name'>bin</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>Size each bin in pixels along the columns of the provided
@@ -709,3 +736,106 @@ The achromatic model attempts to capture deviations in flux that happen sporadic
     Assumes that the same error applies to all points.</span><br></span></p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>sigma_d</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 1D array representing the uncertainty in distance
     measurements for each triplet.</span><br></span></p></div>
+## COSMIC_RAYS
+### _cluster_in_grid {: .hidden-heading }
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.cosmic_rays</span>.<span class='function-name'>_cluster_in_grid</span> (<br>&emsp;&emsp;<span class='arg-var-name'>x_points</span>,<br>&emsp;&emsp;<span class='arg-var-name'>y_points</span>,<br>&emsp;&emsp;<span class='arg-var-name'>R</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/cosmic_rays.py#L108-L151' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Groups an array of points that lie within a box of width R around one another.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>x_points</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>All the x-coordinates of points to be
+    grouped.</span><br><span class='variable-name'>y_points</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>All the y-coordinates of points to be
+    grouped.</span><br><span class='variable-name'>R</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>Width of the box used for grouping points
+    together.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>averaged_points</span> :: <span class='variable-type'>np.ndarray()</span><br><span class='variable-desc'>An array of averaged points.</span><br></span></p></div>
+### _expand_mask {: .hidden-heading }
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.cosmic_rays</span>.<span class='function-name'>_expand_mask</span> (<br>&emsp;&emsp;<span class='arg-var-name'>mask</span>,<br>&emsp;&emsp;<span class='arg-var-name'>ray_padding</span> = <span class='arg-default'>1</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/cosmic_rays.py#L62-L105' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Uses JAX convolution to pad zero-valued pixels surrounding nonzero-valued pixels. This can be performed multiple times to produce several layers of padding.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>mask</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>An array with binary (1 or 0) entries.</span><br><span class='variable-name'>ray_padding</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>How many pixels surrounding a cosmic ray
+    to flag as 'potentially contaminated.'
+    These padded pixels will all have a value
+    between 0 and 1 to allow users to easily
+    filter them out after processing.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>mask</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A nearly-identical array to the input mask,
+    but with non-zero values for pixels surrounding
+    each non-zero entry in the original array.</span><br></span></p></div>
+### _gaussian_mask {: .hidden-heading }
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.cosmic_rays</span>.<span class='function-name'>_gaussian_mask</span> (<br>&emsp;&emsp;<span class='arg-var-name'>shape</span>,<br>&emsp;&emsp;<span class='arg-var-name'>mean</span>,<br>&emsp;&emsp;<span class='arg-var-name'>std</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/cosmic_rays.py#L12-L59' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Create an N-dimensional Gaussian mask where the mean and standard deviation is specified along each dimension.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>shape</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>An array of N integers that specifies the shape
+    of the mask.</span><br><span class='variable-name'>mean</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>An array of N floats that control the mean of the
+    gaussian profiles along each dimension. Must have
+    the same number of entries as 'shape'.</span><br><span class='variable-name'>std</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>An array of N floats indicating the standard
+    deviation of the gaussian profiles along each
+    dimension.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>gaussian</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>An n-dimensional NumPy array with Gaussian values</span><br></span></p></div>
+### flag_cosmic_rays {: .hidden-heading }
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.cosmic_rays</span>.<span class='function-name'>flag_cosmic_rays</span> (<br>&emsp;&emsp;<span class='arg-var-name'>images</span>,<br>&emsp;&emsp;<span class='arg-var-name'>gauss_stds</span> = <span class='arg-default'>None</span>,<br>&emsp;&emsp;<span class='arg-var-name'>thresh</span> = <span class='arg-default'>2000.0</span>,<br>&emsp;&emsp;<span class='arg-var-name'>group_radius</span> = <span class='arg-default'>20</span>,<br>&emsp;&emsp;<span class='arg-var-name'>progress</span> = <span class='arg-default'>False</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/cosmic_rays.py#L154-L297' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Masks out low-frequency features using a 3D DFT with several masks. This function will then attempt to identify the remaining bright pixels and group them together if they reside within a user-specified distance from each other.
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>images</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A 3D array of images ordered such that dimensions
+    are (time, y, x).</span><br><span class='variable-name'>gauss_stds</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A tuple of std values to be used when constructing
+    an n-dimensional Gaussian mask. The order of each
+    entry should correspond with the respective dimension
+    of your image array.</span><br><span class='variable-name'>thresh</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>The minimum brightness required to flag a bright
+    pixel as a potential cosmic ray. Note that this
+    threshold applies to the reconstructed image after
+    filtering has been applied.</span><br><span class='variable-name'>group_radius</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>The distance (pixels) within which two bright pixels
+    will be grouped into a single coordinate at located
+    between them.</span><br><span class='variable-name'>progress</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Toggles progress bar.</span><br><span class='variable-name'>debug</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Allows for diagnostic plotting.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>cosmic_ray_locs</span> :: <span class='variable-type'>dict</span><br><span class='variable-desc'>A dictionary containing the image indexes in which
+    cosmic rays were found, along with a list of each
+    cosmic ray's location.</span><br><span class='variable-name'>reconstructed_ims</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>An array of images where low-frequency contributions
+    have been damped in the FFT. Has the same shape as
+    the input image array.</span><br></span></p></div>
+### replace_cosmic_rays {: .hidden-heading }
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.cosmic_rays</span>.<span class='function-name'>replace_cosmic_rays</span> (<br>&emsp;&emsp;<span class='arg-var-name'>images</span>,<br>&emsp;&emsp;<span class='arg-var-name'>masks</span>,<br>&emsp;&emsp;<span class='arg-var-name'>time_kernel</span> = <span class='arg-default'>5</span>,<br>&emsp;&emsp;<span class='arg-var-name'>progress</span> = <span class='arg-default'>False</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/cosmic_rays.py#L505-L561' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>images</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Raw time-series array of images used
+    for averaging out cosmic ray contamination.</span><br><span class='variable-name'>masks</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A collection of masks that represet the
+    location of cosmic rays along the detector.
+    Any non-zero entry in a mask will be converted
+    to 1.</span><br><span class='variable-name'>time_kernel</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>The number of images to take the median over
+    when converting the cosmic ray pixels into
+    filtered ones.</span><br><span class='variable-name'>progress</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Toggles progress bar.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>filtered_ims</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A time-series array where cosmic rays have
+    been replaced with the median of surrounding
+    exposures at that location.</span><br></span></p></div>
+### verify_cosmic_rays {: .hidden-heading }
+<div class='function-wrapper'><p class='function-header-wrapper'>
+<span class='parent-module'>specsuite.cosmic_rays</span>.<span class='function-name'>verify_cosmic_rays</span> (<br>&emsp;&emsp;<span class='arg-var-name'>images</span>,<br>&emsp;&emsp;<span class='arg-var-name'>locs</span>,<br>&emsp;&emsp;<span class='arg-var-name'>thresh</span>,<br>&emsp;&emsp;<span class='arg-var-name'>time_kernel_size</span> = <span class='arg-default'>10</span>,<br>&emsp;&emsp;<span class='arg-var-name'>ray_padding</span> = <span class='arg-default'>1</span>,<br>&emsp;&emsp;<span class='arg-var-name'>group_radius</span> = <span class='arg-default'>20</span>,<br>&emsp;&emsp;<span class='arg-var-name'>progress</span> = <span class='arg-default'>False</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/cosmic_rays.py#L300-L502' target='_blank'>[SOURCE]</a></span></p>
+<p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Verifies a handful of user-specified cosmic rays by analyzing a small region around the flagged pixels(s).
+</p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>images</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Array of images in which cosmic rays have
+    been identified. The ordering of this image
+    array should correspond with the entries in
+    the 'locs' dictionary.</span><br><span class='variable-name'>locs</span> :: <span class='variable-type'>dict</span><br><span class='variable-desc'>Has entries of the form:
+        {0: [(x1,y1), (x2,y2), ...], 1: [...]}
+    The keys should indicate the image index each
+    list of points refers to. Each point should
+    represent a single cosmic ray where the (x,y)
+    coordinate are ints representing its pixel
+    position.</span><br><span class='variable-name'>thresh</span> :: <span class='variable-type'>float</span><br><span class='variable-desc'>The minimum σ-normalized difference to consider
+    a confirmed cosmic ray. Pixels matching this
+    condition will be represented as 1s in the
+    corresponding mask.</span><br><span class='variable-name'>time_kernel_size</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>The number of surrounding images to check for
+    generating a median exposure. Specifically, the
+    median exposure will range from -N//2 to N//2.</span><br><span class='variable-name'>ray_padding</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>How many pixels around confirmed cosmic ray pixels
+    to also provide a nonzero value in the output mask.</span><br><span class='variable-name'>group_radius</span> :: <span class='variable-type'>int</span><br><span class='variable-desc'>The distance (pixels) within which two bright pixels
+    will be grouped into a single coordinate at located
+    between them.</span><br><span class='variable-name'>progress</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Toggles progress bar.</span><br><span class='variable-name'>debug</span> :: <span class='variable-type'>bool</span><br><span class='variable-desc'>Allows for optional diagnostic plots.</span><br></span></p>
+<p class='written-parameters-wrapper'><span class='parameters-label'>Returns:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>masks</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>Masks containing 0 for non-contaminated pixels, and
+    non-zero entries for potentially-contaminated pixels.</span><br><span class='variable-name'>verified_cosmic_rays</span> :: <span class='variable-type'>dict</span><br><span class='variable-desc'>A dictionary containing the 'confirmed' cosmic rays
+    found in each exposure.</span><br></span></p></div>
