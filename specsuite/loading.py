@@ -206,6 +206,9 @@ def _kosmos_loader(
         A 2D array loaded in from the specified FITS file.
     """
 
+    # Defined here since it is not defined in the FITS metadata
+    _GAIN_ = 0.6
+
     # Extracts header from fits file
     hdu = fits.open(path + f"/{file}")
     image_data = hdu[0].data
@@ -223,7 +226,7 @@ def _kosmos_loader(
         overscan_length = 2 * (overscan_length + 1)
 
         # Rotates the image to make the x-axis our dispersion axis
-        image_data = np.rot90(image_data, k=3)
+        image_data = np.rot90(image_data, k=3) * _GAIN_
         image_data = image_data[: len(image_data[0]) - overscan_length, :]
 
     else:
