@@ -17,6 +17,7 @@ authors = [
 
 dependencies = [
   "lxml",
+  "jax",
   "astropy>=7.0",
   "ipywidgets>=8.0",
   "ipympl",
