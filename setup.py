@@ -2,13 +2,14 @@ from setuptools import setup
 
 setup(
     name='specsuite',
-    version='1.1.9',    
+    version='1.1.10',    
     description='A toolbox for processing data from long-slit spectrographs',
     url='https://github.com/Autumn10677/specsuite',
     author='Autumn Stephens',
     author_email='aust8150@colorado.edu',
     packages=['specsuite'],
     install_requires=[
+        'jax',
         'astropy>=7.0',
         'ipywidgets>=8.0',
         'ipympl',
