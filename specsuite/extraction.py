@@ -923,6 +923,9 @@ def fit_extinction_model(
         ],
     )
 
+    # Saved to prevent shape errors during fitting workflow
+    original_wavelengths = wavelengths.copy()
+
     # Remove any NaN values from the data to avoid issues with curve_fit
     if np.any(np.isnan(taus)):
         mask = ~np.isnan(taus)
@@ -945,8 +948,9 @@ def fit_extinction_model(
     fitted_values_errors = np.sqrt(np.diag(pcov))
 
     # Generate the best-fit model using the fitted parameters
+    # NOTE: This is defined on the original wavelength grid to prevent shape errors
     best_model = generate_extinction_model(
-        wavelengths=wavelengths,
+        wavelengths=original_wavelengths,
         rs_tau0=fitted_values[0],
         aero_tau0=fitted_values[1],
         o2_abundance=fitted_values[2],
@@ -1041,7 +1045,7 @@ def fit_extinction_model(
             color="k",
             alpha=0.9,
         )
-        axs[0].plot(wavelengths, best_model, color="red", zorder=999)
+        axs[0].plot(original_wavelengths, best_model, color="red", zorder=999)
         axs[0].set_ylabel("Atmospheric Transmission")
         axs[0].set_xlim(wavelengths[0], wavelengths[-1])
         axs[0].set_ylim(data_min, 1.0)
@@ -1173,6 +1177,8 @@ def _infer_flux_baselines(
 
         # Sigma-clipping to try and remove cloud-affected exopsures for fitting
         mask = np.ones(times.shape, dtype=bool)
+        mask[np.isnan(flux[:, ref_idx])] = 0
+        mask[np.isinf(flux[:, ref_idx])] = 0
 
         # Should run at least once, but will stop early if no outliers are found
         for _ in range(max_iterations):
