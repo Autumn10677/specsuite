@@ -268,8 +268,8 @@ def flag_cosmic_rays(
 
         # Plots scattered data for each cosmic ray location
         axs["scatter"].scatter(x_locs, y_locs, color="k", s=2)
-        axs["scatter"].set_xlabel("Horizontal Location (pixels)")
-        axs["scatter"].set_ylabel("Horizontal Location (pixels)")
+        axs["scatter"].set_xlabel("Dispersion Axis [pixels]")
+        axs["scatter"].set_ylabel("Cross-Dispersion Axis [pixels]")
         axs["scatter"].set_xlim(min(xbins), max(xbins))
         axs["scatter"].set_ylim(min(ybins), max(ybins))
 
