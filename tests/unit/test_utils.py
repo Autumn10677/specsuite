@@ -7,9 +7,16 @@ import specsuite.loading as loading
 CAL_PATH = "data/KOSMOS/calibrations"
 DATA_PATH = "data/KOSMOS/target"
 
-bias = loading.average_matching_files(CAL_PATH, "bias")
-flat = loading.average_matching_files(CAL_PATH, "flat") - bias
-science = loading.collect_images_array(DATA_PATH, "toi3884") - bias
+bias = loading.average_matching_files(path=CAL_PATH, tag="bias")
+flat = (
+    loading.average_matching_files(
+        path=CAL_PATH,
+        tag="flat",
+        ignore=["flat.0029.fits", "flat.0030.fits"],
+    )
+    - bias
+)
+science = loading.collect_images_array(path=DATA_PATH, tag="toi3884") - bias
 
 
 class TestUtilFunctions(unittest.TestCase):
