@@ -422,7 +422,7 @@ def dewarp_image(
         Parallel(n_jobs=-1)(
             delayed(process_row)(row)
             for row in tqdm(
-                rows, desc="dewarping", position=0, leave=True, disable=not progress
+                rows, desc="Dewarping", position=0, leave=True, disable=not progress
             )
         )
     )
