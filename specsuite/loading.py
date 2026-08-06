@@ -5,7 +5,6 @@ import re
 
 import warnings
 
-from tqdm import tqdm
 from astropy.io import fits
 from astropy import coordinates as coord
 from astropy.time import Time
