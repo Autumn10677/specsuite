@@ -1,4 +1,5 @@
 import numpy as np
+import textwrap
 import os
 import re
 
@@ -10,7 +11,8 @@ from astropy import coordinates as coord
 from astropy.time import Time
 import astropy.units as u
 
-SUPPORTED_INSTRUMENTS = ["kosmos", "gmos"]
+# Filled in using registry system
+SUPPORTED_INSTRUMENTS = {}
 
 
 # Simplifies warning to remove visual clutter
@@ -21,6 +23,505 @@ def custom_formatwarning(
 
 
 warnings.formatwarning = custom_formatwarning
+
+
+def register_instrument(name):
+    def decorator(func):
+        SUPPORTED_INSTRUMENTS[name] = func
+        return func
+
+    return decorator
+
+
+def _format_metadata(x: list) -> np.ndarray | str | bool | float:
+    """
+    Attempts to convert a list of strings into Numpy array
+    with type 'float' or 'bool'. Any lists that cannot be
+    converted successfully are kept as a string. Lists with
+    one unique value are simply returned as that value.
+
+    Parameters:
+    -----------
+    x :: list
+        A 1D list of strings.
+
+    Returns:
+    --------
+    x :: np.ndarray | str | bool | float
+        A 1D array / single value of type str, bool, or float.
+    """
+
+    # If 'bool' or 'float' conversion fails, default to 'str'
+    try:
+        if x[0] in ["True", "False"]:
+            x = x.astype(bool)
+        else:
+            x = x.astype(float)
+    except Exception:
+        x = x.astype(str)
+
+    # Handles repeated / single-entry lists
+    if (len(np.unique(x)) != len(x)) or (len(x) == 1):
+        return x[0]
+
+    return x
+
+
+def _extract_detector_region(string: str) -> tuple[int, int, int, int]:
+    """
+    A simple helper function that takes strings of
+    the form '[#1:#2, #3:#4]' and converts it into
+    four integers.
+
+    Parameters:
+    -----------
+    string :: str
+        A string of the form '[#1:#2, #3:#4]'.
+
+    Returns:
+    --------
+    xstart :: int
+        The value of '#1' as an integer.
+    xend :: int
+        The value of '#2' as an integer.
+    ystart :: int
+        The value of '#3' as an integer.
+    yend :: int
+        The value of '#4' as an integer.
+    """
+
+    string = re.sub(r"[(){}\[\]]", "", string)
+    xstring = string.split(",")[0].split(":")
+    ystring = string.split(",")[1].split(":")
+    xstart, xend, ystart, yend = (
+        int(xstring[0]),
+        int(xstring[1]),
+        int(ystring[0]),
+        int(ystring[1]),
+    )
+
+    return xstart, xend, ystart, yend
+
+
+def _extract_hdu_data(hdus: list) -> tuple[list, list]:
+    """
+    Extracts all data / metadata into lists of
+    arrays / dictionaries. Each list entry corresponds
+    to a single FITS HDU unit, and the length of each
+    entry corresponds to the number of exposures.
+
+    Parameters:
+    -----------
+    hdus :: list
+        A 1D list of 'astropy.io.fits.hdu.image.PrimaryHDU'
+        objects for every exposure.
+
+    Returns:
+    --------
+    data :: list
+        A collection of Numpy arrays with shapes...
+            (N_exposure, x_i, y_i)
+        ...where 'x_i' and 'y_i' is the shape of the DU content
+        for that HDU.
+    metadata :: list
+        A collection of dictionaries where keys are HU keywords
+        and values are 1D lists of metadata. If a 1D value list
+        only has one unique value, the list is replaced with the
+        single unique value.
+    """
+
+    # Helps with readability later on
+    N_components = len(hdus[0])
+
+    # In-place assignment saves time / resources
+    data = [None for _ in range(N_components)]
+    metadata = [None for _ in range(N_components)]
+
+    # Iterates over each exposure for a given HDU
+    for idx in range(N_components):
+
+        # Loads all data for given unit in each exposure
+        component_data = np.array([hdu[idx].data for hdu in hdus])
+        data[idx] = component_data
+
+        # Extracts all (key, value, comment) pairs for a given unit
+        cards = np.array([hdu[idx].header.cards for hdu in hdus])
+
+        # Filters out empty entries in the hdu
+        valid_keys = cards[0, :, 0] != ""
+        cards = cards[:, valid_keys]
+
+        # Extracts keys / values and checks which metadata vary
+        keys = cards[:, :, 0]
+        values = cards[:, :, 1]
+
+        # Creates the metadata dictionary for a given hdu
+        metadata[idx] = {str(k): _format_metadata(v) for k, v in zip(keys[0], values.T)}
+
+    # Prevents accidental overwriting
+    for hdu in hdus:
+        hdu.close()
+
+    return data, metadata
+
+
+@register_instrument("kosmos")
+def _kosmos_formatter(
+    data: list,
+    metadata: list,
+    crop_bds: list,
+) -> np.ndarray:
+    """
+    Data formatter for APO's KOSMOS spectrograph. Information about
+    this instrument can be found at...
+
+        https://www.apo.nmsu.edu/mainpage/kosmos/kosmosguide/
+
+    Hard-coded values are utilized when the information is not
+    available (or computationally simple to access).
+
+    Parameters:
+    -----------
+    data :: list
+        A list of 3D arrays pulled from the content of FITS files.
+        The list should have a length equal to the total number of
+        HDUs in each FITS file.
+    metadata :: list
+        A list of metadata dictionaries pulled from raw FITS files.
+        The length of 'metadata' should be the same as 'data'.
+    crop_bds :: list
+
+
+    Returns:
+    --------
+    formatted_data :: np.ndarray
+        A 3D Numpy array of the shape...
+            (N_exposures, x_wavelength, y_spatial)
+    """
+
+    # Defined here since it is not defined in the FITS metadata
+    GAIN = 0.6
+
+    # Unpacked here since files only have one HDU
+    data = data[0] * GAIN
+    metadata = metadata[0]
+
+    # Aligns images so x = dispersion and y = cross-dispersion
+    data = np.rot90(data, k=3, axes=(1, 2))
+
+    # Just clipping (no subtraction) due to poor charge transfer efficiency
+    overscan_start, _, _, _ = _extract_detector_region(metadata["BSEC11"])
+    formatted_data = data[:, :overscan_start]
+
+    formatted_data = formatted_data[:, crop_bds[0] : crop_bds[1]]
+
+    return formatted_data, metadata
+
+
+@register_instrument("gmos-hamamatsu")
+def _gmos_hamamatsu_formatter(
+    data: list,
+    metadata: list,
+    crop_bds: list,
+) -> np.ndarray:
+    """
+    Data formatter for GMOS' e2v DD (pre-2017) detector layout.
+    As of now, this function assumes data was collected in
+    '6-amp' mode described at...
+
+        https://www.gemini.edu/instrumentation/gmos/data-reduction
+
+    Hard-coded values are utilized when the information is not
+    available (or computationally simple to access). The chip gap
+    is in units of 'pixels' and is adjusted for various binnings.
+    Regardless of binning, overscan regions should always be 32
+    pixels wide.
+
+    Parameters:
+    -----------
+    data :: list
+        A list of 3D arrays pulled from the content of FITS files.
+        The list should have a length equal to the total number of
+        HDUs in each FITS file.
+    metadata :: list
+        A list of metadata dictionaries pulled from raw FITS files.
+        The length of 'metadata' should be the same as 'data'.
+    crop_bds :: list
+        The region along the cross-dispersion (spatial) axis
+        to keep (all other rows will be dropped).
+
+    Returns:
+    --------
+    combined_data :: np.ndarray
+        A 3D Numpy array of the shape...
+            (N_exposures, x_wavelength, y_spatial)
+    """
+
+    # Defined here to improve readibility later on
+    N_COLS = 12
+    N_ROWS = int((len(data) - 1) / N_COLS)
+    N_EXPOSURES = len(data[0])
+
+    # By default, this is a string (i.e., '2 2')
+    BINNING = (
+        int(metadata[1]["CCDSUM"][0]),
+        int(metadata[1]["CCDSUM"][-1]),
+    )
+
+    # Adjusts for bin size's impact on effect gap width
+    CHIP_GAP = 61
+    CHIP_GAP = CHIP_GAP // BINNING[0]
+
+    # Overscan length should be unaffected by binning
+    OVERSCAN_LENGTH = 32
+
+    # Their 'X' and 'Y' conventions are flipped from ours
+    XSHAPE = metadata[0]["DETRO1XS"] + 2 * CHIP_GAP
+    YSHAPE = 0
+    for i in range(N_ROWS):
+        YSHAPE += metadata[0][f"DETRO{i + 1}YS"]
+
+    # Using Numpy array stacking can eat huge chunks of memory
+    combined_data = np.full(
+        (
+            N_EXPOSURES,
+            int(YSHAPE),
+            int(XSHAPE),
+        ),
+        np.nan,
+    )
+
+    y_offset = 0
+
+    for i in range(N_ROWS):
+
+        x_offset = 0
+
+        for j in range(1, N_COLS + 1):
+
+            # Extracted here since 'xlen' is easier to correct before using
+            _, ylen, xlen = data[i * N_COLS + j].shape
+            xlen -= OVERSCAN_LENGTH
+
+            chip_gain = metadata[i * N_COLS + j]["GAIN"]
+
+            # Really nasty, but this is quick and helps with readibility later!
+            gap_offset = CHIP_GAP * (((i * N_COLS + j - 1) // 4) % 3)
+
+            # Overscan is on the right edge of the sub-image
+            if j % 2 == 1:
+                overscan = np.median(
+                    data[i * N_COLS + j][:, :, -OVERSCAN_LENGTH:], axis=2
+                )[:, :, np.newaxis]
+                combined_data[
+                    :,
+                    y_offset : y_offset + ylen,
+                    gap_offset + x_offset : gap_offset + x_offset + xlen,
+                ] = (
+                    data[i * N_COLS + j][:, :, :-OVERSCAN_LENGTH] - overscan
+                ) * chip_gain
+
+            # Overscan is on the left edge of the sub-image
+            else:
+                overscan = np.median(
+                    data[i * N_COLS + j][:, :, :OVERSCAN_LENGTH], axis=2
+                )[:, :, np.newaxis]
+                combined_data[
+                    :,
+                    y_offset : y_offset + ylen,
+                    gap_offset + x_offset : gap_offset + x_offset + xlen,
+                ] = (
+                    data[i * N_COLS + j][:, :, OVERSCAN_LENGTH:] - overscan
+                ) * chip_gain
+
+            x_offset += xlen
+
+        y_offset += ylen
+
+    # Easiest to rotate the image here
+    combined_data = np.rot90(combined_data, k=0, axes=(1, 2))
+    combined_data = combined_data[:, crop_bds[0] : crop_bds[1]]
+
+    return combined_data, metadata
+
+
+@register_instrument("gmos-e2vDD")
+def _gmos_e2vDD_formatter(
+    data: list,
+    metadata: list,
+    crop_bds: list,
+) -> np.ndarray:
+    """
+    Data formatter for GMOS' e2v DD (pre-2017) detector layout.
+    As of now, this function assumes data was collected in
+    '6-amp' mode described at...
+
+        https://www.gemini.edu/instrumentation/gmos/data-reduction
+
+    Hard-coded values are utilized when the information is not
+    available (or computationally simple to access). The chip gap
+    is in units of 'pixels' and is adjusted for various binnings.
+    Regardless of binning, overscan regions should always be 32
+    pixels wide.
+
+    Parameters:
+    -----------
+    data :: list
+        A list of 3D arrays pulled from the content of FITS files.
+        The list should have a length equal to the total number of
+        HDUs in each FITS file.
+    metadata :: list
+        A list of metadata dictionaries pulled from raw FITS files.
+        The length of 'metadata' should be the same as 'data'.
+    crop_bds :: list
+        The region along the cross-dispersion (spatial) axis
+        to keep (all other rows will be dropped).
+
+    Returns:
+    --------
+    combined_data :: np.ndarray
+        A 3D Numpy array of the shape...
+            (N_exposures, x_wavelength, y_spatial)
+    """
+
+    # Assuming 6-amp mode
+    CHIP_ORDER = np.array([2, 1, 4, 3, 5, 6])
+
+    # Defined here to improve readibility later on
+    N_COLS = len(CHIP_ORDER)
+    N_ROWS = int((len(data) - 1) / 6)
+    N_EXPOSURES = len(data[0])
+
+    # By default, this is a string (i.e., '2 2')
+    BINNING = (
+        int(metadata[1]["CCDSUM"][0]),
+        int(metadata[1]["CCDSUM"][-1]),
+    )
+
+    # Adjusts for bin size's impact on effect gap width
+    CHIP_GAP = 39
+    CHIP_GAP = CHIP_GAP // BINNING[0]
+
+    # Overscan length should be unaffected by binning
+    OVERSCAN_LENGTH = 32
+
+    # Their 'X' and 'Y' conventions are flipped from ours
+    XSHAPE = metadata[0]["DETRO1XS"] + 2 * CHIP_GAP
+    YSHAPE = 0
+    for i in range(N_ROWS):
+        YSHAPE += metadata[0][f"DETRO{i + 1}YS"]
+
+    # Using Numpy array stacking can eat huge chunks of memory
+    combined_data = np.full(
+        (
+            N_EXPOSURES,
+            int(YSHAPE),
+            int(XSHAPE),
+        ),
+        np.nan,
+    )
+
+    y_offset = 0
+
+    for i in range(N_ROWS):
+
+        x_offset = 0
+
+        for idx, j in enumerate(CHIP_ORDER):
+
+            # Extracted here since 'xlen' is easier to correct before using
+            _, ylen, xlen = data[i * N_COLS + j].shape
+            xlen -= OVERSCAN_LENGTH
+
+            chip_gain = metadata[i * N_COLS + j]["GAIN"]
+
+            # Really nasty, but this is quick and helps with readibility later!
+            gap_offset = CHIP_GAP * (((i * N_COLS + j - 1) // 2) % 3)
+
+            # Overscan is on the right edge of the sub-image
+            if idx % 2 == 0:
+                overscan = np.median(
+                    data[i * N_COLS + j][:, :, -OVERSCAN_LENGTH:], axis=2
+                )[:, :, np.newaxis]
+                combined_data[
+                    :,
+                    y_offset : y_offset + ylen,
+                    gap_offset + x_offset : gap_offset + x_offset + xlen,
+                ] = (
+                    data[i * N_COLS + j][:, :, :-OVERSCAN_LENGTH] - overscan
+                ) * chip_gain
+
+            # Overscan is on the left edge of the sub-image
+            else:
+                overscan = np.median(
+                    data[i * N_COLS + j][:, :, :OVERSCAN_LENGTH], axis=2
+                )[:, :, np.newaxis]
+                combined_data[
+                    :,
+                    y_offset : y_offset + ylen,
+                    gap_offset + x_offset : gap_offset + x_offset + xlen,
+                ] = (
+                    data[i * N_COLS + j][:, :, OVERSCAN_LENGTH:] - overscan
+                ) * chip_gain
+
+            x_offset += xlen
+
+        y_offset += ylen
+
+    # Easiest to rotate the image here
+    combined_data = np.rot90(combined_data, k=0, axes=(1, 2))
+    combined_data = combined_data[:, crop_bds[0] : crop_bds[1]]
+
+    return combined_data, metadata
+
+
+def _format_data(
+    data: list,
+    metadata: list,
+    instrument: str,
+    crop_bds: list,
+) -> tuple[list, list] | tuple[np.ndarray, dict]:
+    """
+    Handles formatting 'DU' and 'HU' lists into more user-friendly
+    formats. If the provided 'instrument' is not supported,
+    both 'data' and 'metadata' are returned unaltered.
+
+    Parameters:
+    -----------
+    data :: list
+        A list of 3D arrays pulled from the content of FITS files.
+        The list should have a length equal to the total number of
+        HDUs in each FITS file.
+    metadata :: list
+        A list of metadata dictionaries pulled from raw FITS files.
+        The length of 'metadata' should be the same as 'data'.
+    instrument :: str
+        The name of the instrument the FITS data was
+        taken from. This is used to determine which formatting
+        function should be used.
+    crop_bds :: list
+        The region along the cross-dispersion (spatial) axis
+        to keep (all other rows will be dropped).
+
+    Returns:
+    --------
+    data :: list | np.ndarray
+        The formatted data arrays.
+    metadata :: list | dict
+        The formatted metadata dictionaries.
+    """
+
+    # 'SUPPORTED_INSTRUMENTS' has 'values' pointing to functions
+    try:
+        return SUPPORTED_INSTRUMENTS[instrument](
+            data=data,
+            metadata=metadata,
+            crop_bds=crop_bds,
+        )
+
+    # Hopefully only trigger for 'default' instrument
+    except KeyError:
+        return data, metadata
 
 
 def filter_files(files: list, tag: str, ignore: list):
@@ -59,194 +560,15 @@ def filter_files(files: list, tag: str, ignore: list):
     return files
 
 
-def extract_image(
-    path: str,
-    file: str,
-    instrument: str,
-):
-    """
-    Attempts to extract image data from a given FITS file
-    using a method specific to the user-specified instrument.
-
-    Parameters:
-    -----------
-    path :: str
-        Directory pointing toward the FITS file you wish to
-        load. This should not include the name of the file
-        itself.
-    file :: str
-        Name of the FITS file in the specified directory to
-        load.
-    instrument :: str
-        Specifies which loading function should be used for
-        the FITS file. Currently, the only supported instruments
-        are...
-            - KOSMOS
-            - GMOS
-
-    Returns:
-    --------
-    image :: np.ndarray | None
-        A 2D array containing the image found in the resulting FITS
-        file. If there is issue with loading the data, a 'None' is
-        returned.
-    """
-
-    if instrument == "kosmos":
-        return _kosmos_loader(path, file)
-    elif instrument == "gmos":
-        return _GMOS_loader(path, file)
-
-    else:
-        warnings.warn(
-            f"Provided instrumnet '{instrument}' is not currently supported",
-            UserWarning,
-        )
-        return None
-
-
-def _GMOS_loader(
-    path: str,
-    file: str,
-    return_RN: bool = False,
-) -> np.ndarray:
-    """
-    Controls how to load data from Gemini Observatory's
-    GMOS-N instrument. The resulting output will be oriented
-    such that the x-axis is the dispersion axis (left is blue /
-    right is red) and the y-axis is the cross-dispersion axis.
-
-    Parameters:
-    -----------
-    path :: str
-        Directory pointing toward the FITS file you wish to
-        load. This should not include the name of the file
-        itself.
-    file :: str
-        Name of the FITS file in the specified directory to
-        load.
-    return_RN :: bool
-        Determines whether the read noise image should be
-        returned as an additional return. Defaults to 'False'.
-
-    Returns:
-    --------
-    image :: np.ndarray
-        A 2D array loaded in from the specified FITS file.
-    """
-
-    image = None
-    RN = None
-    hdul = fits.open(os.path.join(path, file))
-
-    # Iterates over each header
-    for idx, hdu in enumerate(hdul):
-
-        hdu.verify("fix")
-
-        # Only loads image data
-        if hdu.header["NAXIS"] == 2:
-
-            datasec = hdu.header["DATASEC"].replace("[", "").replace("]", "")
-            datasec = datasec.split(",")
-            lbound, rbound = datasec[0].split(":")
-            lbound, rbound = int(lbound), int(rbound)
-
-            image_data = hdu.data[:, lbound - 1 : rbound] * hdu.header["GAIN"]
-            RN_data = (
-                np.ones(hdu.data.shape)[:, lbound - 1 : rbound] * hdu.header["RDNOISE"]
-            )
-
-            # Adds chip gaps where appropriate
-            if idx in [5, 9]:
-                gap = np.full((image_data.shape[0], 61), np.nan)
-                image_data = np.hstack([gap, image_data])
-                RN_data = np.hstack([gap, RN_data])
-
-            # If image is 'None', then RN should be too
-            if image is None:
-                image = image_data
-                RN = RN_data
-            else:
-                image = np.hstack([image, image_data])
-                RN = np.hstack([RN, RN_data])
-
-    if return_RN:
-        return np.rot90(image, k=2), np.rot90(RN, k=2)
-    return np.rot90(image, k=2)
-
-
-def _kosmos_loader(
-    path: str,
-    file: str,
-    clip_overscan: bool = True,
-) -> np.ndarray:
-    """
-    Controls how to load data from Apache Point Observatory's
-    KOSMOS instrument. The resulting output will be oriented
-    such that the x-axis is the dispersion axis (left is blue /
-    right is red) and the y-axis is the cross-dispersion axis.
-
-    Parameters:
-    -----------
-    path :: str
-        Directory pointing toward the FITS file you wish to
-        load. This should not include the name of the file
-        itself.
-    file :: str
-        Name of the FITS file in the specified directory to
-        load.
-    clip_overscan :: bool
-        Determines whether to clip the overscan region of the
-        detector.
-
-    Returns:
-    --------
-    image_data :: np.ndarray
-        A 2D array loaded in from the specified FITS file.
-    """
-
-    # Defined here since it is not defined in the FITS metadata
-    _GAIN_ = 0.6
-
-    # Extracts header from fits file
-    hdu = fits.open(path + f"/{file}")
-    image_data = hdu[0].data
-    image_header = hdu[0].header
-
-    if clip_overscan:
-
-        # Loads metadata for the size of half the overscan region
-        bias_section = image_header["BSEC11"]
-        bias_section = re.sub(r"[(){}\[\]]", "", bias_section)
-
-        # Calculates the total overscan region length (accounts for indexing)
-        overscan_region = bias_section.split(",")[0].split(":")
-        overscan_length = int(overscan_region[1]) - int(overscan_region[0])
-        overscan_length = 2 * (overscan_length + 1)
-
-        # Rotates the image to make the x-axis our dispersion axis
-        image_data = np.rot90(image_data, k=3) * _GAIN_
-        image_data = image_data[: len(image_data[0]) - overscan_length, :]
-
-    else:
-        image_data = np.rot90(image_data, k=3)
-
-    hdu.close()
-
-    return image_data
-
-
 def collect_images_array(
     path: str,
-    tag: str,
-    ignore: list = None,
+    tag: str = "",
+    ignore: list = [],
     crop_bds: list = [0, None],
     instrument: str = "kosmos",
-    clip_overscan: bool = True,
+    return_metadata: bool = False,
     debug: bool = False,
-    progress: bool = False,
-) -> np.ndarray:
+) -> tuple[list, list] | tuple[np.ndarray, dict]:
     """
     Collect a list of images from a user-given path
     corresponding to a specified tag. Images can
@@ -261,41 +583,40 @@ def collect_images_array(
     tag :: str
         Tag to search for in filenames.
     ignore :: list
-        List of file indexes to ignore.
+        List of filenames to ignore.
     crop_bds :: list
         The region along the cross-dispersion (spatial) axis
         to keep (all other rows will be dropped).
     instrument :: str
         The name of the instrument the FITS data was
-        taken from. This is used to determine which loading
+        taken from. This is used to determine which formatting
         function should be used.
-    clip_overscan :: bool
-        Allows the overscan region to be cropped out of
-        the returned array.
+    return_metadata :: bool
+        Toggles whether metadata is return alongside file data.
     debug :: bool
         Allows for diagnostic information to be printed.
         This includes the names of all files found with
         the given 'tag' and whether any of them failed
         to load.
-    progress :: bool
-        Whether a progress bar should be displayed.
 
     Returns:
     --------
-    image_collection :: np.ndarray
-        An array of 2D images corresponding to each valid
-        file found in the provided path.
+    data :: list | np.ndarray
+        The formatted data arrays.
+    metadata :: list | dict
+        The formatted metadata dictionaries.
     """
 
     instrument = instrument.lower()
 
-    if ignore is None:
-        ignore = []
-
-    # Prevents users from loading data if the relevant function does not exist
+    # Informs user that their instrument name was not recognized
     if instrument not in SUPPORTED_INSTRUMENTS:
-        warnings.warn(f"'{instrument}' is not a supported instrument", UserWarning)
-        return None
+        warnings.warn(
+            f"'{instrument}' is not a supported instrument...\n - "
+            + "\n - ".join(SUPPORTED_INSTRUMENTS.keys())
+            + "\nUsing the 'default' loading procedure!"
+        )
+        instrument = "default"
 
     # Attempts to load and filter filenames
     try:
@@ -306,42 +627,69 @@ def collect_images_array(
         )
         return None
 
+    # Tells the user if no files were found to prevent confusion over 'None'
+    if len(files) == 0:
+        warnings.warn(
+            f"No files in '{path}' with tag '{tag}' were found...", UserWarning
+        )
+        return None
+
+    hdus = []
+
+    # Printed here to allow the following loop
     if debug:
         print(f"\nSearching for files with '{tag}' tag...")
         print("------------------------------------------")
 
-    # Adds each valid file to list of data
-    image_collection = []
-    for file in tqdm(files, desc="collecting image array", disable=not progress):
+    # Iterating in this way to allow errors to show in 'debug' mode
+    for f in files:
 
-        # Extracts and appends image data
+        # Hopefully only fails when file is not a valid '.fits' file
         try:
-            image_collection.append(extract_image(path, file, instrument))
+            hdus.append(fits.open(os.path.join(path, f)))
+            hdus[-1].verify("silentfix")
             if debug:
-                print(f"{file}")
+                print(f"  ✓ {f}")
+
+        # 'textwrap' ensures the error message isn't too long
         except Exception as e:
             if debug:
-                print(f"{file} --> (FAILED, {e})")
+                print(f"  X {f}\n      --> {
+                    textwrap.fill(
+                        str(e),
+                        width=60,
+                        subsequent_indent="          "
+                        )
+                }\n")
 
-    if len(image_collection) == 0:
-        warnings.warn(
-            "No images were successfully loaded, returning 'None' instead",
-            UserWarning,
-        )
-        return None
+    # Should generalize to any instrument
+    data, metadata = _extract_hdu_data(
+        hdus=hdus,
+    )
 
-    return np.array(image_collection)[:, crop_bds[0] : crop_bds[1]].astype(float)
+    # If 'default', 'data' and 'metadata' are unchanged
+    data, metadata = _format_data(
+        data=data,
+        metadata=metadata,
+        instrument=instrument,
+        crop_bds=crop_bds,
+    )
+
+    # Only returns metadata if strictly requested
+    if return_metadata:
+        return data, metadata
+    return data
 
 
 def average_matching_files(
     path: str,
-    tag: str,
+    tag: str = "",
     instrument: str = "kosmos",
     ignore: list = [],
     crop_bds: list = [0, None],
     mode: str = "median",
+    return_metadata: bool = False,
     debug: bool = False,
-    progress: bool = False,
 ) -> np.ndarray:
     """
     Extracts images from a user-given path, and finds
@@ -366,22 +714,27 @@ def average_matching_files(
     mode :: str
         Type of average to take of images. Valid inputs
         include 'median' and 'mean'.
+    return_metadata :: bool
+        Toggles whether metadata is return alongside file data.
     debug :: bool
         Toggles the display of image stats.
-    progress :: bool
-        Toggles the progress bar.
     """
 
     # Retrieves all data filenames and prepares image list
-    images = []
-    images = collect_images_array(
+    content = collect_images_array(
         path,
         tag,
         instrument=instrument,
         ignore=ignore,
+        crop_bds=crop_bds,
+        return_metadata=True,
         debug=debug,
-        progress=progress,
     )
+
+    # Since some errors return 'None', we check for that here
+    if content is None:
+        return content
+    images, metadata = content
 
     # Handles 'None' return from 'collect_images_array()'
     try:
@@ -400,7 +753,9 @@ def average_matching_files(
         print(rf"     Mean: {round(np.mean(avg_image.flatten()), 3)}")
         print(rf"      STD: {round(np.std(avg_image.flatten()), 3)}")
 
-    return avg_image[crop_bds[0] : crop_bds[1]].astype(float)
+    if return_metadata:
+        return avg_image, metadata
+    return avg_image
 
 
 def load_metadata(
