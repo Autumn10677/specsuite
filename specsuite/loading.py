@@ -50,6 +50,8 @@ def _format_metadata(x: list) -> np.ndarray | str | bool | float:
         A 1D array / single value of type str, bool, or float.
     """
 
+    x = np.array(x)
+
     # If 'bool' or 'float' conversion fails, default to 'str'
     try:
         if x[0] in ["True", "False"]:
@@ -64,6 +66,83 @@ def _format_metadata(x: list) -> np.ndarray | str | bool | float:
         return x[0]
 
     return x
+
+
+def _initialize_fits_lists(hdus: list) -> tuple[list, list]:
+    """
+    Initializes the 'data' and 'metadata' lists used to
+    store all FITS file content. Also checks for possible
+    incompatibilities bewteen FITS files (i.e., different
+    data shapes, missing keywords, etc.) and find a
+    resolution to them. If no resolution is possible, returns
+    '(None, None)' to tell higher-level functions to stop
+    running.
+
+    Parameters:
+    -----------
+    hdus :: list
+        A 1D list of 'astropy.io.fits.hdu.image.PrimaryHDU'
+        objects for every exposure.
+
+    Returns:
+    --------
+    data :: list
+        A collection of Numpy arrays with shapes...
+            (N_exposure, x_i, y_i)
+        ...where 'x_i' and 'y_i' is the shape of the DU content
+        for that HDU.
+    metadata :: list
+        A collection of dictionaries where keys are HU keywords
+        and values are 1D lists of metadata. If a 1D value list
+        only has one unique value, the list is replaced with the
+        single unique value.
+    """
+
+    # Helps with readibility below
+    N_files = len(hdus)
+    N_hdus = len(hdus[0])
+
+    # In-place assignment for efficiency
+    data = [None for _ in range(N_hdus)]
+    metadata = [None for _ in range(N_hdus)]
+
+    for hdu_idx in range(N_hdus):
+
+        key_sets = [None for _ in hdus]
+        data_shapes = [None for _ in hdus]
+
+        for file_idx in range(N_files):
+
+            # Sets are useful for finding whether a list is a subset of another
+            key_sets[file_idx] = set(list(hdus[file_idx][hdu_idx].header.keys()))
+
+            # We will use this to look for incompatible shapes
+            fits_data = hdus[file_idx][hdu_idx].data
+            data_shapes[file_idx] = (-1, -1) if fits_data is None else fits_data.shape
+
+        # Ensures a given DU for all exposures have the same shape
+        valid_data_shapes = len(set(data_shapes)) == 1
+
+        # Only 'True' if smaller HUs do not have unique keys
+        target_set = max(key_sets, key=len)
+        valid_header_shapes = all(s.issubset(target_set) for s in key_sets)
+
+        # Impossible for loading functions to process the data
+        if not valid_header_shapes:
+            warnings.warn("FITS files have incompatible header shapes...", UserWarning)
+            return None, None
+        if not valid_data_shapes:
+            warnings.warn("FITS files have incompatible data shapes...", UserWarning)
+            return None, None
+
+        # Initializes metadata dictionary for later in-place assignment
+        metadata[hdu_idx] = {
+            str(key): [None for _ in range(N_files)]
+            for key in target_set
+            if str(key) != ""
+        }
+
+    return data, metadata
 
 
 def _extract_detector_region(string: str) -> tuple[int, int, int, int]:
@@ -132,30 +211,33 @@ def _extract_hdu_data(hdus: list) -> tuple[list, list]:
     # Helps with readability later on
     N_components = len(hdus[0])
 
-    # In-place assignment saves time / resources
-    data = [None for _ in range(N_components)]
-    metadata = [None for _ in range(N_components)]
+    # Helps us prevent issues when HUs and DUs have mismatches
+    data, metadata = _initialize_fits_lists(hdus=hdus)
 
-    # Iterates over each exposure for a given HDU
-    for idx in range(N_components):
+    # Only triggers if no resolution was possible
+    if (data is None) or (metadata is None):
+        return None
 
-        # Loads all data for given unit in each exposure
-        component_data = np.array([hdu[idx].data for hdu in hdus])
-        data[idx] = component_data
+    for hdu_idx in range(N_components):
 
-        # Extracts all (key, value, comment) pairs for a given unit
-        cards = np.array([hdu[idx].header.cards for hdu in hdus])
+        # 'data' cannot be a 'np.ndarray' since entries have non-homogenous shapes
+        data[hdu_idx] = np.array([hdu[hdu_idx].data for hdu in hdus])
 
-        # Filters out empty entries in the hdu
-        valid_keys = cards[0, :, 0] != ""
-        cards = cards[:, valid_keys]
+        # '_initialize_fits_lists()' should have found all possible keys
+        valid_keys = list(metadata[hdu_idx].keys())
 
-        # Extracts keys / values and checks which metadata vary
-        keys = cards[:, :, 0]
-        values = cards[:, :, 1]
+        # The 'KeyError' should only trigger when a non-vital keyword is missing
+        for file_idx, hdu in enumerate(hdus):
+            for key in valid_keys:
+                try:
+                    metadata[hdu_idx][key][file_idx] = hdu[hdu_idx].header[key]
+                except KeyError:
+                    pass
 
-        # Creates the metadata dictionary for a given hdu
-        metadata[idx] = {str(k): _format_metadata(v) for k, v in zip(keys[0], values.T)}
+        # Final pass to fix formatting / type issues in metadata
+        metadata[hdu_idx] = {
+            k: _format_metadata(metadata[hdu_idx][k]) for k in valid_keys
+        }
 
     # Prevents accidental overwriting
     for hdu in hdus:
@@ -290,6 +372,15 @@ def _gmos_hamamatsu_formatter(
         np.nan,
     )
 
+    # This will be stored in the metadata dictionary
+    combined_RN = np.full(
+        (
+            int(YSHAPE),
+            int(XSHAPE),
+        ),
+        np.nan,
+    )
+
     y_offset = 0
 
     for i in range(N_ROWS):
@@ -303,6 +394,7 @@ def _gmos_hamamatsu_formatter(
             xlen -= OVERSCAN_LENGTH
 
             chip_gain = metadata[i * N_COLS + j]["GAIN"]
+            RN = metadata[i * N_COLS + j]["RDNOISE"]
 
             # Really nasty, but this is quick and helps with readibility later!
             gap_offset = CHIP_GAP * (((i * N_COLS + j - 1) // 4) % 3)
@@ -319,6 +411,10 @@ def _gmos_hamamatsu_formatter(
                 ] = (
                     data[i * N_COLS + j][:, :, :-OVERSCAN_LENGTH] - overscan
                 ) * chip_gain
+                combined_RN[
+                    y_offset : y_offset + ylen,
+                    gap_offset + x_offset : gap_offset + x_offset + xlen,
+                ] = RN
 
             # Overscan is on the left edge of the sub-image
             else:
@@ -332,14 +428,23 @@ def _gmos_hamamatsu_formatter(
                 ] = (
                     data[i * N_COLS + j][:, :, OVERSCAN_LENGTH:] - overscan
                 ) * chip_gain
+                combined_RN[
+                    y_offset : y_offset + ylen,
+                    gap_offset + x_offset : gap_offset + x_offset + xlen,
+                ] = RN
 
             x_offset += xlen
 
         y_offset += ylen
 
-    # Easiest to rotate the image here
+    # Easiest to rotate the images here
     combined_data = np.rot90(combined_data, k=0, axes=(1, 2))
     combined_data = combined_data[:, crop_bds[0] : crop_bds[1]]
+
+    combined_RN = np.rot90(combined_RN, k=0)
+    combined_RN = combined_RN[crop_bds[0] : crop_bds[1]]
+
+    metadata[0]["RN"] = combined_RN
 
     return combined_data, metadata
 
@@ -663,6 +768,8 @@ def collect_images_array(
     data, metadata = _extract_hdu_data(
         hdus=hdus,
     )
+    if (data is None) or (metadata is None):
+        return None
 
     # If 'default', 'data' and 'metadata' are unchanged
     data, metadata = _format_data(
@@ -745,10 +852,10 @@ def average_matching_files(
     # Prints image statistics
     if debug:
         print(f"\nImage statistics for average '{tag}' image...")
-        print(rf"      Min: {np.min(avg_image.flatten())}")
-        print(rf"      Max: {np.max(avg_image.flatten())}")
-        print(rf"     Mean: {round(np.mean(avg_image.flatten()), 3)}")
-        print(rf"      STD: {round(np.std(avg_image.flatten()), 3)}")
+        print(rf"      Min: {np.nanmin(avg_image.flatten())}")
+        print(rf"      Max: {np.nanmax(avg_image.flatten())}")
+        print(rf"     Mean: {round(np.nanmean(avg_image.flatten()), 3)}")
+        print(rf"      STD: {round(np.nanstd(avg_image.flatten()), 3)}")
 
     if return_metadata:
         return avg_image, metadata
