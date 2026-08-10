@@ -11,10 +11,20 @@ DATA_PATH = "data/KOSMOS/target"
 trace_region = (150, 300)
 
 # Gathers and calibrates images used across all tests
-bias = loading.average_matching_files(CAL_PATH, "bias", crop_bds=trace_region)
-flat = loading.average_matching_files(CAL_PATH, "flat", crop_bds=trace_region) - bias
-arc = loading.average_matching_files(CAL_PATH, "neon", crop_bds=trace_region) - bias
-data = loading.collect_images_array(DATA_PATH, "", crop_bds=trace_region) - bias
+bias = loading.average_matching_files(path=CAL_PATH, tag="bias", crop_bds=trace_region)
+flat = loading.average_matching_files(
+    path=CAL_PATH,
+    tag="flat",
+    ignore=["flat.0029.fits", "flat.0030.fits"],
+    crop_bds=trace_region,
+)
+arc = (
+    loading.average_matching_files(path=CAL_PATH, tag="neon", crop_bds=trace_region)
+    - bias
+)
+data = (
+    loading.collect_images_array(path=DATA_PATH, tag="", crop_bds=trace_region) - bias
+)
 arc = utils.flatfield_correction(arc, flat)
 
 

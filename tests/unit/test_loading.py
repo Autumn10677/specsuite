@@ -72,15 +72,13 @@ class TestLoadingFunctions(unittest.TestCase):
             loading.collect_images_array(path=CAL_PATH, tag="wrong tag") is None
         )
 
-        # FIXME: In the future, bad instruments should default to 'default' loading
-        self.assertTrue(
-            loading.collect_images_array(
-                path=CAL_PATH,
-                tag="bias",
-                instrument="fake instrument",
-            )
-            is None
+        # Changed from previous version, now uses 'default' loading procedure
+        data = loading.collect_images_array(
+            path=CAL_PATH,
+            tag="bias",
+            instrument="fake instrument",
         )
+        self.assertFalse(data is None)
 
     def test_average_matching_files(self):
 
@@ -96,14 +94,13 @@ class TestLoadingFunctions(unittest.TestCase):
             loading.average_matching_files(path=CAL_PATH, tag="wrong tag") is None
         )
 
-        self.assertTrue(
-            loading.average_matching_files(
-                path=CAL_PATH,
-                tag="bias",
-                instrument="fake instrument",
-            )
-            is None
+        # Changed from previous version, now uses 'default' loading procedure
+        data = loading.average_matching_files(
+            path=CAL_PATH,
+            tag="bias",
+            instrument="fake instrument",
         )
+        self.assertFalse(data is None)
 
 
 if __name__ == "__main__":
