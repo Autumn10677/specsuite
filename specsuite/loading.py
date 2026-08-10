@@ -438,10 +438,10 @@ def _gmos_hamamatsu_formatter(
         y_offset += ylen
 
     # Easiest to rotate the images here
-    combined_data = np.rot90(combined_data, k=0, axes=(1, 2))
+    combined_data = np.rot90(combined_data, k=2, axes=(1, 2))
     combined_data = combined_data[:, crop_bds[0] : crop_bds[1]]
 
-    combined_RN = np.rot90(combined_RN, k=0)
+    combined_RN = np.rot90(combined_RN, k=2)
     combined_RN = combined_RN[crop_bds[0] : crop_bds[1]]
 
     metadata[0]["RN"] = combined_RN
