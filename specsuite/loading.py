@@ -653,13 +653,15 @@ def collect_images_array(
         # 'textwrap' ensures the error message isn't too long
         except Exception as e:
             if debug:
-                print(f"  X {f}\n      --> {
-                    textwrap.fill(
-                        str(e),
-                        width=60,
-                        subsequent_indent="          "
+                print(
+                    f"  X {f}\n      --> {
+                        textwrap.fill(
+                            str(e),
+                            width=60,
+                            subsequent_indent="          "
                         )
-                }\n")
+                    }\n"
+                )
 
     # Should generalize to any instrument
     data, metadata = _extract_hdu_data(
