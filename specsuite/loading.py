@@ -654,13 +654,9 @@ def collect_images_array(
         except Exception as e:
             if debug:
                 print(
-                    f"  X {f}\n      --> {
-                        textwrap.fill(
-                            str(e),
-                            width=60,
-                            subsequent_indent="          "
-                        )
-                    }\n"
+                    f"  X {f}\n      --> "
+                    + textwrap.fill(str(e), width=60, subsequent_indent="          ")
+                    + "\n"
                 )
 
     # Should generalize to any instrument
