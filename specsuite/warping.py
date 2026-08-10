@@ -266,14 +266,21 @@ def generate_warp_model(
     if ref_idx is None:
         ref_idx = len(image) // 2
 
+    # Filters out guesses too close to the image edge
+    guess = np.array(guess)
+    guess = guess[(tolerance < guess) * (guess < len(image[0]) - tolerance)]
+
+    # Iterates over each individual emission line
     for loc in guess:
 
+        # Loads small region of arclamp image for processing
         subim = image[:, int(loc) - tolerance : int(loc) + tolerance]
         ref_row = subim[ref_idx, :]
 
         lag_rows = np.zeros(len(subim))
         lag_list = np.zeros(len(subim))
 
+        # Finds sub-pixel offsets between each row in sub-image
         for idx, row in enumerate(subim):
             correlation = signal.correlate(
                 ref_row - np.mean(ref_row), row - np.mean(row), mode="full"
@@ -284,13 +291,16 @@ def generate_warp_model(
             lag_list[idx] = lag
             lag_rows[idx] = idx
 
+        # Accounts for the left-edge position of the sub-image
         lag_list += loc
 
+        # Fits for the line shape in a local region
         coeffs = np.polyfit(lag_rows, lag_list, line_order)
         coeff_list = np.concatenate([coeff_list, coeffs], axis=0)
 
     coeff_list = coeff_list.reshape((len(guess), line_order + 1)).T
 
+    # Fits for how line shape changes across the detector
     warp_coeffs = []
     warp_models = []
     for idx in range(len(coeff_list)):
