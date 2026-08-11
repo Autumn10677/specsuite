@@ -525,6 +525,15 @@ def _gmos_e2vDD_formatter(
         np.nan,
     )
 
+    # This will be stored in the metadata dictionary
+    combined_RN = np.full(
+        (
+            int(YSHAPE),
+            int(XSHAPE),
+        ),
+        np.nan,
+    )
+
     y_offset = 0
 
     for i in range(N_ROWS):
@@ -538,6 +547,7 @@ def _gmos_e2vDD_formatter(
             xlen -= OVERSCAN_LENGTH
 
             chip_gain = metadata[i * N_COLS + j]["GAIN"]
+            RN = metadata[i * N_COLS + j]["RDNOISE"]
 
             # Really nasty, but this is quick and helps with readibility later!
             gap_offset = CHIP_GAP * (((i * N_COLS + j - 1) // 2) % 3)
@@ -554,6 +564,10 @@ def _gmos_e2vDD_formatter(
                 ] = (
                     data[i * N_COLS + j][:, :, :-OVERSCAN_LENGTH] - overscan
                 ) * chip_gain
+                combined_RN[
+                    y_offset : y_offset + ylen,
+                    gap_offset + x_offset : gap_offset + x_offset + xlen,
+                ] = RN
 
             # Overscan is on the left edge of the sub-image
             else:
@@ -567,14 +581,23 @@ def _gmos_e2vDD_formatter(
                 ] = (
                     data[i * N_COLS + j][:, :, OVERSCAN_LENGTH:] - overscan
                 ) * chip_gain
+                combined_RN[
+                    y_offset : y_offset + ylen,
+                    gap_offset + x_offset : gap_offset + x_offset + xlen,
+                ] = RN
 
             x_offset += xlen
 
         y_offset += ylen
 
     # Easiest to rotate the image here
-    combined_data = np.rot90(combined_data, k=0, axes=(1, 2))
+    combined_data = np.rot90(combined_data, k=2, axes=(1, 2))
     combined_data = combined_data[:, crop_bds[0] : crop_bds[1]]
+
+    combined_RN = np.rot90(combined_RN, k=2)
+    combined_RN = combined_RN[crop_bds[0] : crop_bds[1]]
+
+    metadata[0]["RN"] = combined_RN
 
     return combined_data, metadata
 
@@ -710,8 +733,6 @@ def collect_images_array(
     metadata :: list | dict
         The formatted metadata dictionaries.
     """
-
-    instrument = instrument.lower()
 
     # Informs user that their instrument name was not recognized
     if instrument not in SUPPORTED_INSTRUMENTS:

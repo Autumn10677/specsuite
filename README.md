@@ -1,3 +1,8 @@
+![Python](https://img.shields.io/badge/python-3.14-blue.svg)
+[![PyPI version](https://badge.fury.io/py/specsuite.svg)](https://badge.fury.io/py/specsuite)
+[![Downloads](https://pepy.tech/badge/specsuite)](https://pepy.tech/project/specsuite)
+![Repo Size](https://img.shields.io/github/repo-size/Autumn10677/specsuite)
+
 # Welcome to specsuite!
 For help with getting ```specsuite``` running on your own data, please check out the <a href="https://www.autumnstephens.net/specsuite" target="_blank"><strong>documentation page</strong></a>!
 

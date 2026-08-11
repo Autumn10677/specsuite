@@ -25,7 +25,7 @@
 ### _format_data {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.loading</span>.<span class='function-name'>_format_data</span> (<br>&emsp;&emsp;<span class='arg-var-name'>data</span>,<br>&emsp;&emsp;<span class='arg-var-name'>metadata</span>,<br>&emsp;&emsp;<span class='arg-var-name'>instrument</span>,<br>&emsp;&emsp;<span class='arg-var-name'>crop_bds</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L582-L628' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L605-L651' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Handles formatting 'DU' and 'HU' lists into more user-friendly formats. If the provided 'instrument' is not supported, both 'data' and 'metadata' are returned unaltered.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>data</span> :: <span class='variable-type'>list</span><br><span class='variable-desc'>A list of 3D arrays pulled from the content of FITS files.
@@ -47,7 +47,7 @@
 ### _gmos_e2vDD_formatter {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.loading</span>.<span class='function-name'>_gmos_e2vDD_formatter</span> (<br>&emsp;&emsp;<span class='arg-var-name'>data</span>,<br>&emsp;&emsp;<span class='arg-var-name'>metadata</span>,<br>&emsp;&emsp;<span class='arg-var-name'>crop_bds</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L452-L579' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L452-L602' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Data formatter for GMOS' e2v DD (pre-2017) detector layout. As of now, this function assumes data was collected in '6-amp' mode described at...
 
     https://www.gemini.edu/instrumentation/gmos/data-reduction
@@ -112,7 +112,7 @@ Hard-coded values are utilized when the information is not available (or computa
 ### average_matching_files {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.loading</span>.<span class='function-name'>average_matching_files</span> (<br>&emsp;&emsp;<span class='arg-var-name'>path</span>,<br>&emsp;&emsp;<span class="arg-var-name">tag</span> = <span class="arg-default">""</span>,<br>&emsp;&emsp;<span class="arg-var-name">instrument</span> = <span class="arg-default">"kosmos"</span>,<br>&emsp;&emsp;<span class='arg-var-name'>ignore</span> = <span class='arg-default'>[]</span>,<br>&emsp;&emsp;<span class='arg-var-name'>crop_bds</span> = <span class='arg-default'>[0, None]</span>,<br>&emsp;&emsp;<span class="arg-var-name">mode</span> = <span class="arg-default">"median"</span>,<br>&emsp;&emsp;<span class='arg-var-name'>return_metadata</span> = <span class='arg-default'>False</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L788-L862' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L809-L883' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Extracts images from a user-given path, and finds the average pixel value for every pixel across all images. This defaults to the 'median' average, but can be changed to take the 'mean' average as well.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>path</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Path to data directory.</span><br><span class='variable-name'>tag</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Tag to search for in filenames.</span><br><span class='variable-name'>instrument</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>The name of the instrument your FITS data was taken from. This
@@ -123,7 +123,7 @@ Hard-coded values are utilized when the information is not available (or computa
 ### collect_images_array {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.loading</span>.<span class='function-name'>collect_images_array</span> (<br>&emsp;&emsp;<span class='arg-var-name'>path</span>,<br>&emsp;&emsp;<span class="arg-var-name">tag</span> = <span class="arg-default">""</span>,<br>&emsp;&emsp;<span class='arg-var-name'>ignore</span> = <span class='arg-default'>[]</span>,<br>&emsp;&emsp;<span class='arg-var-name'>crop_bds</span> = <span class='arg-default'>[0, None]</span>,<br>&emsp;&emsp;<span class="arg-var-name">instrument</span> = <span class="arg-default">"kosmos"</span>,<br>&emsp;&emsp;<span class='arg-var-name'>return_metadata</span> = <span class='arg-default'>False</span>,<br>&emsp;&emsp;<span class='arg-var-name'>debug</span> = <span class='arg-default'>False</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L667-L785' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L690-L806' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Collect a list of images from a user-given path corresponding to a specified tag. Images can be ignore by passing their indexes as an additional argument.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>path</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Path to data directory containing image
@@ -138,7 +138,7 @@ Hard-coded values are utilized when the information is not available (or computa
 ### extract_times {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.loading</span>.<span class='function-name'>extract_times</span> (<br>&emsp;&emsp;<span class='arg-var-name'>path</span>,<br>&emsp;&emsp;<span class='arg-var-name'>tag</span>,<br>&emsp;&emsp;<span class='arg-var-name'>ignore</span> = <span class='arg-default'>[]</span>,<br>&emsp;&emsp;<span class="arg-var-name">time_lbl</span> = <span class="arg-default">"DATE-OBS"</span>,<br>&emsp;&emsp;<span class="arg-var-name">ra_lbl</span> = <span class="arg-default">"RA"</span>,<br>&emsp;&emsp;<span class="arg-var-name">dec_lbl</span> = <span class="arg-default">"DEC"</span>,<br>&emsp;&emsp;<span class="arg-var-name">lat_lbl</span> = <span class="arg-default">"LATITUDE"</span>,<br>&emsp;&emsp;<span class="arg-var-name">long_lbl</span> = <span class="arg-default">"LONGITUD"</span>,<br>&emsp;&emsp;<span class="arg-var-name">time_format</span> = <span class="arg-default">"isot"</span>,<br>&emsp;&emsp;<span class="arg-var-name">time_scale</span> = <span class="arg-default">"tai"</span>,<br>&emsp;&emsp;<span class='arg-var-name'>loc_units</span> = <span class='arg-default'>(Unit("hourangle"), Unit("deg"))</span>,<br>&emsp;&emsp;<span class="arg-var-name">loc_frame</span> = <span class="arg-default">"icrs"</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L929-L1022' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L950-L1043' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Extracts time data from the headers of a set of observations. Assumes that the header has information about the observation time.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>path</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Directory pointing toward the FITS file you wish to
@@ -160,7 +160,7 @@ Hard-coded values are utilized when the information is not available (or computa
 ### filter_files {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.loading</span>.<span class='function-name'>filter_files</span> (<br>&emsp;&emsp;<span class='arg-var-name'>files</span>,<br>&emsp;&emsp;<span class='arg-var-name'>tag</span>,<br>&emsp;&emsp;<span class='arg-var-name'>ignore</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L631-L664' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L654-L687' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Filters down a list of filenames if they to not satisfy the following requirements...
 
     1) The file ends with '.fits' extension
@@ -178,7 +178,7 @@ Hard-coded values are utilized when the information is not available (or computa
 ### load_metadata {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.loading</span>.<span class='function-name'>load_metadata</span> (<br>&emsp;&emsp;<span class='arg-var-name'>path</span>,<br>&emsp;&emsp;<span class='arg-var-name'>tag</span>,<br>&emsp;&emsp;<span class='arg-var-name'>ignore</span> = <span class='arg-default'>[]</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L865-L926' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L886-L947' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Loads an dictionary of all data for a collection of FITS files. This metadata comes from the header of the first FITS card.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>path</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Path to data directory.</span><br><span class='variable-name'>tag</span> :: <span class='variable-type'>str</span><br><span class='variable-desc'>Tag to search for in filenames.</span><br><span class='variable-name'>ignore</span> :: <span class='variable-type'>list</span><br><span class='variable-desc'>List of data indexes to ignore.</span><br></span></p>
@@ -190,7 +190,7 @@ Hard-coded values are utilized when the information is not available (or computa
 ### split_chips {: .hidden-heading }
 <div class='function-wrapper'><p class='function-header-wrapper'>
 <span class='parent-module'>specsuite.loading</span>.<span class='function-name'>split_chips</span> (<br>&emsp;&emsp;<span class='arg-var-name'>images</span>,<br>):
-<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L1025-L1061' target='_blank'>[SOURCE]</a></span></p>
+<span class='function-code-source'><a href='https://github.com/Autumn10677/specsuite/blob/main/specsuite/loading.py#L1046-L1082' target='_blank'>[SOURCE]</a></span></p>
 <p class='documentation-description'><span class='description-label'>Description:</span><br><span class='underline'></span>Attempts to split up a series of 2D images into separate arrays for each "chip" that has been combined. This function assumes that "chip gaps" are indicated by a column that is entirely comprised of NaN values.
 </p>
 <p class='written-parameters-wrapper'><span class='parameters-label'>Parameters:</span><br><span class='underline'></span><span class='written-parameters-content'><span class='variable-name'>images</span> :: <span class='variable-type'>np.ndarray</span><br><span class='variable-desc'>A series of images that are comprised of multiple chips
