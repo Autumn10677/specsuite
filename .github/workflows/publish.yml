@@ -33,7 +33,13 @@ jobs:
           hatch --version
 
       - name: Build artifacts
-        run: hatch build
+        run: |
+          python -m pip install --upgrade build
+          python -m build
+
+      - name: Inspect wheel metadata
+        run: |
+          unzip -p dist/*.whl '*/METADATA' | grep '^Metadata-Version:'
 
       - name: Verify dist contents
         run: ls -R dist
