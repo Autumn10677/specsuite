@@ -204,11 +204,7 @@ def flag_cosmic_rays(
 
     # Generates the shifted FFT of an image array
     # NOTE: NaN handling creates sharp, time-persistent features
-    dft_shifted = jnp.fft.fftshift(
-        jnp.fft.fftn(
-            jnp.nan_to_num(images, nan=0.0)
-        )
-    )
+    dft_shifted = jnp.fft.fftshift(jnp.fft.fftn(jnp.nan_to_num(images, nan=0.0)))
 
     # De-weights low-frequency contributions in all dimensions
     mask = 1 - _gaussian_mask(
