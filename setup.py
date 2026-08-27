@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='specsuite',
-    version='1.2.1',    
+    version='1.2.2',    
     description='A toolbox for processing data from long-slit spectrographs',
     url='https://github.com/Autumn10677/specsuite',
     author='Autumn Stephens',
