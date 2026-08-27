@@ -145,8 +145,13 @@ def boxcar_extraction(
     images: np.ndarray,
     backgrounds: np.ndarray,
     RN: float | np.ndarray = 0.0,
+    trace_order: int = 2,
+    bin_size: int = 16,
+    extraction_size: int = 50,
+    mode: str = "fit trace",
+    progress: bool = False,
     debug: bool = False,
-):
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Performs a simple boxcar extraction on an image
     (or series of images). This assumes that both arrays
@@ -167,6 +172,22 @@ def boxcar_extraction(
         that have been subtracted off of your science images.
     RN :: float | np.ndarray
         The read noise associated with your detector.
+    trace_order :: int
+        The order of the polynomial fit to the signal trace
+        (only for 'fit trace' mode).
+    bin_size :: int
+        The x-axis bin size used for binning down each individual
+        exposure (only for 'fit trace' mode).
+    extraction_size :: int
+        How many y-pixels above and below the fitted trace
+        polynomial to extract flux from (only for 'fit trace' mode).
+    mode :: str
+        Determines which type of boxcar extraction to use. Currently,
+        valid modes are: (1) 'full' which sums along the cross-dispersion
+        axis, and (2) 'fit trace' which only extracts flux from a small
+        region around the trace.
+    progress :: bool
+        Enables progress bar (only for 'fit trace' mode).
     debug :: bool
         Allows for optional plotting.
 
@@ -180,11 +201,26 @@ def boxcar_extraction(
         exposure. Has a shape of (image index, pixel position).
     """
 
+    # Gives us arrays to modify without impacting user-end data
+    copied_images = images.copy()
+    copied_backgrounds = backgrounds.copy()
+
+    # Ensures shape is correct in case trace fitting is used
+    if isinstance(RN, int) or isinstance(RN, float):
+        copied_RN = np.full(
+            copied_images.shape,
+            fill_value=RN,
+        )
+    else:
+        copied_RN = RN.copy()
+
     # Handles single-image exposures by wrapping them in a list
-    if len(images.shape) != 3:
-        images = np.array([images])
-    if len(backgrounds.shape) != 3:
-        backgrounds = np.array([backgrounds])
+    if len(images.shape) == 2:
+        copied_images = np.array([copied_images])
+    if len(backgrounds.shape) == 2:
+        copied_backgrounds = np.array([copied_backgrounds])
+    if len(RN.shape) == 2:
+        copied_RN = np.array([copied_RN])
 
     # Checks that arrays are either 3D or a wrapped 2D exposure
     try:
@@ -192,34 +228,54 @@ def boxcar_extraction(
     except AssertionError:
         raise AssertionError("Both image arrays should be 2D or 3D.")
 
+    # Ensures that users are aware of available modes
+    valid_modes = ["full", "fit trace"]
+    assert (
+        mode in valid_modes
+    ), "Invalid 'mode', must be one of the following: " + ", ".join(valid_modes)
+
+    # Modifies copied arrays to change flux / noise calculation
+    if mode == "fit trace":
+
+        # Used for calculating boxcar mask
+        pixels = np.arange(images.shape[2])
+        y_grid = np.arange(images.shape[1])[:, None]
+
+        copied_RN = np.array([RN for _ in range(len(images))])
+
+        # Iterates over single images since 'trace_fit()' takes one image
+        for idx in tqdm(
+            range(len(images)),
+            desc="Performing boxcar extraction",
+            disable=not progress,
+        ):
+
+            # Attempts to fit a nth-order polynomial to trace
+            _, _, _, p_trace = trace_fit(
+                image=np.nan_to_num(images[idx], nan=0.0),
+                bin=bin_size,
+                trace_order=trace_order,
+            )
+
+            # Injects NaNs so they are ignored during flux / error calculation
+            boxcar_mask = ~(np.abs(y_grid - p_trace(pixels)) <= extraction_size)
+            copied_images[idx][boxcar_mask] *= 0.0
+            copied_backgrounds[idx][boxcar_mask] *= 0.0
+            copied_RN[idx][boxcar_mask] *= 0.0
+
+            if debug:
+                plt.rcParams["figure.figsize"] = (5, 3)
+                plt.plot(pixels, p_trace(pixels), color="k")
+                plot_image(copied_images[idx], norm="log", figsize=(5, 3))
+
     # Assumes that 'images' and 'backgrounds' are 3D arrays
-    flux_array = np.sum(images, axis=1)
-    error_array = np.sqrt(np.sum(images + backgrounds + RN**2, axis=1))
-
-    if debug:
-        pixel_positions = np.array(range(len(flux_array[0])))
-
-        plt.rcParams["figure.figsize"] = (12, 4)
-        plt.errorbar(
-            pixel_positions,
-            flux_array[0],
-            yerr=error_array[0],
-            color="k",
-            label="First Exposure",
-            fmt="none",
+    flux_array = np.sum(copied_images, axis=1)
+    error_array = np.sqrt(
+        np.sum(
+            copied_images + copied_backgrounds + copied_RN**2,
+            axis=1,
         )
-        plt.plot(
-            pixel_positions,
-            np.median(flux_array, axis=0),
-            color="salmon",
-            label="Median Exposure",
-            zorder=-999,
-        )
-        plt.xlim(np.min(pixel_positions), np.max(pixel_positions))
-        plt.xlabel("Pixel Position (Dispersion Axis)")
-        plt.ylabel("Extracted Flux / Pixel")
-        plt.legend()
-        plt.show()
+    )
 
     return flux_array, error_array
 
