@@ -32,7 +32,7 @@ def register_instrument(name):
     return decorator
 
 
-def _format_metadata(x: list, test=False) -> np.ndarray | str | bool | float:
+def _format_metadata(x: list) -> np.ndarray | str | bool | float:
     """
     Attempts to convert a list of strings into Numpy array
     with type 'float' or 'bool'. Any lists that cannot be
