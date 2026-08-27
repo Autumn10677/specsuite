@@ -32,7 +32,7 @@ def register_instrument(name):
     return decorator
 
 
-def _format_metadata(x: list) -> np.ndarray | str | bool | float:
+def _format_metadata(x: list, test=False) -> np.ndarray | str | bool | float:
     """
     Attempts to convert a list of strings into Numpy array
     with type 'float' or 'bool'. Any lists that cannot be
@@ -62,7 +62,7 @@ def _format_metadata(x: list) -> np.ndarray | str | bool | float:
         x = x.astype(str)
 
     # Handles repeated / single-entry lists
-    if (len(np.unique(x)) != len(x)) or (len(x) == 1):
+    if (len(np.unique(x)) == 1) or (len(x) == 1):
         return x[0]
 
     return x
@@ -296,6 +296,8 @@ def _kosmos_formatter(
 
     formatted_data = formatted_data[:, crop_bds[0] : crop_bds[1]]
 
+    metadata["RN"] = 6
+
     return formatted_data, metadata
 
 
@@ -338,6 +340,44 @@ def _gmos_hamamatsu_formatter(
             (N_exposures, x_wavelength, y_spatial)
     """
 
+    # Assuming 12-amp mode
+    CHIP_ORDER = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
+
+    # Tables pulled from ee2v DD documentation page
+    GAINS = {
+        "Normal Science": [1.66, 1.63, 1.62, 1.57, 1.68, 1.65, 1.64, 1.68, 1.61, 1.63, 1.58, 1.65],
+        "Acquisition": [2.01, 1.95, 1.97, 1.91, 2.03, 1.97, 1.96, 2.01, 1.95, 1.95, 1.89, 1.95],
+        "Bright Target": [5.21, 5.18, 5.05, 5.04, 5.29, 5.13, 5.14, 5.29, 5.03, 5.10, 4.86, 5.09],
+    }
+    READ_NOISES = {
+        "Normal Science": [4.06, 4.12, 4.12, 3.99, 4.20, 3.98, 3.88, 4.20, 4.04, 4.35, 4.02, 4.55],
+        "Acquisition": [8.02, 6.88, 6.01, 5.88, 6.71, 6.34, 5.39, 5.86, 6.10, 6.13, 5.98, 6.79],
+        "Bright Target": [9.90, 8.94, 8.75, 8.17, 9.42, 8.91, 8.19, 8.84, 8.13, 8.53, 8.03, 8.80],
+    }
+
+    AMP_MODE = metadata[0]["AMPINTEG"]
+    AMP_MODE = "slow" if AMP_MODE==1000 else "fast"
+
+    GAIN_MODE = 0
+    for idx in range(1, len(metadata)):
+        GAIN_MODE += metadata[idx]["GAIN"] / (len(metadata) - 1)
+    GAIN_MODE = "low" if GAIN_MODE < 3.0 else "high"
+
+    # Necessary for figuring out which instrument mode was used
+    avg_gain = 0.0
+    avg_rn = 0.0
+    for entry in metadata[1:]:
+        avg_gain += entry["GAIN"] / (len(metadata) - 1)
+        avg_rn += entry["RDNOISE"] / (len(metadata) - 1)
+
+    # Values seem arbitrary, but are based on web-based documentation
+    if (avg_gain < 1.8) and (avg_rn < 5):
+        MODE = "Normal Science"
+    elif (avg_gain < 4) and (avg_rn < 7):
+        MODE = "Acquisition"
+    else:
+        MODE = "Bright Target"
+
     # Defined here to improve readibility later on
     N_COLS = 12
     N_ROWS = int((len(data) - 1) / N_COLS)
@@ -354,7 +394,7 @@ def _gmos_hamamatsu_formatter(
     CHIP_GAP = CHIP_GAP // BINNING[0]
 
     # Overscan length should be unaffected by binning
-    OVERSCAN_LENGTH = 32
+    CONTAM_PIX_LENGTH = 5
 
     # Their 'X' and 'Y' conventions are flipped from ours
     XSHAPE = metadata[0]["DETRO1XS"] + 2 * CHIP_GAP
@@ -371,7 +411,6 @@ def _gmos_hamamatsu_formatter(
         ),
         np.nan,
     )
-
     # This will be stored in the metadata dictionary
     combined_RN = np.full(
         (
@@ -384,60 +423,59 @@ def _gmos_hamamatsu_formatter(
     y_offset = 0
 
     for i in range(N_ROWS):
+        for j in range(N_COLS):
 
-        x_offset = 0
+            GAIN = GAINS[MODE][j]
+            RN = READ_NOISES[MODE][j]
 
-        for j in range(1, N_COLS + 1):
+            REAL_IDX = CHIP_ORDER[j] + N_COLS * i
 
-            # Extracted here since 'xlen' is easier to correct before using
-            _, ylen, xlen = data[i * N_COLS + j].shape
-            xlen -= OVERSCAN_LENGTH
+            AMPNAME = metadata[REAL_IDX]["AMPNAME"]
 
-            chip_gain = metadata[i * N_COLS + j]["GAIN"]
-            RN = metadata[i * N_COLS + j]["RDNOISE"]
+            over_start, over_end, _, _ = _extract_detector_region(
+                metadata[REAL_IDX]["BIASSEC"]
+            )
+            data_start, data_end, ystart, yend = _extract_detector_region(
+                metadata[REAL_IDX]["DATASEC"]
+            )
+
+            DATALEN = int(data_end - data_start + 1)
+            DATA_YLEN = int(yend - ystart + 1)
+
+            # if "right" in AMPNAME:
+            if j % 2 == 1:
+                over_end -= CONTAM_PIX_LENGTH
+            else:
+                over_start += CONTAM_PIX_LENGTH
 
             # Really nasty, but this is quick and helps with readibility later!
-            gap_offset = CHIP_GAP * (((i * N_COLS + j - 1) // 4) % 3)
+            gap_offset = CHIP_GAP * (((i * N_COLS + j) // 4) % 3)
+            total_offset = j * DATALEN + gap_offset
 
-            # Overscan is on the right edge of the sub-image
-            if j % 2 == 1:
-                overscan = np.median(
-                    data[i * N_COLS + j][:, :, -OVERSCAN_LENGTH:], axis=2
-                )[:, :, np.newaxis]
-                combined_data[
-                    :,
-                    y_offset : y_offset + ylen,
-                    gap_offset + x_offset : gap_offset + x_offset + xlen,
-                ] = (
-                    data[i * N_COLS + j][:, :, :-OVERSCAN_LENGTH] - overscan
-                ) * chip_gain
-                combined_RN[
-                    y_offset : y_offset + ylen,
-                    gap_offset + x_offset : gap_offset + x_offset + xlen,
-                ] = RN
+            bias = np.repeat(
+                np.median(
+                    data[REAL_IDX][:, :, over_start - 1 : over_end],
+                    axis=2,
+                )[:, :, np.newaxis],
+                DATALEN,
+                axis=2,
+            )
 
-            # Overscan is on the left edge of the sub-image
-            else:
-                overscan = np.median(
-                    data[i * N_COLS + j][:, :, :OVERSCAN_LENGTH], axis=2
-                )[:, :, np.newaxis]
-                combined_data[
-                    :,
-                    y_offset : y_offset + ylen,
-                    gap_offset + x_offset : gap_offset + x_offset + xlen,
-                ] = (
-                    data[i * N_COLS + j][:, :, OVERSCAN_LENGTH:] - overscan
-                ) * chip_gain
-                combined_RN[
-                    y_offset : y_offset + ylen,
-                    gap_offset + x_offset : gap_offset + x_offset + xlen,
-                ] = RN
+            chip_data = data[REAL_IDX][:, :, data_start -1 : data_end]
 
-            x_offset += xlen
+            combined_data[
+                :,
+                y_offset : y_offset + DATA_YLEN,
+                total_offset : total_offset + DATALEN,
+            ] = (chip_data - bias) * GAIN
+            combined_RN[
+                y_offset : y_offset + DATA_YLEN,
+                total_offset : total_offset + DATALEN,
+            ] = RN
 
-        y_offset += ylen
+        y_offset += DATA_YLEN
 
-    # Easiest to rotate the images here
+    # Easiest to rotate the image here
     combined_data = np.rot90(combined_data, k=2, axes=(1, 2))
     combined_data = combined_data[:, crop_bds[0] : crop_bds[1]]
 
@@ -491,6 +529,26 @@ def _gmos_e2vDD_formatter(
     # Assuming 6-amp mode
     CHIP_ORDER = np.array([2, 1, 4, 3, 5, 6])
 
+    # Tables pulled from ee2v DD documentation page
+    GAINS = {
+        "low_slow": [2.31, 2.31, 2.21, 2.27, 2.17, 2.33],
+        "low_fast": [2.53, 2.53, 2.41, 2.50, 2.43, 2.56],
+        "high_fast": [5.36, 5.34, 5.10, 5.27, 5.16, 5.41],
+    }
+    READ_NOISES = {
+        "low_slow": [3.41, 3.17, 3.20, 3.22, 3.46, 3.44],
+        "low_fast": [4.3, 4.2, 4.1, 4.1, 4.3, 4.4],
+        "high_fast": [7.0, 7.8, 5.7, 5.8, 6.4, 6.3],
+    }
+
+    AMP_MODE = metadata[0]["AMPINTEG"]
+    AMP_MODE = "slow" if AMP_MODE==1000 else "fast"
+
+    GAIN_MODE = 0
+    for idx in range(1, len(metadata)):
+        GAIN_MODE += metadata[idx]["GAIN"] / (len(metadata) - 1)
+    GAIN_MODE = "low" if GAIN_MODE < 3.0 else "high"
+
     # Defined here to improve readibility later on
     N_COLS = len(CHIP_ORDER)
     N_ROWS = int((len(data) - 1) / 6)
@@ -507,7 +565,7 @@ def _gmos_e2vDD_formatter(
     CHIP_GAP = CHIP_GAP // BINNING[0]
 
     # Overscan length should be unaffected by binning
-    OVERSCAN_LENGTH = 32
+    CONTAM_PIX_LENGTH = 5
 
     # Their 'X' and 'Y' conventions are flipped from ours
     XSHAPE = metadata[0]["DETRO1XS"] + 2 * CHIP_GAP
@@ -524,7 +582,6 @@ def _gmos_e2vDD_formatter(
         ),
         np.nan,
     )
-
     # This will be stored in the metadata dictionary
     combined_RN = np.full(
         (
@@ -537,58 +594,56 @@ def _gmos_e2vDD_formatter(
     y_offset = 0
 
     for i in range(N_ROWS):
+        for j in range(N_COLS):
 
-        x_offset = 0
+            GAIN = GAINS[f"{GAIN_MODE}_{AMP_MODE}"][j]
+            RN = READ_NOISES[f"{GAIN_MODE}_{AMP_MODE}"][j]
 
-        for idx, j in enumerate(CHIP_ORDER):
+            REAL_IDX = CHIP_ORDER[j] + N_COLS * i
 
-            # Extracted here since 'xlen' is easier to correct before using
-            _, ylen, xlen = data[i * N_COLS + j].shape
-            xlen -= OVERSCAN_LENGTH
+            AMPNAME = metadata[REAL_IDX]["AMPNAME"]
 
-            chip_gain = metadata[i * N_COLS + j]["GAIN"]
-            RN = metadata[i * N_COLS + j]["RDNOISE"]
+            over_start, over_end, _, _ = _extract_detector_region(
+                metadata[REAL_IDX]["BIASSEC"]
+            )
+            data_start, data_end, ystart, yend = _extract_detector_region(
+                metadata[REAL_IDX]["DATASEC"]
+            )
+
+            DATALEN = int(data_end - data_start + 1)
+            DATA_YLEN = int(yend - ystart + 1)
+
+            if "right" in AMPNAME:
+                over_end -= CONTAM_PIX_LENGTH
+            else:
+                over_start += CONTAM_PIX_LENGTH
 
             # Really nasty, but this is quick and helps with readibility later!
-            gap_offset = CHIP_GAP * (((i * N_COLS + j - 1) // 2) % 3)
+            gap_offset = CHIP_GAP * (((i * N_COLS + j) // 2) % 3)
+            total_offset = j * DATALEN + gap_offset
 
-            # Overscan is on the right edge of the sub-image
-            if idx % 2 == 0:
-                overscan = np.median(
-                    data[i * N_COLS + j][:, :, -OVERSCAN_LENGTH:], axis=2
-                )[:, :, np.newaxis]
-                combined_data[
-                    :,
-                    y_offset : y_offset + ylen,
-                    gap_offset + x_offset : gap_offset + x_offset + xlen,
-                ] = (
-                    data[i * N_COLS + j][:, :, :-OVERSCAN_LENGTH] - overscan
-                ) * chip_gain
-                combined_RN[
-                    y_offset : y_offset + ylen,
-                    gap_offset + x_offset : gap_offset + x_offset + xlen,
-                ] = RN
+            bias = np.repeat(
+                np.median(
+                    data[REAL_IDX][:, :, over_start - 1 : over_end],
+                    axis=2,
+                )[:, :, np.newaxis],
+                DATALEN,
+                axis=2,
+            )
 
-            # Overscan is on the left edge of the sub-image
-            else:
-                overscan = np.median(
-                    data[i * N_COLS + j][:, :, :OVERSCAN_LENGTH], axis=2
-                )[:, :, np.newaxis]
-                combined_data[
-                    :,
-                    y_offset : y_offset + ylen,
-                    gap_offset + x_offset : gap_offset + x_offset + xlen,
-                ] = (
-                    data[i * N_COLS + j][:, :, OVERSCAN_LENGTH:] - overscan
-                ) * chip_gain
-                combined_RN[
-                    y_offset : y_offset + ylen,
-                    gap_offset + x_offset : gap_offset + x_offset + xlen,
-                ] = RN
+            chip_data = data[REAL_IDX][:, :, data_start -1 : data_end]
 
-            x_offset += xlen
+            combined_data[
+                :,
+                y_offset : y_offset + DATA_YLEN,
+                total_offset : total_offset + DATALEN,
+            ] = (chip_data - bias) * GAIN
+            combined_RN[
+                y_offset : y_offset + DATA_YLEN,
+                total_offset : total_offset + DATALEN,
+            ] = RN
 
-        y_offset += ylen
+        y_offset += DATA_YLEN
 
     # Easiest to rotate the image here
     combined_data = np.rot90(combined_data, k=2, axes=(1, 2))
