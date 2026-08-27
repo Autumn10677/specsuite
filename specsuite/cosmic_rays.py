@@ -153,7 +153,7 @@ def _cluster_in_grid(
 
 def flag_cosmic_rays(
     images: np.ndarray,
-    gauss_stds: np.ndarray = None,
+    gauss_stds: np.ndarray = np.array([1000, 1000, 1000]),
     thresh: float = 2e3,
     group_radius: int = 20,
     progress: bool = False,
@@ -202,11 +202,13 @@ def flag_cosmic_rays(
         the input image array.
     """
 
-    if gauss_stds is None:
-        gauss_stds = np.array([1000, 1000, 1000])
-
     # Generates the shifted FFT of an image array
-    dft_shifted = jnp.fft.fftshift(jnp.fft.fftn(images))
+    # NOTE: NaN handling creates sharp, time-persistent features
+    dft_shifted = jnp.fft.fftshift(
+        jnp.fft.fftn(
+            jnp.nan_to_num(images, nan=0.0)
+        )
+    )
 
     # De-weights low-frequency contributions in all dimensions
     mask = 1 - _gaussian_mask(
