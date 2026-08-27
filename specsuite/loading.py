@@ -345,23 +345,93 @@ def _gmos_hamamatsu_formatter(
 
     # Tables pulled from ee2v DD documentation page
     GAINS = {
-        "Normal Science": [1.66, 1.63, 1.62, 1.57, 1.68, 1.65, 1.64, 1.68, 1.61, 1.63, 1.58, 1.65],
-        "Acquisition": [2.01, 1.95, 1.97, 1.91, 2.03, 1.97, 1.96, 2.01, 1.95, 1.95, 1.89, 1.95],
-        "Bright Target": [5.21, 5.18, 5.05, 5.04, 5.29, 5.13, 5.14, 5.29, 5.03, 5.10, 4.86, 5.09],
+        "Normal Science": [
+            1.66,
+            1.63,
+            1.62,
+            1.57,
+            1.68,
+            1.65,
+            1.64,
+            1.68,
+            1.61,
+            1.63,
+            1.58,
+            1.65,
+        ],
+        "Acquisition": [
+            2.01,
+            1.95,
+            1.97,
+            1.91,
+            2.03,
+            1.97,
+            1.96,
+            2.01,
+            1.95,
+            1.95,
+            1.89,
+            1.95,
+        ],
+        "Bright Target": [
+            5.21,
+            5.18,
+            5.05,
+            5.04,
+            5.29,
+            5.13,
+            5.14,
+            5.29,
+            5.03,
+            5.10,
+            4.86,
+            5.09,
+        ],
     }
     READ_NOISES = {
-        "Normal Science": [4.06, 4.12, 4.12, 3.99, 4.20, 3.98, 3.88, 4.20, 4.04, 4.35, 4.02, 4.55],
-        "Acquisition": [8.02, 6.88, 6.01, 5.88, 6.71, 6.34, 5.39, 5.86, 6.10, 6.13, 5.98, 6.79],
-        "Bright Target": [9.90, 8.94, 8.75, 8.17, 9.42, 8.91, 8.19, 8.84, 8.13, 8.53, 8.03, 8.80],
+        "Normal Science": [
+            4.06,
+            4.12,
+            4.12,
+            3.99,
+            4.20,
+            3.98,
+            3.88,
+            4.20,
+            4.04,
+            4.35,
+            4.02,
+            4.55,
+        ],
+        "Acquisition": [
+            8.02,
+            6.88,
+            6.01,
+            5.88,
+            6.71,
+            6.34,
+            5.39,
+            5.86,
+            6.10,
+            6.13,
+            5.98,
+            6.79,
+        ],
+        "Bright Target": [
+            9.90,
+            8.94,
+            8.75,
+            8.17,
+            9.42,
+            8.91,
+            8.19,
+            8.84,
+            8.13,
+            8.53,
+            8.03,
+            8.80,
+        ],
     }
-
-    AMP_MODE = metadata[0]["AMPINTEG"]
-    AMP_MODE = "slow" if AMP_MODE==1000 else "fast"
-
-    GAIN_MODE = 0
-    for idx in range(1, len(metadata)):
-        GAIN_MODE += metadata[idx]["GAIN"] / (len(metadata) - 1)
-    GAIN_MODE = "low" if GAIN_MODE < 3.0 else "high"
 
     # Necessary for figuring out which instrument mode was used
     avg_gain = 0.0
@@ -425,13 +495,14 @@ def _gmos_hamamatsu_formatter(
     for i in range(N_ROWS):
         for j in range(N_COLS):
 
+            # Pulls from the gain / RN tables for that chip / mode
             GAIN = GAINS[MODE][j]
             RN = READ_NOISES[MODE][j]
 
+            # Convenient for readibility later on
             REAL_IDX = CHIP_ORDER[j] + N_COLS * i
 
-            AMPNAME = metadata[REAL_IDX]["AMPNAME"]
-
+            # Extracts overscan / data regions from metadata strings
             over_start, over_end, _, _ = _extract_detector_region(
                 metadata[REAL_IDX]["BIASSEC"]
             )
@@ -439,10 +510,11 @@ def _gmos_hamamatsu_formatter(
                 metadata[REAL_IDX]["DATASEC"]
             )
 
+            # Used for calculating where data from each chip slots in
             DATALEN = int(data_end - data_start + 1)
             DATA_YLEN = int(yend - ystart + 1)
 
-            # if "right" in AMPNAME:
+            # Two cases exist since overscan is sometimes on left/right of data
             if j % 2 == 1:
                 over_end -= CONTAM_PIX_LENGTH
             else:
@@ -452,6 +524,7 @@ def _gmos_hamamatsu_formatter(
             gap_offset = CHIP_GAP * (((i * N_COLS + j) // 4) % 3)
             total_offset = j * DATALEN + gap_offset
 
+            # Creates a 3D array from a 2D median overscan array
             bias = np.repeat(
                 np.median(
                     data[REAL_IDX][:, :, over_start - 1 : over_end],
@@ -461,8 +534,10 @@ def _gmos_hamamatsu_formatter(
                 axis=2,
             )
 
-            chip_data = data[REAL_IDX][:, :, data_start -1 : data_end]
+            # Clips out the overscan region for that chip
+            chip_data = data[REAL_IDX][:, :, data_start - 1 : data_end]
 
+            # Inserts all data for that chip into the 3D / 2D arrays
             combined_data[
                 :,
                 y_offset : y_offset + DATA_YLEN,
@@ -478,10 +553,10 @@ def _gmos_hamamatsu_formatter(
     # Easiest to rotate the image here
     combined_data = np.rot90(combined_data, k=2, axes=(1, 2))
     combined_data = combined_data[:, crop_bds[0] : crop_bds[1]]
-
     combined_RN = np.rot90(combined_RN, k=2)
     combined_RN = combined_RN[crop_bds[0] : crop_bds[1]]
 
+    # Doing this to avoid having optional third return
     metadata[0]["RN"] = combined_RN
 
     return combined_data, metadata
@@ -541,9 +616,11 @@ def _gmos_e2vDD_formatter(
         "high_fast": [7.0, 7.8, 5.7, 5.8, 6.4, 6.3],
     }
 
+    # Value of 5000 represents 1000
     AMP_MODE = metadata[0]["AMPINTEG"]
-    AMP_MODE = "slow" if AMP_MODE==1000 else "fast"
+    AMP_MODE = "slow" if AMP_MODE == 1000 else "fast"
 
+    # 3.0 threshold pulled from average RN for 'slow' mode
     GAIN_MODE = 0
     for idx in range(1, len(metadata)):
         GAIN_MODE += metadata[idx]["GAIN"] / (len(metadata) - 1)
@@ -596,13 +673,14 @@ def _gmos_e2vDD_formatter(
     for i in range(N_ROWS):
         for j in range(N_COLS):
 
+            # Pulls from the gain / RN tables for that chip / mode
             GAIN = GAINS[f"{GAIN_MODE}_{AMP_MODE}"][j]
             RN = READ_NOISES[f"{GAIN_MODE}_{AMP_MODE}"][j]
 
+            # Convenient for readibility later on
             REAL_IDX = CHIP_ORDER[j] + N_COLS * i
 
-            AMPNAME = metadata[REAL_IDX]["AMPNAME"]
-
+            # Extracts overscan / data regions from metadata strings
             over_start, over_end, _, _ = _extract_detector_region(
                 metadata[REAL_IDX]["BIASSEC"]
             )
@@ -610,9 +688,12 @@ def _gmos_e2vDD_formatter(
                 metadata[REAL_IDX]["DATASEC"]
             )
 
+            # Used for calculating where data from each chip slots in
             DATALEN = int(data_end - data_start + 1)
             DATA_YLEN = int(yend - ystart + 1)
 
+            # Chip order is weird, so using metadata to locate overscan
+            AMPNAME = metadata[REAL_IDX]["AMPNAME"]
             if "right" in AMPNAME:
                 over_end -= CONTAM_PIX_LENGTH
             else:
@@ -622,6 +703,7 @@ def _gmos_e2vDD_formatter(
             gap_offset = CHIP_GAP * (((i * N_COLS + j) // 2) % 3)
             total_offset = j * DATALEN + gap_offset
 
+            # Creates a 3D array from a 2D median overscan array
             bias = np.repeat(
                 np.median(
                     data[REAL_IDX][:, :, over_start - 1 : over_end],
@@ -631,8 +713,10 @@ def _gmos_e2vDD_formatter(
                 axis=2,
             )
 
-            chip_data = data[REAL_IDX][:, :, data_start -1 : data_end]
+            # Clips out the overscan region for that chip
+            chip_data = data[REAL_IDX][:, :, data_start - 1 : data_end]
 
+            # Inserts all data for that chip into the 3D / 2D arrays
             combined_data[
                 :,
                 y_offset : y_offset + DATA_YLEN,
@@ -648,10 +732,10 @@ def _gmos_e2vDD_formatter(
     # Easiest to rotate the image here
     combined_data = np.rot90(combined_data, k=2, axes=(1, 2))
     combined_data = combined_data[:, crop_bds[0] : crop_bds[1]]
-
     combined_RN = np.rot90(combined_RN, k=2)
     combined_RN = combined_RN[crop_bds[0] : crop_bds[1]]
 
+    # Doing this to avoid having optional third return
     metadata[0]["RN"] = combined_RN
 
     return combined_data, metadata
