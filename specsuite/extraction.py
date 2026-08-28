@@ -219,8 +219,8 @@ def boxcar_extraction(
         copied_images = np.array([copied_images])
     if len(backgrounds.shape) == 2:
         copied_backgrounds = np.array([copied_backgrounds])
-    if len(RN.shape) == 2:
-        copied_RN = np.array([copied_RN])
+    if len(copied_RN.shape) == 2:
+        copied_RN = np.array([copied_RN for _ in range(len(copied_images))])
 
     # Checks that arrays are either 3D or a wrapped 2D exposure
     try:
@@ -240,8 +240,6 @@ def boxcar_extraction(
         # Used for calculating boxcar mask
         pixels = np.arange(images.shape[2])
         y_grid = np.arange(images.shape[1])[:, None]
-
-        copied_RN = np.array([RN for _ in range(len(images))])
 
         # Iterates over single images since 'trace_fit()' takes one image
         for idx in tqdm(
