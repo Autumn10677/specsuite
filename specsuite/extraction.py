@@ -246,8 +246,8 @@ def boxcar_extraction(
         y_grid = np.arange(images.shape[1])[:, None]
 
         boxcar_masks = np.full(
-            shape = copied_images.shape,
-            fill_value = 1.0,
+            shape=copied_images.shape,
+            fill_value=1.0,
         )
 
         # Iterates over single images since 'trace_fit()' takes one image
