@@ -149,6 +149,7 @@ def boxcar_extraction(
     bin_size: int = 16,
     extraction_size: int = 50,
     mode: str = "fit trace",
+    return_masks: bool = False,
     progress: bool = False,
     debug: bool = False,
 ) -> tuple[np.ndarray, np.ndarray]:
@@ -186,6 +187,9 @@ def boxcar_extraction(
         valid modes are: (1) 'full' which sums along the cross-dispersion
         axis, and (2) 'fit trace' which only extracts flux from a small
         region around the trace.
+    return_masks :: bool
+        Returns an additional third array filled with each `boxcar_mask`
+        used during flux extraction (only for 'fit trace' mode).
     progress :: bool
         Enables progress bar (only for 'fit trace' mode).
     debug :: bool
@@ -241,6 +245,11 @@ def boxcar_extraction(
         pixels = np.arange(images.shape[2])
         y_grid = np.arange(images.shape[1])[:, None]
 
+        boxcar_masks = np.full(
+            shape = copied_images.shape,
+            fill_value = 1.0,
+        )
+
         # Iterates over single images since 'trace_fit()' takes one image
         for idx in tqdm(
             range(len(images)),
@@ -257,6 +266,8 @@ def boxcar_extraction(
 
             # Injects NaNs so they are ignored during flux / error calculation
             boxcar_mask = ~(np.abs(y_grid - p_trace(pixels)) <= extraction_size)
+            boxcar_masks[idx][boxcar_mask] *= 0.0
+
             copied_images[idx][boxcar_mask] *= 0.0
             copied_backgrounds[idx][boxcar_mask] *= 0.0
             copied_RN[idx][boxcar_mask] *= 0.0
@@ -275,6 +286,8 @@ def boxcar_extraction(
         )
     )
 
+    if mode == "fit trace" and return_masks:
+        return flux_array, error_array, boxcar_masks
     return flux_array, error_array
 
 
