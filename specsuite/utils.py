@@ -530,12 +530,14 @@ def phase_slope_shift(
 def estimate_shift(
     ref_fft: np.ndarray,
     data_fft: np.ndarray,
+    percentile: float = 80,
+    debug: bool = False,
 ) -> float:
     """
     Attempts to estimate the sub-pixel shift between two signals.
-    This is done in two steps, first by finding the peak coarse
-    shift, then by refining this estimate using the slope of the phase
-    correlation.
+    This is done using a standard phase correlation technique,
+    and a parabola is fit to the highest 'thresh' quantile of
+    points
 
     Parameters:
     -----------
@@ -543,28 +545,60 @@ def estimate_shift(
         The Fourier transform of the reference signal.
     data_fft :: np.ndarray
         The Fourier transform of the data signal.
-
+    percentile :: float
+        Determines the lowest allowed percentile of points from
+        the IFT to fit a parabola to.
+    debug :: bool
+        Enables and optional debugging plot.
+ 
     Returns:
     --------
     shift :: float
         The estimated sub-pixel shift between the two signals.
     """
 
-    # Coarse, global estimate
-    coarse = peak_phase_shift(ref_fft, data_fft)
+    assert (0 < percentile < 100), "Invalid percentile, value must lie between 0-100!"
 
-    # Recenter data FFT
-    freq = np.fft.fftfreq(len(ref_fft))
-    data_fft_centered = data_fft * np.exp(2j * np.pi * freq * coarse)
+    # Used to avoid specific x-scale
+    length = len(ref_fft)
+    pixels = np.linspace(-length//2, length//2, length)
 
-    # Fine, local estimate
-    fine = phase_slope_shift(ref_fft, data_fft_centered)
+    # Calculates the phase correlation and applies a power to the magnitude
+    cross = np.conjugate(ref_fft) * data_fft
+    corr = np.real(np.fft.ifft(cross))
+    corr = (corr - np.min(corr)) / (np.max(corr) - np.min(corr))
 
-    # Enforce validity
-    if not np.isfinite(fine) or abs(fine) > 0.5:
-        fine = 0.0
+    # Helpful for fitting negative offsets rather than worrying about data wrapping
+    shifted_corr = np.full(corr.shape, None)
+    shifted_corr[:length//2] = corr[length//2:]
+    shifted_corr[length//2:] = corr[:length//2]
+    shifted_corr = shifted_corr.astype(float)
 
-    return coarse + fine
+    # Extracts the top 'thresh' percentile of points
+    mask = (shifted_corr > np.percentile(shifted_corr, q=percentile))
+
+    assert len(pixels[mask]) > 3, (
+        f"Only {len(pixels[mask])} points lie above percentile limit,"
+        + " so a parabola cannot be fit to the data."
+    )
+
+    # Fits a parabola to the remaining points
+    a, b, c = np.polyfit(pixels[mask], shifted_corr[mask], 2)
+    shift = -b/(2*a)
+
+    # Optional debugging plot
+    if debug:
+        pix_ss = np.linspace(np.min(pixels[mask]), np.max(pixels[mask]), 1000)
+        plt.rcParams["figure.figsize"] = (5, 2)
+        plt.axvline(shift, color='k', ls="--")
+        plt.scatter(pixels[mask], shifted_corr[mask])
+        plt.plot(pix_ss, np.poly1d([a, b, c])(pix_ss))
+        plt.xlabel("Sub-Pixel Offset")
+        plt.ylabel("Offset Likelihood")
+        plt.ylim(0, 1)
+        plt.show()
+
+    return shift
 
 
 def convolve_to_resolution(
