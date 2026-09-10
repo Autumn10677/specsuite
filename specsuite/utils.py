@@ -449,18 +449,18 @@ def estimate_shift(
         the IFT to fit a parabola to.
     debug :: bool
         Enables and optional debugging plot.
- 
+
     Returns:
     --------
     shift :: float
         The estimated sub-pixel shift between the two signals.
     """
 
-    assert (0 < percentile < 100), "Invalid percentile, value must lie between 0-100!"
+    assert 0 < percentile < 100, "Invalid percentile, value must lie between 0-100!"
 
     # Used to avoid specific x-scale
     length = len(ref_fft)
-    pixels = np.linspace(-length//2, length//2, length)
+    pixels = np.linspace(-length // 2, length // 2, length)
 
     # Calculates the phase correlation and applies a power to the magnitude
     cross = np.conjugate(ref_fft) * data_fft
@@ -469,12 +469,12 @@ def estimate_shift(
 
     # Helpful for fitting negative offsets rather than worrying about data wrapping
     shifted_corr = np.full(corr.shape, None)
-    shifted_corr[:length//2] = corr[length//2:]
-    shifted_corr[length//2:] = corr[:length//2]
+    shifted_corr[: length // 2] = corr[length // 2 :]
+    shifted_corr[length // 2 :] = corr[: length // 2]
     shifted_corr = shifted_corr.astype(float)
 
     # Extracts the top 'thresh' percentile of points
-    mask = (shifted_corr > np.percentile(shifted_corr, q=percentile))
+    mask = shifted_corr > np.percentile(shifted_corr, q=percentile)
 
     assert len(pixels[mask]) > 3, (
         f"Only {len(pixels[mask])} points lie above percentile limit,"
@@ -483,13 +483,13 @@ def estimate_shift(
 
     # Fits a parabola to the remaining points
     a, b, c = np.polyfit(pixels[mask], shifted_corr[mask], 2)
-    shift = -b/(2*a)
+    shift = -b / (2 * a)
 
     # Optional debugging plot
     if debug:
         pix_ss = np.linspace(np.min(pixels[mask]), np.max(pixels[mask]), 1000)
         plt.rcParams["figure.figsize"] = (5, 2)
-        plt.axvline(shift, color='k', ls="--")
+        plt.axvline(shift, color="k", ls="--")
         plt.scatter(pixels[mask], shifted_corr[mask])
         plt.plot(pix_ss, np.poly1d([a, b, c])(pix_ss))
         plt.xlabel("Sub-Pixel Offset")
