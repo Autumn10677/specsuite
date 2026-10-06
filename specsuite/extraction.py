@@ -298,7 +298,6 @@ def horne_extraction(
     profile_order: int = 3,
     RN: float | np.ndarray = 0.0,
     bin_size: int = 16,
-    max_iter: int = 5,
     masks: np.ndarray = None,
     return_spatial_profiles: bool = False,
     repeat: bool = True,
@@ -335,11 +334,6 @@ def horne_extraction(
         bin when generating a spatial profile. Generally, a higher value
         increases the probability that 'generate_spatial_profile()'
         converges, but the precision of the extracted profile is lower.
-    max_iter :: int
-        The number of iterations to repeat the Horne extraction algorithm
-        for. The cosmic ray masking has been removed, so the only benefit
-        from increasing 'max_iter' is the potential to get a better
-        constraint on the spatial profile.
     masks :: np.ndarray
         A single (or multiple) 2D mask containing pixels that represent
         known outliers in your data. This can be used to handle dead pixels,
@@ -401,42 +395,35 @@ def horne_extraction(
         # Initializes flux using median to mitigate cosmic rays
         f = np.sum(D - S, axis=0)
 
-        step = 0
+        # Should catch bad values caused by division with flux array
+        f = np.clip(f, 0, None)
+        normed_image = (D - S) / f
+        normed_image = np.nan_to_num(normed_image, nan=1.0, posinf=1.0)
 
-        # Iterates until erroneous pixels have been flagged and removed
-        while step < max_iter:
+        # Generates new spatial profile and variance estimate
+        P = generate_spatial_profile(
+            normed_image,
+            bin_size=bin_size,
+            profile=profile,
+            profile_order=profile_order,
+            repeat=repeat,
+            debug=False,
+        )
 
-            # Should catch bad values caused by division with flux array
-            f = np.clip(f, 0, None)
-            normed_image = (D - S) / f
-            normed_image = np.nan_to_num(normed_image, nan=1.0, posinf=1.0)
+        # Since we divide by V later, division by 0 should produce NaN values
+        V = RN**2 + np.abs(f * P.copy() + S)
+        V[V < 1e-20] = 0
 
-            # Generates new spatial profile and variance estimate
-            P = generate_spatial_profile(
-                normed_image,
-                bin_size=bin_size,
-                profile=profile,
-                profile_order=profile_order,
-                repeat=repeat,
-                debug=False,
-            )
+        # Re-calculates flux and variance using updated arrays
+        numerator = np.sum(M[idx] * P.copy() * (D - S) / V.copy(), axis=0)
+        denominator = np.sum(M[idx] * P.copy() ** 2 / V.copy(), axis=0)
 
-            V = RN**2 + np.abs(f * P.copy() + S)
-            V[V < 1e-20] = 0
-
-            # Re-calculates flux and variance using updated arrays
-            numerator = np.sum(M[idx] * P.copy() * (D - S) / V.copy(), axis=0)
-            denominator = np.sum(M[idx] * P.copy() ** 2 / V.copy(), axis=0)
-
-            f = numerator / denominator
-            f_var = np.sum(M[idx] * P, axis=0) / denominator
-
-            step += 1
-
-        flux[:, idx] = f
-        flux_err[:, idx] = np.sqrt(f_var)
+        # Assigns data to relevant arrays
+        flux[:, idx] = numerator / denominator
+        flux_err[:, idx] = np.sqrt(np.sum(M[idx] * P, axis=0) / denominator)
         all_spatial_profiles[idx] = P
 
+    # Transposed to place psuedo-wavelengths on x-axis
     flux = flux.T
     flux_err = flux_err.T
 
@@ -532,10 +519,10 @@ def trace_fit(
         initial_guess = [max(y_data), y_data.index(max(y_data)), 1]
 
         # Fit Gaussian to data
-        popt, pcov = curve_fit(_gaussian, x_data, y_data, p0=initial_guess)
+        popt, _ = curve_fit(_gaussian, x_data, y_data, p0=initial_guess)
 
         # Extract fitted parameters
-        A_fit, mu_fit, sigma_fit = popt
+        _, mu_fit, sigma_fit = popt
 
         # Appends fit parameters to lists
         locs = np.append(locs, mu_fit)
